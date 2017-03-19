@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <ExecutablePath>C:\DevelopmentLibraries\sqlite\Lib;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\DevelopmentLibraries\boost_1_63_0\boost_1_63_0;E:\Engine Project\DeltaStudios\DeltaStudios;C:\DevelopmentLibraries\sqlite\Include;D:\Projects\Toccata_root\Toccata\include;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\Engine Project\DeltaStudios\Debug;C:\DevelopmentLibraries\sqlite\Project\SQLite_Build\Release;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>DeltaStudios.lib;Winmm.lib;SQLite_Build.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

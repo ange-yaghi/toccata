@@ -5,7 +5,7 @@
 
 #include <fstream>
 
-#include "yds_dynamic_array.h"
+#include <yds_dynamic_array.h>
 
 struct MidiChunkHeader
 {

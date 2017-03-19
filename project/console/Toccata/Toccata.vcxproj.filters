@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Database">
+      <UniqueIdentifier>{ca360c44-1e77-4c96-abb6-4c29919e4beb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FSM%27s">
+      <UniqueIdentifier>{3aded623-4b39-40f2-b188-84f987bc6c6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MIDI">
+      <UniqueIdentifier>{df11da43-0c35-4107-9aa8-1d288494b0b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pattern Detection">
+      <UniqueIdentifier>{65ceb85a-190d-41d0-9c0f-81fea9fd822e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Performance Analysis">
+      <UniqueIdentifier>{7f593f38-091a-4866-bd67-5591b26857a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Session">
+      <UniqueIdentifier>{d47eb7f0-2b36-41e7-b373-8d840cb24f27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utilities">
+      <UniqueIdentifier>{23e61f25-a966-4207-bd44-4b1695f3d988}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Audio">
+      <UniqueIdentifier>{5cc2fb17-581d-4d1e-aa80-953da509d020}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database">
+      <UniqueIdentifier>{d3160ac7-53dc-47d9-9ed4-8823963b29fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FSM%27s">
+      <UniqueIdentifier>{8d28622a-d9bd-495b-8b77-82673b14e658}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MIDI">
+      <UniqueIdentifier>{6e0538c3-acfe-4efd-8a54-df3ceca41b0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Pattern Detection">
+      <UniqueIdentifier>{d2300a79-fdfb-41a8-95a1-ce53bf68b8fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Performance Analysis">
+      <UniqueIdentifier>{e29bd5ae-f97b-4f87-9e6b-8d3d50754006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Session">
+      <UniqueIdentifier>{fecc383f-d7fc-4f9a-8b55-e6e978b2f2a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities">
+      <UniqueIdentifier>{6c4e9f0e-250c-4138-a341-1e339ae33576}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Work Tracking">
+      <UniqueIdentifier>{199b0933-bc9e-497d-8739-6a5a90cf424f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Database\sqlite">
+      <UniqueIdentifier>{626b73d9-cb3b-48d2-9c9d-0e4625b2626c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Audio">
+      <UniqueIdentifier>{d253a9eb-2ea7-44bc-b7f3-e8d995d5b640}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\scripts\increment_build_version.py">
+      <Filter>Work Tracking</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\include\toccata_database.h">
+      <Filter>Header Files\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_fsm.h">
+      <Filter>Header Files\FSM%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_set_tempo_fsm.h">
+      <Filter>Header Files\FSM%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_set_time_fsm.h">
+      <Filter>Header Files\FSM%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_midi.h">
+      <Filter>Header Files\MIDI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_midi_callback.h">
+      <Filter>Header Files\MIDI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_midi_output.h">
+      <Filter>Header Files\MIDI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_sound.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_sound_system.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_error_reporting.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_exercise.h">
+      <Filter>Header Files\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_session.h">
+      <Filter>Header Files\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_performance_report.h">
+      <Filter>Header Files\Performance Analysis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_pattern_detection_system.h">
+      <Filter>Header Files\Pattern Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_pattern_detector.h">
+      <Filter>Header Files\Pattern Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\toccata_recorder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\toccata_database.cpp">
+      <Filter>Source Files\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_fsm.cpp">
+      <Filter>Source Files\FSM%27s</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_set_tempo_fsm.cpp">
+      <Filter>Source Files\FSM%27s</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_set_time_fsm.cpp">
+      <Filter>Source Files\FSM%27s</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_midi.cpp">
+      <Filter>Source Files\MIDI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_midi_callback.cpp">
+      <Filter>Source Files\MIDI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_midi_output.cpp">
+      <Filter>Source Files\MIDI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_error_reporting.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_exercise.cpp">
+      <Filter>Source Files\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_session.cpp">
+      <Filter>Source Files\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_performance_report.cpp">
+      <Filter>Source Files\Performance Analysis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_pattern_detection_system.cpp">
+      <Filter>Source Files\Pattern Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_pattern_detector.cpp">
+      <Filter>Source Files\Pattern Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_sound.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_sound_system.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\toccata_recorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\tracking\BuildVersion.txt">
+      <Filter>Work Tracking</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
