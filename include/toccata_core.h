@@ -45,8 +45,6 @@ public:
 	{
 
 		FSM_Type *newFSM = m_fsms.NewGeneric<FSM_Type>(1);
-		((Toccata_FSM *)newFSM)->m_core = this;
-
 		return newFSM;
 
 	}

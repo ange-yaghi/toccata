@@ -5,12 +5,15 @@
   <PropertyGroup>
     <ExecutablePath>C:\DevelopmentLibraries\sqlite\Lib;$(ExecutablePath)</ExecutablePath>
     <IncludePath>C:\DevelopmentLibraries\boost_1_63_0\boost_1_63_0;E:\Engine Project\DeltaStudios\DeltaStudios;C:\DevelopmentLibraries\sqlite\Include;D:\Projects\Toccata_root\Toccata\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Engine Project\DeltaStudios\Debug;C:\DevelopmentLibraries\sqlite\Project\SQLite_Build\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\DevelopmentLibraries\boost_1_63_0\boost_1_63_0\stage\lib;E:\Engine Project\DeltaStudios\Debug;C:\DevelopmentLibraries\sqlite\Project\SQLite_Build\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>DeltaStudios.lib;Winmm.lib;SQLite_Build.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>python ../../../scripts/increment_build_version.py</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

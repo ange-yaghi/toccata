@@ -12,6 +12,7 @@ public:
 	{
 
 		STATE_DIGIT_1,
+		STATE_WAIT,
 
 		STATE_DEACTIVATED,
 
@@ -23,17 +24,19 @@ public:
 	~Toccata_SetTimeFSM();
 
 	bool Run(int midiKey, int velocity);
-	virtual void UpdateCore();
+	virtual void OnUpdate();
+
+	int GetCurrentMeter() const { return m_currentTime; }
+	bool SwitchMetronomeOnOff() const { return m_enableDisableMetronome; }
 
 protected:
 
 	FSM_STATE m_currentState;
 
 	int m_currentTime;
-
 	bool m_enableDisableMetronome;
 
-	bool m_updateCore;
+	//bool m_updateCore;
 
 };
 

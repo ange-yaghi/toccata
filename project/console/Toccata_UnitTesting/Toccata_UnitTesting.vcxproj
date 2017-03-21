@@ -163,6 +163,8 @@
     <ClCompile Include="..\..\..\src\toccata_set_time_fsm.cpp" />
     <ClCompile Include="..\..\..\src\toccata_sound.cpp" />
     <ClCompile Include="..\..\..\src\toccata_sound_system.cpp" />
+    <ClCompile Include="toccata_recorder_unit_testing.cpp" />
+    <ClCompile Include="toccata_set_time_fsm_unit_testing.cpp" />
     <ClCompile Include="unit_testing_check.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

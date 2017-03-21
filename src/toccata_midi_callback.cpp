@@ -80,7 +80,7 @@ void CALLBACK Toccata_MIDI_Callback(
 
 			if (!processed) processed = Toccata.SetTimeFSM()->Run(key, velocity);
 			if (!processed) processed = Toccata.SetTempoFSM()->Run(key, velocity);
-			if (!processed) Toccata.GetRecorder()->ProcessNote(key, velocity, dwTimestamp, programTimeStamp);
+			if (!processed) Toccata.GetRecorder()->ProcessEvent(key, velocity, dwTimestamp, programTimeStamp);
 
 		}
 

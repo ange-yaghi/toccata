@@ -3,8 +3,9 @@
 Toccata_FSM::Toccata_FSM(const char *typeID) : ysObject(typeID)
 {
 
-	m_core = NULL;
+	m_stateChanged = false;
 	m_enabled = false;
+	m_locked = false;
 
 }
 
@@ -13,14 +14,32 @@ Toccata_FSM::~Toccata_FSM()
 
 }
 
-void Toccata_FSM::UpdateCoreTopLevel()
+//void Toccata_FSM::UpdateCoreTopLevel()
+//{
+//
+//	Lock();
+//
+//	UpdateCore();
+//
+//	Unlock();
+//
+//}
+
+Toccata_FSM::ERROR_CODE Toccata_FSM::ClearFlag()
 {
 
-	Lock();
+	if (!m_stateChanged) return ERROR_NONE;
 
-	UpdateCore();
+	if (!m_locked)
+	{
 
-	Unlock();
+		return ERROR_FSM_NOT_LOCKED;
+
+	}
+
+	m_stateChanged = false;
+
+	return ERROR_NONE;
 
 }
 
@@ -28,6 +47,7 @@ void Toccata_FSM::Lock()
 {
 
 	m_fsmLock.lock();
+	m_locked = true;
 
 }
 
@@ -35,5 +55,6 @@ void Toccata_FSM::Unlock()
 {
 
 	m_fsmLock.unlock();
+	m_locked = false;
 
 }

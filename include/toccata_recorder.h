@@ -80,6 +80,14 @@ public:
 
 	};
 
+	enum ERROR_CODE
+	{
+
+		ERROR_NONE,
+		ERROR_INVALID_INTERNAL_STATE,
+
+	};
+
 public:
 
 	Toccata_Recorder();
@@ -87,12 +95,11 @@ public:
 
 	void Initialize();
 
-	void OnNewTempo();
-	void OnNewTime();
+	ERROR_CODE OnNewTempo(int tempoBPM, int meterNumerator, int meterDenominator, bool metronomeEnabled);
+	ERROR_CODE OnNewTime(int tempoBPM, int meterNumerator, int meterDenominator, bool metronomeEnabled);
 
 	void ProcessMidiTick(int timeStamp);
-	void ProcessNote(int midiKey, int velocity, int timeStamp, uint64_t systemTimeStamp);
-	void IncrementTime(double dt);
+	ERROR_CODE ProcessEvent(int midiKey, int velocity, int timeStamp, uint64_t systemTimeStamp);
 
 	Toccata_InputBuffer *GetInputBuffer() { return &m_inputBuffer; }
 
@@ -105,11 +112,18 @@ public:
 
 	Toccata_RawMidiFileOutput *GetRawOutput() { return &m_rawOutput; }
 
+	bool IsMetronomeEnabled() const { return m_isMetronomeEnabled; }
+	int GetTempoBPM() { return m_tempoBPM; }
+	int GetMeterNumerator() const { return m_meterNumerator; }
+	int GetMeterDenominator() const { return m_meterDenominator; }
+
+	bool IsInitialized() const { return m_initialized; }
+
 protected:
 
 	MidiPianoSegment *NewSegment();
-
 	MidiPianoSegment *m_currentTarget;
+
 	int m_midiTimeStampStart;
 	int m_currentMidiTimeStamp;
 	int m_currentMidiTimeStampExternal;
@@ -125,7 +139,14 @@ protected:
 
 protected:
 
-	Toccata_Core *m_core;
+	// States
+	bool m_initialized;
+
+	// Inputs
+	bool m_isMetronomeEnabled;
+	int m_tempoBPM;
+	int m_meterNumerator;
+	int m_meterDenominator;
 
 };
 

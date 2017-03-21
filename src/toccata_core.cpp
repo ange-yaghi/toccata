@@ -40,7 +40,7 @@ void Toccata_Core::Initialize()
 	CreateFSMS();
 
 	m_timingSystem.Initialize();
-	m_recorder.m_core = this;
+	//m_recorder.m_core = this;
 
 	m_patternDetector.SetCore(this);
 
@@ -49,15 +49,42 @@ void Toccata_Core::Initialize()
 void Toccata_Core::Update()
 {
 
-	int nFSMs = m_fsms.GetNumObjects();
+	// Check each fsm
 
-	for (int i = 0; i < nFSMs; i++)
+	// Check the tempo fsm
+	m_setTempoFSM->Lock();
+	if (m_setTempoFSM->IsStateChanged())
 	{
 
-		m_fsms.Get(i)->UpdateCore();
+		SetTempo(m_setTempoFSM->GetTempo());
+
+		if (m_setTempoFSM->ForceMetronomeEnable())
+			EnableMetronome(true);
+
+		else if (m_setTempoFSM->SwitchMetronomeOnOff())
+			EnableMetronome(!IsMetronomeEnabled());
 
 	}
+	m_setTempoFSM->OnUpdate();
+	m_setTempoFSM->ClearFlag();
+	m_setTempoFSM->Unlock();
 
+	// Check the time fsm
+	m_setTimeFSM->Lock();
+	if (m_setTimeFSM->IsStateChanged())
+	{
+
+		SetTime(m_setTimeFSM->GetCurrentMeter());
+
+		if (m_setTimeFSM->SwitchMetronomeOnOff())
+			EnableMetronome(!IsMetronomeEnabled());
+
+	}
+	m_setTimeFSM->OnUpdate();
+	m_setTimeFSM->ClearFlag();
+	m_setTimeFSM->Unlock();
+
+	// Update the timing system
 	m_timingSystem.Update();
 
 }
@@ -88,7 +115,7 @@ void Toccata_Core::SetTempo(int tempoBPM)
 
 		m_currentTempo = newTempo;
 
-		m_recorder.OnNewTempo();
+		m_recorder.OnNewTempo(m_currentTempo, m_currentTime, 2, true);
 
 	}
 
@@ -112,7 +139,7 @@ void Toccata_Core::SetTime(int time)
 	{
 
 		m_currentTime = time;
-		m_recorder.OnNewTime();
+		m_recorder.OnNewTime(m_currentTempo, m_currentTime, 2, true);
 
 	}
 
@@ -128,7 +155,7 @@ void Toccata_Core::EnableMetronome(bool enable)
 
 		ResetMetronome();
 
-		m_recorder.OnNewTempo();
+		m_recorder.OnNewTempo(m_currentTempo, m_currentTime, 2, true);
 
 	}
 

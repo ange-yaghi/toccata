@@ -68,6 +68,14 @@ Toccata_Recorder::Toccata_Recorder()
 	// Create the first recording
 	NewSegment();
 
+	// Initialzie member variables
+	m_tempoBPM = 0;
+	m_isMetronomeEnabled = false;
+	m_meterNumerator = 0;
+	m_meterDenominator = 0;
+
+	m_initialized = false;
+
 }
 
 Toccata_Recorder::~Toccata_Recorder()
@@ -82,15 +90,20 @@ void Toccata_Recorder::Initialize()
 
 	m_rawOutput.Open(fname.c_str());
 
+	// Set the initialized flag
+	m_initialized = true;
+
 }
 
-void Toccata_Recorder::OnNewTempo()
+Toccata_Recorder::ERROR_CODE Toccata_Recorder::OnNewTempo(int tempo, int meterNumerator, int meterDenominator, bool metronomeEnabled)
 {
 
-	bool metronomeEnabled = m_core->IsMetronomeEnabled();
-	int tempo = m_core->GetTempoBPM();
-
 	MidiPianoSegment *newSegment = NULL;
+
+	m_tempoBPM = tempo;
+	m_meterNumerator = meterNumerator;
+	m_meterDenominator = meterDenominator;
+	m_isMetronomeEnabled = metronomeEnabled;
 	
 	if (m_currentTarget->IsEmpty())
 	{
@@ -118,57 +131,38 @@ void Toccata_Recorder::OnNewTempo()
 
 	newSegment->SetTimeFormat(MidiPianoSegment::TIME_FORMAT_TIME_CODE);
 
-	if (tempo == 0 || !metronomeEnabled)
+	if (m_tempoBPM == 0 || !m_isMetronomeEnabled)
 	{
 	
 		// Assume 120 bpm, 4/4 time
+		// Correct values will be calculated below to allow
+		// for millisecond accuracy of recordings
 
-		newSegment->SetTempoBPM(120);
-
-		// 0.5 sec/whole note
-		// 0.125 sec/quarter note
-		// 1250 ms/quarter note
-
-		newSegment->SetTicksPerQuarterNote(1250);
-
-	}
-
-	else
-	{
-
-		newSegment->SetTempoBPM(m_core->GetTempoBPM());
-
-		// Calculate number of ticks needed for millisecond accuracy
-		double period = (60.0 / m_core->GetTempoBPM()) / 4;
-		period *= 1000; // Convert to ms
-
-		newSegment->SetTicksPerQuarterNote((int)(period + 0.5) * 100);
+		m_tempoBPM = 120;
+		m_meterNumerator = 4;
+		m_meterDenominator = 2;
+		m_isMetronomeEnabled = false;
 
 	}
 
-	int timeNumerator = m_core->GetTime();
-	int timeDenominator = 2;
+	newSegment->SetTempoBPM(m_tempoBPM);
 
-	newSegment->SetTimeSignature(timeNumerator, timeDenominator);
+	// Calculate number of ticks needed for millisecond accuracy
+	double period = (60.0 / m_tempoBPM) / 4;
+	period *= 1000; // Convert to ms
+
+	newSegment->SetTicksPerQuarterNote((int)(period + 0.5) * 100);
+
+	newSegment->SetTimeSignature(m_meterNumerator, m_meterDenominator);
+
+	return ERROR_NONE;
 
 }
 
-void Toccata_Recorder::OnNewTime()
+Toccata_Recorder::ERROR_CODE Toccata_Recorder::OnNewTime(int tempoBPM, int meterNumerator, int meterDenominator, bool metronomeEnabled)
 {
 
-	OnNewTempo();
-
-}
-
-void Toccata_Recorder::IncrementTime(double dt)
-{
-
-	if (m_recording)
-	{
-
-		//m_deltaTime += m_currentTarget->ConvertSecondsToDeltaTime(dt, m_currentTarget->GetTempo());
-
-	}
+	return OnNewTempo(tempoBPM, meterNumerator, meterDenominator, metronomeEnabled);
 
 }
 
@@ -281,8 +275,12 @@ void Toccata_Recorder::ProcessMidiTick(int timeStamp)
 
 }
 
-void Toccata_Recorder::ProcessNote(int midiKey, int velocity, int timeStamp, uint64_t systemTimeStamp)
+Toccata_Recorder::ERROR_CODE Toccata_Recorder::ProcessEvent(int midiKey, int velocity, int timeStamp, uint64_t systemTimeStamp)
 {
+
+	if (m_tempoBPM == 0)			return ERROR_INVALID_INTERNAL_STATE;
+	if (m_meterNumerator == 0)		return ERROR_INVALID_INTERNAL_STATE;
+	if (m_meterDenominator == 0)	return ERROR_INVALID_INTERNAL_STATE;
 
 	m_inputBuffer.LockBuffer();
 
@@ -338,6 +336,8 @@ void Toccata_Recorder::ProcessNote(int midiKey, int velocity, int timeStamp, uin
 	}
 
 	m_inputBuffer.UnlockBuffer();
+
+	return ERROR_NONE;
 
 }
 

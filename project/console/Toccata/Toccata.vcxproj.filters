@@ -61,9 +61,6 @@
     <Filter Include="Work Tracking">
       <UniqueIdentifier>{199b0933-bc9e-497d-8739-6a5a90cf424f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Database\sqlite">
-      <UniqueIdentifier>{626b73d9-cb3b-48d2-9c9d-0e4625b2626c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Audio">
       <UniqueIdentifier>{d253a9eb-2ea7-44bc-b7f3-e8d995d5b640}</UniqueIdentifier>
     </Filter>

@@ -72,5 +72,11 @@
     <ClCompile Include="..\..\..\src\toccata_sound_system.cpp">
       <Filter>Toccata Source</Filter>
     </ClCompile>
+    <ClCompile Include="toccata_recorder_unit_testing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="toccata_set_time_fsm_unit_testing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

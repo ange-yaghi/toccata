@@ -12,29 +12,41 @@ class Toccata_FSM : public ysObject
 
 public:
 
+	enum ERROR_CODE
+	{
+
+		ERROR_NONE = 0x0,
+		ERROR_FSM_NOT_LOCKED,
+
+	};
+
+public:
+
 	Toccata_FSM(const char *typeID);
 	virtual ~Toccata_FSM();
-
-	Toccata_Core *Core() { return m_core; }
-
-	void UpdateCoreTopLevel();
 
 	void Lock();
 	void Unlock();
 
+	virtual void OnUpdate() = 0;
+
 	void SetEnable(bool enable) { Lock(); m_enabled = enable; Unlock(); }
 	bool IsEnabled() const { return m_enabled; }
 
+	bool IsStateChanged() const { return m_stateChanged; }
+	ERROR_CODE ClearFlag();
+
 protected:
 
-	virtual void UpdateCore() = 0;
+	void SetUpdateNeeded() { m_stateChanged = true; }
 
 private:
 
 	bool m_enabled;
-	std::mutex m_fsmLock;
+	bool m_stateChanged;
+	bool m_locked;
 
-	Toccata_Core *m_core;
+	std::mutex m_fsmLock;
 
 };
 

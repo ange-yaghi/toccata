@@ -25,7 +25,11 @@ public:
 	~Toccata_SetTempoFSM();
 
 	bool Run(int midiKey, int velocity);
-	virtual void UpdateCore();
+	virtual void OnUpdate();
+
+	int GetTempo() { return m_currentTempo; }
+	bool ForceMetronomeEnable() { return m_forceEnable; }
+	bool SwitchMetronomeOnOff() { return m_enableDisableMetronome; }
 
 protected:
 
@@ -34,8 +38,6 @@ protected:
 	int m_currentTempo;
 	bool m_enableDisableMetronome;
 	bool m_forceEnable;
-
-	bool m_updateCore;
 
 };
 

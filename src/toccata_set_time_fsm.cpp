@@ -6,10 +6,7 @@ Toccata_SetTimeFSM::Toccata_SetTimeFSM() : Toccata_FSM("Toccata_SetTempoFSM")
 {
 
 	m_currentState = STATE_DEACTIVATED;
-
-	m_currentTime = 4;
-	m_updateCore = true;
-
+	m_currentTime = 0;
 	m_enableDisableMetronome = false;
 
 }
@@ -72,7 +69,8 @@ bool Toccata_SetTimeFSM::Run(int midiKey, int velocity)
 
 				m_enableDisableMetronome = true;
 				nextState = STATE_DIGIT_1;
-				m_updateCore = true;
+
+				SetUpdateNeeded();
 
 			}
 
@@ -83,10 +81,20 @@ bool Toccata_SetTimeFSM::Run(int midiKey, int velocity)
 				{
 
 					m_currentTime = amount;
-					m_updateCore = true;
-					m_enableDisableMetronome = false;
 
-					nextState = STATE_DEACTIVATED;
+					nextState = STATE_WAIT;
+
+					SetUpdateNeeded();
+
+				}
+
+				else if (m_currentState == STATE_WAIT)
+				{
+
+					m_currentTime = amount;
+					nextState = STATE_WAIT;
+
+					SetUpdateNeeded();
 
 				}
 
@@ -106,16 +114,18 @@ bool Toccata_SetTimeFSM::Run(int midiKey, int velocity)
 			{
 
 				nextState = STATE_DEACTIVATED;
-				printf("Set Time to %d\n", m_currentTime);
+				//printf("Set Time to %d\n", m_currentTime);
+
+				// TODO: DELETE
 
 				// No need to update if nothing has changed
-				if (m_currentState != STATE_DIGIT_1)
-				{
+				//if (m_currentState != STATE_DIGIT_1)
+				//{
 
-					m_enableDisableMetronome = false;
-					m_updateCore = true;
+				//	m_enableDisableMetronome = false;
+				//	SetUpdateNeeded();
 
-				}
+				//}
 
 			}
 
@@ -143,16 +153,18 @@ bool Toccata_SetTimeFSM::Run(int midiKey, int velocity)
 
 }
 
-void Toccata_SetTimeFSM::UpdateCore()
+void Toccata_SetTimeFSM::OnUpdate()
 {
 
-	if (m_updateCore)
-	{
+	m_enableDisableMetronome = false;
 
-		Core()->SetTime(m_currentTime);
+	//if (m_updateCore)
+	//{
 
-		m_updateCore = false;
+	//	Core()->SetTime(m_currentTime);
 
-	}
+	//	m_updateCore = false;
+
+	//}
 
 }

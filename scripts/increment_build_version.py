@@ -23,8 +23,10 @@ if __name__ == "__main__":
     buildVersion = 0
     lineCount = 0
     buildLog = []
+
+    mypath = os.path.dirname(os.path.realpath(__file__)) + "/../"
     
-    f = open("BuildVersion.txt", "r")
+    f = open(mypath + "/tracking/BuildVersion.txt", "r")
     
     if (f):
     
@@ -47,16 +49,17 @@ if __name__ == "__main__":
     buildVersion += 1
     
     # Calculate line count
-    mypath = os.path.dirname(os.path.realpath(__file__))
-    sourceFileList = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+
+    #sourceFileList = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     
-    for fileEntry in sourceFileList:
-        if (fileEntry.endswith(".h") or fileEntry.endswith(".cpp") or fileEntry.endswith(".py")):
-            lineCount += GetFileLineCount(fileEntry.strip())
+    for root, subFolders, files in os.walk(mypath):
+        for fileEntry in files:
+            if (fileEntry.endswith(".h") or fileEntry.endswith(".cpp") or fileEntry.endswith(".py")):
+                lineCount += GetFileLineCount(os.path.join(root, fileEntry.strip()))
         
     # Rewrite the file
-        
-    f = open("BuildVersion.txt", "w")
+       
+    f = open(mypath + "/tracking/BuildVersion.txt", "w")
     
     f.write("Toccata 2016 Build Information\n")
     f.write("Ange Yaghi | 2016 | Every now and then, some rain must fall\n")
