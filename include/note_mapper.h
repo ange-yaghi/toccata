@@ -13,9 +13,12 @@ namespace toccata {
         struct NNeighborMappingRequest {
             const MusicSegment *ReferenceSegment;
             const MusicSegment *Segment;
+            int Start = -1;
+            int End = -1;
             double s;
             double t;
             double CorrelationThreshold;
+            int *const *NotesByPitch = nullptr; // Optional
 
             int *Target;
         };
@@ -37,6 +40,9 @@ namespace toccata {
             const MusicSegment *ReferenceSegment;
             const MusicSegment *Segment;
 
+            int Start = -1;
+            int End = -1;
+
             double s;
             double t;
             double CorrelationThreshold;
@@ -46,7 +52,8 @@ namespace toccata {
             int *Target; // size = n
         };
 
-        static int GetClosestNote(const MusicSegment *segment, double timestamp, int pitch);
+        static int GetClosestNote(const MusicPoint *points, int start, int end, double timestamp, int pitch);
+        static int GetClosestNote(const MusicPoint *points, const int *indices, int n, double timestamp);
 
         static void AllocateMemorySpace(InjectiveMappingRequest::MemorySpace *memory, int referenceNoteCount, int noteCount);
         static void FreeMemorySpace(InjectiveMappingRequest::MemorySpace *memory);

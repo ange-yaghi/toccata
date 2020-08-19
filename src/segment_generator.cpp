@@ -118,6 +118,21 @@ void toccata::SegmentGenerator::Jitter(MusicSegment *segment, double amplitude) 
     for (int i = 0; i < n; ++i) {
         points[i].Timestamp += dist(m_generator);
     }
+
+    for (int i = 0; i < n; ++i) {
+        int smallest = -1;
+        for (int j = i; j < n; ++j) {
+            if (smallest == -1 || points[j].Timestamp < points[smallest].Timestamp) {
+                smallest = j;
+            }
+        }
+
+        if (smallest == -1) break;
+
+        MusicPoint temp = points[i];
+        points[i] = points[smallest];
+        points[smallest] = temp;
+    }
 }
 
 void toccata::SegmentGenerator::Scale(MusicSegment *segment, double s) {

@@ -22,6 +22,7 @@ TEST(TestPatternEvaluatorTest, SanityCheck) {
 	const int testPattern[] = { 0, 1 };
 
 	int *const *notesByPitch = toccata::Memory::Allocate2d<int>(4, 2);
+	notesByPitch[0][0] = 0;
 	notesByPitch[1][0] = 0; notesByPitch[1][1] = -1;
 	notesByPitch[2][0] = 1; notesByPitch[2][1] = -1;
 	notesByPitch[3][0] = 2; notesByPitch[3][1] = -1;
@@ -30,12 +31,14 @@ TEST(TestPatternEvaluatorTest, SanityCheck) {
 	toccata::TestPatternEvaluator::Request request;
 	request.Segment = &segment;
 	request.ReferenceSegment = &reference;
+	request.Start = 0;
+	request.End = 2;
 	request.TestPattern = testPattern;
 	request.TestPatternLength = 2;
 	request.SegmentNotesByPitch = notesByPitch;
 	
 	toccata::TestPatternEvaluator::AllocateMemorySpace(&request.Memory, 2, 3, 3);
-	bool found = toccata::TestPatternEvaluator::FindBestSolution(request, &output);
+	bool found = toccata::TestPatternEvaluator::Solve(request, &output);
 	toccata::TestPatternEvaluator::FreeMemorySpace(&request.Memory);
 
 	EXPECT_TRUE(found);
@@ -60,6 +63,7 @@ TEST(TestPatternEvaluatorTest, TwoOptions) {
 	const int testPattern[] = { 0, 1 };
 
 	int *const *notesByPitch = toccata::Memory::Allocate2d<int>(4, 3);
+	notesByPitch[0][0] = 0;
 	notesByPitch[1][0] = 0; notesByPitch[1][1] = 3; notesByPitch[1][2] = -1;
 	notesByPitch[2][0] = 1; notesByPitch[2][1] = -1;
 	notesByPitch[3][0] = 2; notesByPitch[3][1] = -1;
@@ -68,12 +72,14 @@ TEST(TestPatternEvaluatorTest, TwoOptions) {
 	toccata::TestPatternEvaluator::Request request;
 	request.Segment = &segment;
 	request.ReferenceSegment = &reference;
+	request.Start = 0;
+	request.End = 3;
 	request.TestPattern = testPattern;
 	request.TestPatternLength = 2;
 	request.SegmentNotesByPitch = notesByPitch;
 
 	toccata::TestPatternEvaluator::AllocateMemorySpace(&request.Memory, 2, 3, 4);
-	bool found = toccata::TestPatternEvaluator::FindBestSolution(request, &output);
+	bool found = toccata::TestPatternEvaluator::Solve(request, &output);
 	toccata::TestPatternEvaluator::FreeMemorySpace(&request.Memory);
 
 	EXPECT_TRUE(found);
@@ -106,12 +112,14 @@ TEST(TestPatternEvaluatorTest, TwoCloseOptions) {
 	toccata::TestPatternEvaluator::Request request;
 	request.Segment = &segment;
 	request.ReferenceSegment = &reference;
+	request.Start = 0;
+	request.End = 3;
 	request.TestPattern = testPattern;
 	request.TestPatternLength = 2;
 	request.SegmentNotesByPitch = notesByPitch;
 
 	toccata::TestPatternEvaluator::AllocateMemorySpace(&request.Memory, 2, 3, 4);
-	bool found = toccata::TestPatternEvaluator::FindBestSolution(request, &output);
+	bool found = toccata::TestPatternEvaluator::Solve(request, &output);
 	toccata::TestPatternEvaluator::FreeMemorySpace(&request.Memory);
 
 	EXPECT_TRUE(found);
@@ -146,12 +154,14 @@ TEST(TestPatternEvaluatorTest, OneBadPatternPoint) {
 	toccata::TestPatternEvaluator::Request request;
 	request.Segment = &segment;
 	request.ReferenceSegment = &reference;
+	request.Start = 0;
+	request.End = 3;
 	request.TestPattern = testPattern;
 	request.TestPatternLength = 3;
 	request.SegmentNotesByPitch = notesByPitch;
 
 	toccata::TestPatternEvaluator::AllocateMemorySpace(&request.Memory, 3, 4, 4);
-	bool found = toccata::TestPatternEvaluator::FindBestSolution(request, &output);
+	bool found = toccata::TestPatternEvaluator::Solve(request, &output);
 	toccata::TestPatternEvaluator::FreeMemorySpace(&request.Memory);
 
 	EXPECT_TRUE(found);
@@ -170,22 +180,27 @@ TEST(TestPatternEvaluatorTest, LargeData) {
 	const int testPattern[] = { 3, 5, 10 };
 
 	int **notesByPitch = toccata::Memory::Allocate2d<int>(256, 17);
-	toccata::SegmentUtilities::SortByPitch(&segment, 256, notesByPitch);
+	toccata::SegmentUtilities::SortByPitch(&segment, 0, 15, 256, notesByPitch);
 
 	toccata::TestPatternEvaluator::Output output;
 	toccata::TestPatternEvaluator::Request request;
 	request.Segment = &segment;
 	request.ReferenceSegment = &reference;
+	request.Start = 0;
+	request.End = 15;
 	request.TestPattern = testPattern;
 	request.TestPatternLength = 3;
 	request.SegmentNotesByPitch = notesByPitch;
 
 	toccata::TestPatternEvaluator::AllocateMemorySpace(&request.Memory, 3, 16, 16);
-	bool found = toccata::TestPatternEvaluator::FindBestSolution(request, &output);
+	bool found = toccata::TestPatternEvaluator::Solve(request, &output);
 	toccata::TestPatternEvaluator::FreeMemorySpace(&request.Memory);
 
 	EXPECT_TRUE(found);
-	EXPECT_NEAR(output.Error, 0.0, 1E-4);
+	EXPECT_EQ(output.MappedNotes, 16);
+	EXPECT_EQ(output.MappingEnd, 15);
+	EXPECT_EQ(output.MappingStart, 0);
+	EXPECT_NEAR(output.AverageError, 0.0, 1E-4);
 	EXPECT_NEAR(output.s, 1.0, 1E-4);
 	EXPECT_NEAR(output.t, 0.0, 1E-4);
 }

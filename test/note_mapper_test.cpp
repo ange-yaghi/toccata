@@ -9,11 +9,14 @@ TEST(NoteMapperTest, SanityCheck) {
 	reference.NoteContainer.AddPoint({ 0.1 });
 	reference.NoteContainer.AddPoint({ 0.2 });
 
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, -0.1, 0), 0);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.0, 0), 0);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.1, 0), 1);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.2, 0), 2);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.3, 0), 2);
+	const int n = reference.NoteContainer.GetCount();
+	const toccata::MusicPoint *points = reference.NoteContainer.GetPoints();
+
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, -0.1, 0), 0);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.0, 0), 0);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.1, 0), 1);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.2, 0), 2);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.3, 0), 2);
 }
 
 TEST(NoteMapperTest, SinglePoint) {
@@ -21,18 +24,24 @@ TEST(NoteMapperTest, SinglePoint) {
 
 	reference.NoteContainer.AddPoint({ 0.0 });
 
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, -0.1, 0), 0);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.0, 0), 0);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.1, 0), 0);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.2, 0), 0);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.3, 0), 0);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.3, 1), -1);
+	const int n = reference.NoteContainer.GetCount();
+	const toccata::MusicPoint *points = reference.NoteContainer.GetPoints();
+
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, -0.1, 0), 0);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.0, 0), 0);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.1, 0), 0);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.2, 0), 0);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.3, 0), 0);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.3, 1), -1);
 }
 
 TEST(NoteMapperTest, NoPoints) {
 	toccata::MusicSegment reference;
 
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, -0.1, 0), -1);
+	const int n = reference.NoteContainer.GetCount();
+	const toccata::MusicPoint *points = reference.NoteContainer.GetPoints();
+
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, -0.1, 0), -1);
 }
 
 TEST(NoteMapperTest, MultiplePitches) {
@@ -45,15 +54,18 @@ TEST(NoteMapperTest, MultiplePitches) {
 	reference.NoteContainer.AddPoint({ 0.26, 1 });
 	reference.NoteContainer.AddPoint({ 0.66, 1 });
 
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.0, 0), 0);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.16, 0), 3);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.26, 0), 3);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.66, 0), 3);
+	const int n = reference.NoteContainer.GetCount();
+	const toccata::MusicPoint *points = reference.NoteContainer.GetPoints();
 
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.0, 1), 2);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.16, 1), 2);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.26, 1), 4);
-	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(&reference, 0.66, 1), 5);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.0, 0), 0);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.16, 0), 3);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.26, 0), 3);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.66, 0), 3);
+
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.0, 1), 2);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.16, 1), 2);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.26, 1), 4);
+	EXPECT_EQ(toccata::NoteMapper::GetClosestNote(points, 0, n - 1, 0.66, 1), 5);
 }
 
 TEST(NoteMapperTest, TrivialMapping) {
@@ -71,6 +83,8 @@ TEST(NoteMapperTest, TrivialMapping) {
 	request.CorrelationThreshold = 0.1;
 	request.ReferenceSegment = &reference;
 	request.Segment = &reference;
+	request.Start = 0;
+	request.End = 5;
 	request.s = 1.0;
 	request.t = 0.0;
 	request.Target = new int[6];
@@ -99,6 +113,8 @@ TEST(NoteMapperTest, MappingWithOffset) {
 	request.CorrelationThreshold = 0.1;
 	request.ReferenceSegment = &reference;
 	request.Segment = &reference;
+	request.Start = 0;
+	request.End = 5;
 	request.s = 1.0;
 	request.t = 2.0;
 	request.Target = new int[6];
@@ -125,6 +141,8 @@ TEST(NoteMapperTest, MappingSinglePoint) {
 	request.CorrelationThreshold = 0.1;
 	request.ReferenceSegment = &reference;
 	request.Segment = &segment;
+	request.Start = 0;
+	request.End = 0;
 	request.s = 1.0;
 	request.t = -1.0;
 	request.Target = new int[1];
@@ -152,6 +170,8 @@ TEST(NoteMapperTest, MappingScale) {
 	request.CorrelationThreshold = 0.1;
 	request.ReferenceSegment = &reference;
 	request.Segment = &segment;
+	request.Start = 0;
+	request.End = 2;
 	request.s = 0.1;
 	request.t = 0.0;
 	request.Target = new int[3];
@@ -180,14 +200,16 @@ TEST(NoteMapperTest, MappingWrongScale) {
 	request.CorrelationThreshold = 0.1;
 	request.ReferenceSegment = &reference;
 	request.Segment = &segment;
+	request.Start = 0;
+	request.End = 1;
 	request.s = 10.0;
 	request.t = 0.0;
 	request.Target = new int[3];
 
 	const int *mapping = toccata::NoteMapper::GetMapping(&request);
 	EXPECT_EQ(mapping[0], 0);
-	EXPECT_EQ(mapping[1], 0);
-	EXPECT_EQ(mapping[2], 0);
+	EXPECT_EQ(mapping[1], -1);
+	EXPECT_EQ(mapping[2], -1);
 
 	delete[] mapping;
 }
@@ -216,6 +238,8 @@ TEST(NoteMapperTest, InjectiveMappingSanityCheck) {
 	request.CorrelationThreshold = 0.1;
 	request.ReferenceSegment = &reference;
 	request.Segment = &reference;
+	request.Start = 0;
+	request.End = 5;
 	request.s = 1.0;
 	request.t = 0.0;
 	request.Target = new int[6];
@@ -247,6 +271,8 @@ TEST(NoteMapperTest, InjectiveMappingWrongScale) {
 	request.CorrelationThreshold = 0.1;
 	request.ReferenceSegment = &reference;
 	request.Segment = &segment;
+	request.Start = 0;
+	request.End = 1;
 	request.s = 10.0;
 	request.t = 0.0;
 	request.Target = new int[3];
@@ -282,6 +308,8 @@ TEST(NoteMapperTest, InjectiveMappingDiscernment) {
 	request.Segment = &segment;
 	request.s = 1.0;
 	request.t = 0.0;
+	request.Start = 0;
+	request.End = 3;
 	request.Target = new int[3];
 
 	toccata::NoteMapper::AllocateMemorySpace(&request.Memory, 3, 4);
@@ -313,6 +341,8 @@ TEST(NoteMapperTest, InjectiveMappingCompetition) {
 	request.CorrelationThreshold = 0.15;
 	request.ReferenceSegment = &reference;
 	request.Segment = &segment;
+	request.Start = 0;
+	request.End = 3;
 	request.s = 1.0;
 	request.t = 0.0;
 	request.Target = new int[3];

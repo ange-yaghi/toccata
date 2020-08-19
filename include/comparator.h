@@ -19,12 +19,17 @@ namespace toccata {
 
         struct Result {
             double AverageError;
+            int MappedNotes;
+            int MappingStart;
+            int MappingEnd;
         };
 
         static bool CalculateError(
             const Request &request,
             Result *result
         );
+
+        static int CalculateAddedNotes(const Request &request);
     };
 
 } /* namespace toccata */

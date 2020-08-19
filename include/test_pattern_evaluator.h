@@ -11,6 +11,7 @@ namespace toccata {
     class TestPatternEvaluator {
     public:
         static constexpr bool EnablePreciseMapping = false;
+        static constexpr bool UsePitchCachingInMappingStep = true;
 
     public:
         struct Request {
@@ -24,8 +25,11 @@ namespace toccata {
                 int *Mapping; // size = # of reference notes
             };
 
-            MusicSegment *ReferenceSegment;
-            MusicSegment *Segment;
+            const MusicSegment *ReferenceSegment;
+            const MusicSegment *Segment;
+
+            int Start = -1;
+            int End = -1;
 
             int *const *SegmentNotesByPitch;
 
@@ -38,7 +42,11 @@ namespace toccata {
         struct Output {
             double s;
             double t;
-            double Error;
+            double AverageError;
+
+            int MappedNotes;
+            int MappingStart;
+            int MappingEnd;
         };
 
         static void AllocateMemorySpace(
@@ -47,8 +55,9 @@ namespace toccata {
             int referenceSegmentNotes,
             int segmentNotes
         );
+
         static void FreeMemorySpace(Request::MemorySpace *memory);
-        static bool FindBestSolution(const Request &request, Output *output);
+        static bool Solve(const Request &request, Output *output);
 
     private:
         static const int StackInitialValue = -2;

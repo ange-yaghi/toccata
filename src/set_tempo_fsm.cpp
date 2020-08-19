@@ -1,7 +1,5 @@
 #include "../include/set_tempo_fsm.h"
 
-#include "../include/Core.h"
-
 toccata::SetTempoFsm::SetTempoFsm() : Fsm("SetTempoFsm") {
     m_currentState = FsmState::Deactivated;
 

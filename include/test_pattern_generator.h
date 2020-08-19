@@ -18,6 +18,12 @@ namespace toccata {
             int NoteCount;
         };
 
+        struct SafeTestPatternRequest {
+            const MusicSegment *Segment;
+            int *Buffer;
+            int RequestedPatternSize;
+        };
+
     public:
         TestPatternGenerator();
         ~TestPatternGenerator();
@@ -25,6 +31,7 @@ namespace toccata {
         void Seed(unsigned int seed);
         int FindRandomTestPattern(TestPatternRequest &request);
         int FindExtremeTestPattern(TestPatternRequest &request);
+        //int FindSafeTestPattern(SafeTestPatternRequest &request);
 
     protected:
         std::default_random_engine m_generator;

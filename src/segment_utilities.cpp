@@ -1,6 +1,6 @@
 #include "../include/segment_utilities.h"
 
-void toccata::SegmentUtilities::SortByPitch(const MusicSegment *segment, int pitchCount, int **target) {
+void toccata::SegmentUtilities::SortByPitch(const MusicSegment *segment, int start, int end, int pitchCount, int **target) {
     int n = segment->NoteContainer.GetCount();
     const MusicPoint *points = segment->NoteContainer.GetPoints();
 
@@ -9,7 +9,7 @@ void toccata::SegmentUtilities::SortByPitch(const MusicSegment *segment, int pit
         target[i][n] = 0;
     }
 
-    for (int i = 0; i < n; ++i) {
+    for (int i = start; i <= end; ++i) {
         const int pitch = points[i].Pitch;
         const int index = target[pitch][n]++;
 

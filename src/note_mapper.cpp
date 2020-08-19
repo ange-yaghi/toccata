@@ -5,13 +5,10 @@
 #include "../include/memory.h"
 
 int toccata::NoteMapper::GetClosestNote(
-    const MusicSegment *segment, double timestamp, int pitch) 
+    const MusicPoint *points, int start, int end, double timestamp, int pitch)
 {
-    const int n = segment->NoteContainer.GetCount();
-    const MusicPoint *points = segment->NoteContainer.GetPoints();
-
     int prev = -1;
-    for (int i = 0; i < n; ++i) {
+    for (int i = start; i <= end; ++i) {
         if (points[i].Pitch == pitch) {
             if (prev != -1) {
                 const double currTimestamp = points[i].Timestamp;
@@ -35,8 +32,39 @@ int toccata::NoteMapper::GetClosestNote(
     return prev;
 }
 
+int toccata::NoteMapper::GetClosestNote(
+    const MusicPoint *points, const int *indices, int n, double timestamp)
+{
+    int prev = -1;
+    for (int i = 0; i < n; ++i) {
+        const int index = indices[i];
+        if (prev != -1) {
+            const double currTimestamp = points[index].Timestamp;
+
+            if (currTimestamp >= timestamp) {
+                const double prevTimestamp = points[prev].Timestamp;
+
+                const double diffPrev = Math::Abs(prevTimestamp - timestamp);
+                const double diffCurr = Math::Abs(currTimestamp - timestamp);
+
+                return diffPrev < diffCurr
+                    ? prev
+                    : index;
+            }
+        }
+
+        prev = index;
+    }
+
+    return prev;
+}
+
 int *toccata::NoteMapper::GetMapping(NNeighborMappingRequest *request) {
+    assert(request->Start >= 0);
+    assert(request->End >= request->Start);
+
     const int n = request->ReferenceSegment->NoteContainer.GetCount();
+
     const double correlationThreshold = 
         request->CorrelationThreshold * request->ReferenceSegment->Length / request->s;
 
@@ -51,11 +79,29 @@ int *toccata::NoteMapper::GetMapping(NNeighborMappingRequest *request) {
             request->t
         );
 
-        const int closest = GetClosestNote(
-            request->Segment,
-            refTimestampSegmentSpace,
-            referencePoint.Pitch
-        );
+        int closest = -1;
+        
+        if (request->NotesByPitch == nullptr) {
+            closest = GetClosestNote(
+                request->Segment->NoteContainer.GetPoints(),
+                request->Start,
+                request->End,
+                refTimestampSegmentSpace,
+                referencePoint.Pitch
+            );
+        }
+        else {
+            int n_pitch = 0;
+            const int *points = request->NotesByPitch[referencePoint.Pitch];
+            while (points[n_pitch] != -1) { ++n_pitch; }
+
+            closest = GetClosestNote(
+                request->Segment->NoteContainer.GetPoints(),
+                points,
+                n_pitch,
+                refTimestampSegmentSpace
+            );
+        }
 
         if (closest == -1) {
             request->Target[i] = closest;
@@ -96,8 +142,11 @@ void toccata::NoteMapper::FreeMemorySpace(
 }
 
 int *toccata::NoteMapper::GetInjectiveMapping(InjectiveMappingRequest *request) {
+    assert(request->Start >= 0);
+    assert(request->End >= request->Start);
+
     const int n = request->ReferenceSegment->NoteContainer.GetCount();
-    const int m = request->Segment->NoteContainer.GetCount();
+    const int m = request->End - request->Start + 1;
     const int k = m > n ? m : n;
 
     double **C = request->Memory.Costs;
@@ -119,7 +168,7 @@ int *toccata::NoteMapper::GetInjectiveMapping(InjectiveMappingRequest *request) 
                 D[i][j] = true;
             }
             else {
-                const MusicPoint &point = points[j];
+                const MusicPoint &point = points[j + request->Start];
                 const double timestamp = Transform::f(
                     point.Timestamp,
                     request->s,
@@ -150,6 +199,10 @@ int *toccata::NoteMapper::GetInjectiveMapping(InjectiveMappingRequest *request) 
 
     MunkresSolver::InitializeRequest(&munkresRequest);
     MunkresSolver::Solve(&munkresRequest);
+
+    for (int i = 0; i < n; ++i) {
+        request->Target[i] += request->Start;
+    }
 
     return munkresRequest.Target;
 }

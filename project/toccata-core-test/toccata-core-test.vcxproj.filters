@@ -2,12 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="..\..\test\midi_output_test.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\test\recorder_unit_test.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\test\set_time_fsm_unit_test.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
@@ -36,6 +30,12 @@
       <Filter>Tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\segment_utilities_test.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\search_thread_test.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\midi_file_test.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>

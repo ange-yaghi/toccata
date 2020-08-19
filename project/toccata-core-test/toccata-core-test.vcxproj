@@ -53,12 +53,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\comparator_test.cpp" />
-    <ClCompile Include="..\..\test\midi_output_test.cpp" />
+    <ClCompile Include="..\..\test\midi_file_test.cpp" />
     <ClCompile Include="..\..\test\munkres_solver_test.cpp" />
     <ClCompile Include="..\..\test\nls_optimizer_test.cpp" />
     <ClCompile Include="..\..\test\note_mapper_test.cpp" />
     <ClCompile Include="..\..\test\point_container_test.cpp" />
-    <ClCompile Include="..\..\test\recorder_unit_test.cpp" />
+    <ClCompile Include="..\..\test\search_thread_test.cpp" />
     <ClCompile Include="..\..\test\segment_utilities_test.cpp" />
     <ClCompile Include="..\..\test\set_time_fsm_unit_test.cpp" />
     <ClCompile Include="..\..\test\sanity_check_test.cpp" />

@@ -9,7 +9,7 @@ namespace toccata {
 
     class SegmentUtilities {
     public:
-        static void SortByPitch(const MusicSegment *segment, int pitchCount, int **target);
+        static void SortByPitch(const MusicSegment *segment, int start, int end, int pitchCount, int **target);
     };
 
 } /* namespace toccata */

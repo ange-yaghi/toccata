@@ -1,5 +1,7 @@
 #include "../include/test_pattern_generator.h"
 
+#include <map>
+
 toccata::TestPatternGenerator::TestPatternGenerator() {
     /* void */
 }
@@ -58,3 +60,47 @@ int toccata::TestPatternGenerator::FindExtremeTestPattern(TestPatternRequest &re
 
     return patternSize; 
 }
+
+/*
+int toccata::TestPatternGenerator::FindSafeTestPattern(SafeTestPatternRequest &request) {
+    const int noteCount = request.Segment->NoteContainer.GetCount();
+    const int requestedSize = request.RequestedPatternSize;
+    const MusicPoint *points = request.Segment->NoteContainer.GetPoints();
+
+    int patternSize = requestedSize;
+    if (patternSize > noteCount) patternSize = noteCount;
+    if (patternSize > MaxPatternSize) patternSize = MaxPatternSize;
+
+    std::map<int, int> countByPitch;
+    for (int i = 0; i < noteCount; ++i) {
+        countByPitch.emplace(points[i].Pitch, 0);
+        if (countByPitch[points[i].Pitch] < 2) {
+            countByPitch[points[i].Pitch] += 1;
+        }
+    }
+
+    int *mem = request.Buffer;
+    for (int i = 0; i < patternSize; ++i) {
+        mem[i] = i;
+    }
+
+    int choiceSize = noteCount;
+    int currentPatternSize = 0;
+    for (int i = 0; i < patternSize; ++i) {
+        std::uniform_int_distribution<int> dist(currentPatternSize, currentPatternSize + choiceSize - 1);
+
+        const int newIndex = mem[dist(m_generator)];
+
+        mem[currentPatternSize] = newIndex;
+
+        const int pitch = points[newIndex].Pitch;
+        if (--countByPitch[pitch] == 0) {
+            for (int j = currentPatternSize; j < currentPatternSize + choiceSize; ++j) {
+                if (points[mem[j]].Pitch == pitch) {
+                    mem[j] = mem[currentPatternSize + choiceSize - 1];
+                    --choiceSize;
+                }
+            }
+        }
+    }
+}*/

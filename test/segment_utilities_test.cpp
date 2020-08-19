@@ -12,7 +12,7 @@ TEST(SegmentUtilitiesTest, SanityCheck) {
 
 	int **target = toccata::Memory::Allocate2d<int>(3, 4);
 
-	toccata::SegmentUtilities::SortByPitch(&segment, 3, target);
+	toccata::SegmentUtilities::SortByPitch(&segment, 0, 2, 3, target);
 
 	EXPECT_EQ(target[0][0], 0);
 	EXPECT_EQ(target[0][1], -1);

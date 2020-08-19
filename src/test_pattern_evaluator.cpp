@@ -13,8 +13,8 @@ void toccata::TestPatternEvaluator::AllocateMemorySpace(
     NoteMapper::AllocateMemorySpace(&memory->MappingMemory, referenceSegmentNotes, segmentNotes);
 
     memory->Stack = Memory::Allocate<int>(testPatternSize);
-    memory->p = Memory::Allocate<double>(testPatternSize);
-    memory->r = Memory::Allocate<double>(testPatternSize);
+    memory->p = Memory::Allocate<double>(referenceSegmentNotes);
+    memory->r = Memory::Allocate<double>(referenceSegmentNotes);
     memory->Mapping = Memory::Allocate<int>(referenceSegmentNotes);
 }
 
@@ -27,7 +27,7 @@ void toccata::TestPatternEvaluator::FreeMemorySpace(Request::MemorySpace *memory
     Memory::Free(memory->Mapping);
 }
 
-bool toccata::TestPatternEvaluator::FindBestSolution(const Request &request, Output *output) {
+bool toccata::TestPatternEvaluator::Solve(const Request &request, Output *output) {
     const int patternLength = request.TestPatternLength;
 
     const MusicPoint *referencePoints = request.ReferenceSegment->NoteContainer.GetPoints();
@@ -46,10 +46,14 @@ bool toccata::TestPatternEvaluator::FindBestSolution(const Request &request, Out
     double *r = request.Memory.r;
     double *p = request.Memory.p;
 
-    int maxMatchedNotes = 0;
-    double minError = DBL_MAX;
-    double best_s = 0.0;
+    double best_s = 1.0;
     double best_t = 0.0;
+
+    Comparator::Result bestMatchData;
+    bestMatchData.AverageError = DBL_MAX;
+    bestMatchData.MappedNotes = 0;
+    bestMatchData.MappingEnd = -1;
+    bestMatchData.MappingStart = -1;
     
     while (true) {
         const bool complete = Advance(request);
@@ -65,8 +69,8 @@ bool toccata::TestPatternEvaluator::FindBestSolution(const Request &request, Out
                 int noteIndex = notesByPitch[referencePoint.Pitch][mapping[i]];
                 const MusicPoint &point = points[noteIndex];
 
-                r[i] = referencePoint.Timestamp;
-                p[i] = point.Timestamp;
+                r[validPointCount] = referencePoint.Timestamp;
+                p[validPointCount] = point.Timestamp;
 
                 ++validPointCount;
             }
@@ -86,17 +90,20 @@ bool toccata::TestPatternEvaluator::FindBestSolution(const Request &request, Out
         nnMappingRequest.t = solution.t;
         nnMappingRequest.Target = request.Memory.Mapping;
         nnMappingRequest.ReferenceSegment = request.ReferenceSegment;
+        nnMappingRequest.Start = request.Start;
+        nnMappingRequest.End = request.End;
         nnMappingRequest.Segment = request.Segment;
         nnMappingRequest.CorrelationThreshold = 0.1;
+
+        if (UsePitchCachingInMappingStep) {
+            nnMappingRequest.NotesByPitch = notesByPitch;
+        }
         
         int *fullMapping = NoteMapper::GetMapping(&nnMappingRequest);
         int notesMatched = 0;
         for (int i = 0; i < n; ++i) {
             if (fullMapping[i] != -1) ++notesMatched;
         }
-
-        if (notesMatched == 0) continue;
-        if (notesMatched < maxMatchedNotes) continue;
 
         if (EnablePreciseMapping) {
             NoteMapper::InjectiveMappingRequest mappingRequest;
@@ -105,6 +112,8 @@ bool toccata::TestPatternEvaluator::FindBestSolution(const Request &request, Out
             mappingRequest.Segment = request.Segment;
             mappingRequest.Target = request.Memory.Mapping;
             mappingRequest.Memory = request.Memory.MappingMemory;
+            mappingRequest.Start = request.Start;
+            mappingRequest.End = request.End;
             mappingRequest.s = solution.s;
             mappingRequest.t = solution.t;
 
@@ -114,12 +123,12 @@ bool toccata::TestPatternEvaluator::FindBestSolution(const Request &request, Out
             for (int i = 0; i < n; ++i) {
                 if (fullMapping[i] != -1) ++notesMatched;
             }
-
-            if (notesMatched == 0) continue;
-            if (notesMatched < maxMatchedNotes) continue;
         }
+
+        if (notesMatched == 0) continue;
+        if (notesMatched < bestMatchData.MappedNotes) continue;
         
-        Comparator::Result solutionError;
+        Comparator::Result solutionData;
         Comparator::Request comparatorRequest;
         comparatorRequest.Mapping = fullMapping;
         comparatorRequest.Reference = request.ReferenceSegment;
@@ -127,21 +136,25 @@ bool toccata::TestPatternEvaluator::FindBestSolution(const Request &request, Out
         comparatorRequest.s = solution.s;
         comparatorRequest.t = solution.t;
 
-        Comparator::CalculateError(comparatorRequest, &solutionError);
+        Comparator::CalculateError(comparatorRequest, &solutionData);
 
-        if (solutionError.AverageError < minError || notesMatched > maxMatchedNotes) {
-            minError = solutionError.AverageError;
+        if (solutionData.AverageError < bestMatchData.AverageError ||
+            notesMatched > bestMatchData.MappedNotes)
+        {
+            bestMatchData = solutionData;
             best_s = solution.s;
             best_t = solution.t;
-            maxMatchedNotes = notesMatched;
         }
     }
 
-    if (maxMatchedNotes == 0) return false;
+    if (bestMatchData.MappedNotes == 0) return false;
     else {
+        output->AverageError = bestMatchData.AverageError;
+        output->MappedNotes = bestMatchData.MappedNotes;
+        output->MappingEnd = bestMatchData.MappingEnd;
+        output->MappingStart = bestMatchData.MappingStart;
         output->s = best_s;
         output->t = best_t;
-        output->Error = minError;
 
         return true;
     }
