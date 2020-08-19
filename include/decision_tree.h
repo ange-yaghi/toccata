@@ -3,18 +3,19 @@
 
 #include "music_segment.h"
 #include "library.h"
+#include "full_solver.h"
 
 #include <vector>
 #include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <thread>
 
 namespace toccata {
 
     class Bar;
 
     class DecisionTree {
-    public:
-        static constexpr int ThreadCount = 12;
-
     protected:
         struct Decision {
             int StartIndex;
@@ -29,6 +30,25 @@ namespace toccata {
             int MappedNotes;
         };
 
+        struct ThreadContext {
+            std::thread *Thread;
+
+            FullSolver FullSolver;
+
+            std::mutex Lock;
+            std::condition_variable ConditionVariable;
+
+            bool Trigger = false;
+            bool Done = false;
+            bool Kill = false;
+
+            int LibraryStart = 0;
+            int LibraryEnd = 0;
+
+            int DecisionStart = 0;
+            int DecisionEnd = 0;
+        };
+
     public:
         DecisionTree();
         ~DecisionTree();
@@ -39,17 +59,26 @@ namespace toccata {
         void SetInputSegment(const MusicSegment *segment) { m_segment = segment; }
         const MusicSegment *GetInputSegment() const { return m_segment; }
 
+        void SetStartIndex(int index) { m_startIndex = index; }
+        int GetStartIndex() const { return m_startIndex; }
+
+        void Initialize(int threadCount);
+        void SpawnThreads();
+        void KillThreads();
+        void Destroy();
+        void Process();
+
     protected:
+        void TriggerThreads();
+
         Decision *AllocateDecision() const { return new Decision; }
         void DestroyDecision(Decision *decision) { delete decision; }
 
         void WorkerThread(int threadId);
         void SeedMatch(
-            const MusicSegment *segment, int startIndex, 
-            const Library *library, int libraryStart, int libraryEnd,
+            int libraryStart, int libraryEnd,
             int threadId);
         void PredictionMatch(
-            const MusicSegment *segment, int startIndex,
             int decisionIndexStart, int decisionIndexEnd,
             int threadId);
 
@@ -57,8 +86,13 @@ namespace toccata {
         std::vector<Decision *> m_decisions;
         std::queue<Decision *> m_newDecisions;
 
+        ThreadContext *m_threadContexts;
+
         Library *m_library;
         const MusicSegment *m_segment;
+        int m_startIndex;
+
+        int m_threadCount;
     };
 
 } /* namespace toccata */

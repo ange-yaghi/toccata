@@ -114,6 +114,9 @@
     <ClCompile Include="..\..\src\full_solver.cpp">
       <Filter>Source Files\pmm</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\decision_tree.cpp">
+      <Filter>Source Files\pmm</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\error_reporting.h">

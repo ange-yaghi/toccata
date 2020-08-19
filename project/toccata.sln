@@ -1,9 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "toccata-ui", "toccata/toccata-ui.vcxproj", "{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "toccata-ui", "toccata\toccata-ui.vcxproj", "{B81F82B7-286D-4FCC-ADAC-342F880ACC85}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "toccata-benchmarking", "toccata-benchmarking\toccata-benchmarking.vcxproj", "{2220FF16-2C68-4D0C-9BB4-F3B016076476}"
+	ProjectSection(ProjectDependencies) = postProject
+		{96960F43-BE29-487F-A9E0-3F74863AF598} = {96960F43-BE29-487F-A9E0-3F74863AF598}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "toccata-core", "toccata-core\toccata-core.vcxproj", "{96960F43-BE29-487F-A9E0-3F74863AF598}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "toccata-core-test", "toccata-core-test\toccata-core-test.vcxproj", "{993333BE-219C-4176-8DEA-F60320ACB641}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +22,38 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}.Debug|x64.ActiveCfg = Debug|x64
-		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}.Debug|x64.Build.0 = Debug|x64
-		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}.Debug|x86.ActiveCfg = Debug|Win32
-		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}.Debug|x86.Build.0 = Debug|Win32
-		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}.Release|x64.ActiveCfg = Release|x64
-		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}.Release|x64.Build.0 = Release|x64
-		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}.Release|x86.ActiveCfg = Release|Win32
-		{6DB2FA44-5C75-431B-85F5-BAA11D6EF583}.Release|x86.Build.0 = Release|Win32
+		{B81F82B7-286D-4FCC-ADAC-342F880ACC85}.Debug|x64.ActiveCfg = Debug|x64
+		{B81F82B7-286D-4FCC-ADAC-342F880ACC85}.Debug|x64.Build.0 = Debug|x64
+		{B81F82B7-286D-4FCC-ADAC-342F880ACC85}.Debug|x86.ActiveCfg = Debug|Win32
+		{B81F82B7-286D-4FCC-ADAC-342F880ACC85}.Debug|x86.Build.0 = Debug|Win32
+		{B81F82B7-286D-4FCC-ADAC-342F880ACC85}.Release|x64.ActiveCfg = Release|x64
+		{B81F82B7-286D-4FCC-ADAC-342F880ACC85}.Release|x64.Build.0 = Release|x64
+		{B81F82B7-286D-4FCC-ADAC-342F880ACC85}.Release|x86.ActiveCfg = Release|Win32
+		{B81F82B7-286D-4FCC-ADAC-342F880ACC85}.Release|x86.Build.0 = Release|Win32
+		{2220FF16-2C68-4D0C-9BB4-F3B016076476}.Debug|x64.ActiveCfg = Debug|x64
+		{2220FF16-2C68-4D0C-9BB4-F3B016076476}.Debug|x64.Build.0 = Debug|x64
+		{2220FF16-2C68-4D0C-9BB4-F3B016076476}.Debug|x86.ActiveCfg = Debug|Win32
+		{2220FF16-2C68-4D0C-9BB4-F3B016076476}.Debug|x86.Build.0 = Debug|Win32
+		{2220FF16-2C68-4D0C-9BB4-F3B016076476}.Release|x64.ActiveCfg = Release|x64
+		{2220FF16-2C68-4D0C-9BB4-F3B016076476}.Release|x64.Build.0 = Release|x64
+		{2220FF16-2C68-4D0C-9BB4-F3B016076476}.Release|x86.ActiveCfg = Release|Win32
+		{2220FF16-2C68-4D0C-9BB4-F3B016076476}.Release|x86.Build.0 = Release|Win32
+		{96960F43-BE29-487F-A9E0-3F74863AF598}.Debug|x64.ActiveCfg = Debug|x64
+		{96960F43-BE29-487F-A9E0-3F74863AF598}.Debug|x64.Build.0 = Debug|x64
+		{96960F43-BE29-487F-A9E0-3F74863AF598}.Debug|x86.ActiveCfg = Debug|Win32
+		{96960F43-BE29-487F-A9E0-3F74863AF598}.Debug|x86.Build.0 = Debug|Win32
+		{96960F43-BE29-487F-A9E0-3F74863AF598}.Release|x64.ActiveCfg = Release|x64
+		{96960F43-BE29-487F-A9E0-3F74863AF598}.Release|x64.Build.0 = Release|x64
+		{96960F43-BE29-487F-A9E0-3F74863AF598}.Release|x86.ActiveCfg = Release|Win32
+		{96960F43-BE29-487F-A9E0-3F74863AF598}.Release|x86.Build.0 = Release|Win32
+		{993333BE-219C-4176-8DEA-F60320ACB641}.Debug|x64.ActiveCfg = Debug|x64
+		{993333BE-219C-4176-8DEA-F60320ACB641}.Debug|x64.Build.0 = Debug|x64
+		{993333BE-219C-4176-8DEA-F60320ACB641}.Debug|x86.ActiveCfg = Debug|Win32
+		{993333BE-219C-4176-8DEA-F60320ACB641}.Debug|x86.Build.0 = Debug|Win32
+		{993333BE-219C-4176-8DEA-F60320ACB641}.Release|x64.ActiveCfg = Release|x64
+		{993333BE-219C-4176-8DEA-F60320ACB641}.Release|x64.Build.0 = Release|x64
+		{993333BE-219C-4176-8DEA-F60320ACB641}.Release|x86.ActiveCfg = Release|Win32
+		{993333BE-219C-4176-8DEA-F60320ACB641}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\comparator_test.cpp" />
+    <ClCompile Include="..\..\test\decision_tree_test.cpp" />
     <ClCompile Include="..\..\test\midi_file_test.cpp" />
     <ClCompile Include="..\..\test\munkres_solver_test.cpp" />
     <ClCompile Include="..\..\test\nls_optimizer_test.cpp" />

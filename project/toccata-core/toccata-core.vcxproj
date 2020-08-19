@@ -181,6 +181,7 @@
     <ClCompile Include="..\..\dependencies\libraries\sqlite\src\sqlite3.c" />
     <ClCompile Include="..\..\src\bar.cpp" />
     <ClCompile Include="..\..\src\comparator.cpp" />
+    <ClCompile Include="..\..\src\decision_tree.cpp" />
     <ClCompile Include="..\..\src\error_reporting.cpp" />
     <ClCompile Include="..\..\src\fsm.cpp" />
     <ClCompile Include="..\..\src\full_solver.cpp" />
