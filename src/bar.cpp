@@ -8,10 +8,10 @@ toccata::Bar::~Bar() {
     /* void */
 }
 
-void toccata::Bar::AddNext(int next) {
+void toccata::Bar::AddNext(Bar *next) {
     m_next.push_back(next);
 }
 
-int toccata::Bar::GetNext(int index) {
+toccata::Bar *toccata::Bar::GetNext(int index) const {
     return m_next[index];
 }

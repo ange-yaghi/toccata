@@ -12,16 +12,21 @@ namespace toccata {
         Bar();
         ~Bar();
 
-        void AddNext(int next);
-        int GetNext(int index);
+        void AddNext(Bar *next);
+        Bar *GetNext(int index) const;
         int GetNextCount() const { return (int)m_next.size(); }
 
         void SetSegment(MusicSegment *segment) { m_segment = segment; }
         MusicSegment *GetSegment() const { return m_segment; }
 
+        void SetId(int id) { m_id = id; }
+        int GetId() const { return m_id; }
+
     protected:
-        std::vector<int> m_next;
+        std::vector<Bar *> m_next;
         MusicSegment *m_segment;
+
+        int m_id;
     };
 
 } /* namespace toccata */

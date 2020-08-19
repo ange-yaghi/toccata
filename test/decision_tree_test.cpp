@@ -8,7 +8,7 @@ TEST(DecisionTreeTest, SanityCheck) {
 	tree.SpawnThreads();
 
 	for (int i = 0; i < 1; ++i) {
-		tree.Process();
+		tree.Process(0);
 	}
 
 	tree.KillThreads();
@@ -21,7 +21,7 @@ TEST(DecisionTreeTest, MultipleThreads) {
 	tree.SpawnThreads();
 
 	for (int i = 0; i < 1000; ++i) {
-		tree.Process();
+		tree.Process(0);
 	}
 
 	tree.KillThreads();

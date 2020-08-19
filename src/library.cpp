@@ -22,3 +22,18 @@ toccata::MusicSegment *toccata::Library::GetSegment(int index) const {
 int toccata::Library::GetSegmentCount() const {
     return (int)m_segments.size();
 }
+
+toccata::Bar *toccata::Library::NewBar() {
+    Bar *newBar = new Bar;
+    m_bars.push_back(newBar);
+
+    return newBar;
+}
+
+toccata::Bar *toccata::Library::GetBar(int index) const {
+    return m_bars[index];
+}
+
+int toccata::Library::GetBarCount() const {
+    return (int)m_bars.size();
+}

@@ -111,7 +111,9 @@ bool toccata::FullSolver::Solve(const Request &request, Result *result) {
 	double missedNoteRatio = missedNotes / (double)n;
 
 	if (missedNoteRatio < request.MissingNoteThreshold) {
-		*result = solutionData;
+		result->Fit = solutionData;
+		result->s = refinedSolution.s;
+		result->t = refinedSolution.t;
 		return true;
 	}
 	else return false;

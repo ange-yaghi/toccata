@@ -29,7 +29,11 @@ namespace toccata {
             int EndIndex = -1;
         };
 
-        typedef Comparator::Result Result;
+        struct Result {
+            Comparator::Result Fit;
+            double s;
+            double t;
+        };
 
     public:
         FullSolver();
