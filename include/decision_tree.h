@@ -103,7 +103,7 @@ namespace toccata {
         void PredictionMatch(
             int decisionIndexStart, int decisionIndexEnd,
             int threadId);
-        Decision *Match(const Bar *bar, ThreadContext &context);
+        Decision *Match(const Bar *bar, int startIndex, ThreadContext &context);
 
     protected:
         std::vector<Decision *> m_decisions;

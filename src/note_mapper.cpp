@@ -169,21 +169,27 @@ int *toccata::NoteMapper::GetInjectiveMapping(InjectiveMappingRequest *request) 
             }
             else {
                 const MusicPoint &point = points[j + request->Start];
-                const double timestamp = Transform::f(
-                    point.Timestamp,
-                    request->s,
-                    request->t
-                );
-
-                const double diff = Math::Abs(refTimestamp - timestamp);
-
-                if (diff > correlationThreshold) {
+                if (point.Pitch != referencePoint.Pitch) {
                     C[i][j] = 0.0;
                     D[i][j] = true;
                 }
                 else {
-                    C[i][j] = diff;
-                    D[i][j] = false;
+                    const double timestamp = Transform::f(
+                        point.Timestamp,
+                        request->s,
+                        request->t
+                    );
+
+                    const double diff = Math::Abs(refTimestamp - timestamp);
+
+                    if (diff > correlationThreshold) {
+                        C[i][j] = 0.0;
+                        D[i][j] = true;
+                    }
+                    else {
+                        C[i][j] = diff;
+                        D[i][j] = false;
+                    }
                 }
             }
         }
@@ -201,7 +207,9 @@ int *toccata::NoteMapper::GetInjectiveMapping(InjectiveMappingRequest *request) 
     MunkresSolver::Solve(&munkresRequest);
 
     for (int i = 0; i < n; ++i) {
-        request->Target[i] += request->Start;
+        if (request->Target[i] != -1) {
+            request->Target[i] += request->Start;
+        }
     }
 
     return munkresRequest.Target;

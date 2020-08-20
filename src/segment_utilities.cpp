@@ -1,7 +1,7 @@
 #include "../include/segment_utilities.h"
 
 void toccata::SegmentUtilities::SortByPitch(const MusicSegment *segment, int start, int end, int pitchCount, int **target) {
-    int n = segment->NoteContainer.GetCount();
+    const int n = segment->NoteContainer.GetCount();
     const MusicPoint *points = segment->NoteContainer.GetPoints();
 
     // nth column used as a counter

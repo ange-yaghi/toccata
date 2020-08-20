@@ -36,27 +36,27 @@ bool toccata::FullSolver::Solve(const Request &request, Result *result) {
 	SegmentUtilities::SortByPitch(
 		segment, request.StartIndex, request.EndIndex, MaxPitches, m_notesByPitchBuffer);
 
-	int n = reference->NoteContainer.GetCount();
+	const int n = reference->NoteContainer.GetCount();
 
 	TestPatternGenerator::TestPatternRequest patternRequest;
 	patternRequest.NoteCount = n;
 	patternRequest.Buffer = m_testPatternBuffer;
 	patternRequest.RequestedPatternSize = request.PatternLength;
 
-	int patternLength = m_testPatternGenerator.FindRandomTestPattern(patternRequest);
+	const int patternLength = m_testPatternGenerator.FindRandomTestPattern(patternRequest);
 
 	TestPatternEvaluator::Output output;
 	TestPatternEvaluator::Request te_request;
 	te_request.Segment = segment;
 	te_request.ReferenceSegment = reference;
-	te_request.Start = 0;
-	te_request.End = segment->NoteContainer.GetCount() - 1;
+	te_request.Start = request.StartIndex;
+	te_request.End = request.EndIndex;
 	te_request.TestPattern = m_testPatternBuffer;
 	te_request.TestPatternLength = patternLength;
 	te_request.SegmentNotesByPitch = m_notesByPitchBuffer;
 	te_request.Memory = m_memorySpace;
 
-	bool found = toccata::TestPatternEvaluator::Solve(te_request, &output);
+	const bool found = toccata::TestPatternEvaluator::Solve(te_request, &output);
 	if (!found) return false;
 
 	toccata::NoteMapper::InjectiveMappingRequest mappingRequest;
@@ -96,7 +96,8 @@ bool toccata::FullSolver::Solve(const Request &request, Result *result) {
 	refineStepRequest.N = validPointCount;
 	refineStepRequest.r_set = r;
 	refineStepRequest.p_set = p;
-	toccata::NlsOptimizer::Solve(refineStepRequest, &refinedSolution);
+	bool solvable = toccata::NlsOptimizer::Solve(refineStepRequest, &refinedSolution);
+	if (!solvable) return false;
 
 	Comparator::Result solutionData;
 	Comparator::Request comparatorRequest;

@@ -14,13 +14,21 @@ toccata::DecisionTree::~DecisionTree() {
 
 void toccata::DecisionTree::Initialize(int threadCount) {
     m_threadCount = threadCount;
-
     m_threadContexts = Memory::Allocate<ThreadContext>(m_threadCount);
+
+    for (int i = 0; i < m_threadCount; ++i) {
+        m_threadContexts[i].Solver.Initialize();
+    }
 }
 
 void toccata::DecisionTree::SpawnThreads() {
-    for (int i = 0; i < m_threadCount; ++i) {
-        m_threadContexts[i].Thread = new std::thread(&DecisionTree::WorkerThread, *this, i);
+    if (m_threadCount > 1) {
+        for (int i = 0; i < m_threadCount; ++i) {
+            m_threadContexts[i].Thread = new std::thread(&DecisionTree::WorkerThread, *this, i);
+        }
+    }
+    else if (m_threadCount == 1) {
+        m_threadContexts[0].Thread = nullptr;
     }
 }
 
@@ -31,17 +39,23 @@ void toccata::DecisionTree::KillThreads() {
 
     TriggerThreads();
 
-    for (int i = 0; i < m_threadCount; ++i) {
-        m_threadContexts[i].Thread->join();
-        delete m_threadContexts[i].Thread;
+    if (m_threadCount > 1) {
+        for (int i = 0; i < m_threadCount; ++i) {
+            m_threadContexts[i].Thread->join();
+            delete m_threadContexts[i].Thread;
 
-        m_threadContexts[i].Thread = nullptr;
+            m_threadContexts[i].Thread = nullptr;
+        }
     }
 }
 
 void toccata::DecisionTree::Destroy() {
     for (int i = 0; i < m_threadCount; ++i) {
         assert(m_threadContexts[i].Thread == nullptr);
+    }
+
+    for (int i = 0; i < m_threadCount; ++i) {
+        m_threadContexts[i].Solver.Release();
     }
 
     Memory::Free(m_threadContexts);
@@ -148,17 +162,17 @@ void toccata::DecisionTree::Prune() {
             Decision *b = m_decisions[j];
 
             if (a->IsSameAs(b)) {
-                if (a->GetDepth() > b->GetDepth()) {
+                if (a->GetDepth() < b->GetDepth()) {
+                    a->Flagged = true;
+                }
+                else if (b->GetDepth() < a->GetDepth()) {
                     b->Flagged = true;
                 }
-                else if (a->GetDepth() < b->GetDepth()) {
+                else if (b->IsBetterFitThan(a)) {
                     a->Flagged = true;
                 }
                 else if (a->IsBetterFitThan(b)) {
                     b->Flagged = true;
-                }
-                else {
-                    a->Flagged = true;
                 }
             }
         }
@@ -173,6 +187,8 @@ void toccata::DecisionTree::Prune() {
             m_decisions[i] = m_decisions[--newCount];
         }
     }
+
+    m_decisions.resize(newCount);
 }
 
 bool toccata::DecisionTree::IntegrateDecision(Decision *decision) {
@@ -229,9 +245,10 @@ void toccata::DecisionTree::SeedMatch(
 
     for (int i = libraryStart; i <= libraryEnd; ++i) {
         Bar *bar = m_library->GetBar(i);
+        Decision *newDecision = Match(bar, context.StartIndex, context);
 
-        Decision *newDecision = Match(bar, context);
         if (newDecision != nullptr) {
+            newDecision->ParentDecision = nullptr;
             context.NewDecisions.push(newDecision);
         }
     }
@@ -243,15 +260,20 @@ void toccata::DecisionTree::PredictionMatch(
     ThreadContext &context = m_threadContexts[threadId];
 
     for (int i = decisionIndexStart; i <= decisionIndexEnd; ++i) {
-        const Decision *decision = m_decisions[i];
+        Decision *decision = m_decisions[i];
         const Bar *bar = decision->MatchedBar;
+
+        int startIndex = context.StartIndex;
+        if (startIndex <= decision->MappingEnd) startIndex = decision->MappingEnd + 1;
+        if (startIndex >= m_segment->NoteContainer.GetCount()) continue;
         
         int lookaheadCount = bar->GetNextCount();
         for (int j = 0; j < lookaheadCount; ++j) {
             Bar *next = bar->GetNext(j);
-            Decision *newDecision = Match(next, context);
+            Decision *newDecision = Match(next, startIndex, context);
 
             if (newDecision != nullptr) {
+                newDecision->ParentDecision = decision;
                 context.NewDecisions.push(newDecision);
             }
         }
@@ -259,15 +281,15 @@ void toccata::DecisionTree::PredictionMatch(
 }
 
 toccata::DecisionTree::Decision *toccata::DecisionTree::Match(
-    const Bar *reference, ThreadContext &context) 
+    const Bar *reference, int startIndex, ThreadContext &context) 
 {
     const int n = reference->GetSegment()->NoteContainer.GetCount();
     const int k = m_segment->NoteContainer.GetCount();
 
     FullSolver::Result result;
     FullSolver::Request request;
-    request.StartIndex = context.StartIndex;
-    request.EndIndex = context.StartIndex + (int)std::ceil(n * (1.0 + m_margin)) - 1;
+    request.StartIndex = startIndex;
+    request.EndIndex = startIndex + (int)std::ceil(n * (1.0 + m_margin)) - 1;
     if (request.EndIndex >= k) request.EndIndex = k - 1;
     request.Reference = reference->GetSegment();
     request.Segment = m_segment;
@@ -283,6 +305,10 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::Match(
     newDecision->MappingEnd = result.Fit.MappingEnd;
     newDecision->MappedNotes = result.Fit.MappedNotes;
     newDecision->MatchedBar = reference;
+
+    if (newDecision->AverageError > request.CorrelationThreshold * reference->GetSegment()->Length) {
+        int a = 0;
+    }
 
     return newDecision;
 }
