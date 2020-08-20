@@ -170,6 +170,7 @@
     <ClInclude Include="..\..\include\segment_utilities.h" />
     <ClInclude Include="..\..\include\set_tempo_fsm.h" />
     <ClInclude Include="..\..\include\set_time_fsm.h" />
+    <ClInclude Include="..\..\include\song_generator.h" />
     <ClInclude Include="..\..\include\sound.h" />
     <ClInclude Include="..\..\include\sound_system.h" />
     <ClInclude Include="..\..\include\test_pattern_evaluator.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="..\..\src\segment_utilities.cpp" />
     <ClCompile Include="..\..\src\set_tempo_fsm.cpp" />
     <ClCompile Include="..\..\src\set_time_fsm.cpp" />
+    <ClCompile Include="..\..\src\song_generator.cpp" />
     <ClCompile Include="..\..\src\sound.cpp" />
     <ClCompile Include="..\..\src\sound_system.cpp" />
     <ClCompile Include="..\..\src\test_pattern_evaluator.cpp" />

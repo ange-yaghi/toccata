@@ -117,6 +117,9 @@
     <ClCompile Include="..\..\src\decision_tree.cpp">
       <Filter>Source Files\pmm</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\song_generator.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\error_reporting.h">
@@ -205,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\full_solver.h">
       <Filter>Header Files\pmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\song_generator.h">
+      <Filter>Header Files\utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
