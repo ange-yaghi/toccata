@@ -30,7 +30,10 @@ void toccata::SegmentGenerator::Append(MusicSegment *target, const MusicSegment 
     const int n = segment->NoteContainer.GetCount();
 
     for (int i = 0; i < n; ++i) {
-        target->NoteContainer.AddPoint(points[i]);
+        MusicPoint newPoint = points[i];
+        newPoint.Timestamp += offset;
+
+        target->NoteContainer.AddPoint(newPoint);
     }
 
     target->Length += segment->Length;

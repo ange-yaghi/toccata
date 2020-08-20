@@ -2,12 +2,23 @@
 #define TOCCATA_SONG_GENERATOR_H
 
 #include "library.h"
+#include "segment_generator.h"
 
 namespace toccata {
 
     class SongGenerator {
     public:
-        static void GenerateSong(Library *library, int sections, int sectionBars);
+        SongGenerator();
+        ~SongGenerator();
+
+        void GenerateSong(Library *library, int sections, int sectionBars);
+
+        void Seed(unsigned int seed);
+
+    protected:
+        SegmentGenerator m_generator;
+
+        std::default_random_engine m_engine;
     };
 
 } /* namespace toccata */

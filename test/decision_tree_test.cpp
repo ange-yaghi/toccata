@@ -3,6 +3,25 @@
 #include "../include/decision_tree.h"
 #include "../include/library.h"
 #include "../include/music_segment.h"
+#include "../include/song_generator.h"
+
+int GenerateInput(toccata::Bar *start, toccata::MusicSegment *target, int barCount) {
+	toccata::Bar *current = start;
+	int n = 0;
+
+	while (current != nullptr && n < barCount) {
+		toccata::SegmentGenerator::Append(target, current->GetSegment());
+		++n;
+
+		if (current->GetNextCount() > 0) {
+			toccata::Bar *nextBar = current->GetNext(0);
+			current = nextBar;
+		}
+		else current = nullptr;
+	}
+
+	return n;
+}
 
 TEST(DecisionTreeTest, SanityCheck) {
 	toccata::DecisionTree tree;
@@ -69,6 +88,35 @@ TEST(DecisionTreeTest, BasicIdentificationTest) {
 	tree.SpawnThreads();
 	
 	const int n = input.NoteContainer.GetCount();
+	for (int i = 0; i < n; ++i) {
+		tree.Process(i);
+	}
+
+	tree.KillThreads();
+	tree.Destroy();
+}
+
+TEST(DecisionTreeTest, FullSong) {
+	toccata::Library library;
+	
+	toccata::SongGenerator songGenerator;
+	songGenerator.Seed(0);
+
+	songGenerator.GenerateSong(&library, 4, 8);
+	songGenerator.GenerateSong(&library, 4, 8);
+
+	toccata::MusicSegment inputSegment;
+	inputSegment.Length = 0.0;
+
+	GenerateInput(library.GetBar(0), &inputSegment, 36);
+
+	toccata::DecisionTree tree;
+	tree.SetLibrary(&library);
+	tree.SetInputSegment(&inputSegment);
+	tree.Initialize(12);
+	tree.SpawnThreads();
+
+	const int n = inputSegment.NoteContainer.GetCount();
 	for (int i = 0; i < n; ++i) {
 		tree.Process(i);
 	}

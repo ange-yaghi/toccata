@@ -14,8 +14,8 @@ namespace toccata {
 
         void Seed(unsigned int seed);
 
-        void Copy(const MusicSegment *reference, MusicSegment *segment);
-        void Append(MusicSegment *target, const MusicSegment *segment);
+        static void Copy(const MusicSegment *reference, MusicSegment *segment);
+        static void Append(MusicSegment *target, const MusicSegment *segment);
 
         void CreateRandomSegment(MusicSegment *segment, int noteCount, double length, int notes);
         void CreateRandomSegmentQuantized(MusicSegment *segment, int noteCount, int gridSpaces, double length, int notes);
@@ -25,8 +25,8 @@ namespace toccata {
         void RemoveRandomNotes(MusicSegment *segment, int count);
 
         void Jitter(MusicSegment *segment, double amplitude);
-        void Scale(MusicSegment *segment, double s);
-        void Shift(MusicSegment *segment, double t);
+        static void Scale(MusicSegment *segment, double s);
+        static void Shift(MusicSegment *segment, double t);
 
     protected:
         std::default_random_engine m_generator;
