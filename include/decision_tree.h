@@ -17,12 +17,14 @@ namespace toccata {
     class DecisionTree {
     protected:
         static constexpr double DefaultMargin = 0.25;
+        static constexpr bool ForceMultithreaded = false;
 
-    protected:
+    public:
         struct Decision {
             int MappingStart;
             int MappingEnd;;
             Decision *ParentDecision;
+            int Children = 0;
 
             const Bar *MatchedBar;
             double s;
@@ -31,6 +33,7 @@ namespace toccata {
             double AverageError;
             int MappedNotes;
 
+            bool Placeholder = false;
             bool Flagged = false;
 
             bool IsSameAs(const Decision *decision) const;
@@ -39,6 +42,7 @@ namespace toccata {
             int GetDepth() const;
         };
 
+    protected:
         struct ThreadContext {
             std::thread *Thread;
 
@@ -75,6 +79,7 @@ namespace toccata {
         void SetInputSegment(const MusicSegment *segment) { m_segment = segment; }
         const MusicSegment *GetInputSegment() const { return m_segment; }
 
+        Decision *GetDecision(int index) { return m_decisions[index]; }
         int GetDecisionCount() const { return (int)m_decisions.size(); }
 
         void Initialize(int threadCount);

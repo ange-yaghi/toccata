@@ -145,6 +145,8 @@ void toccata::SegmentGenerator::Scale(MusicSegment *segment, double s) {
     for (int i = 0; i < n; ++i) {
         points[i].Timestamp *= s;
     }
+
+    segment->Length *= s;
 }
 
 void toccata::SegmentGenerator::Shift(MusicSegment *segment, double t) {

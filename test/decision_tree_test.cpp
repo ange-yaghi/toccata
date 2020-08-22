@@ -5,19 +5,34 @@
 #include "../include/music_segment.h"
 #include "../include/song_generator.h"
 
-int GenerateInput(toccata::Bar *start, toccata::MusicSegment *target, int barCount) {
+int GenerateInput(
+	toccata::Bar *start, toccata::MusicSegment *target, int barCount,
+	double jitter, double scale, int missingNotesPerBar, int addedNotesPerBar) 
+{
 	toccata::Bar *current = start;
 	int n = 0;
 
+	toccata::SegmentGenerator utilities;
+	utilities.Seed(0);
+
 	while (current != nullptr && n < barCount) {
-		toccata::SegmentGenerator::Append(target, current->GetSegment());
+		toccata::MusicSegment segment;
+		toccata::SegmentGenerator::Copy(current->GetSegment(), &segment);
+
+		utilities.Jitter(&segment, jitter);
+		utilities.AddRandomNotes(&segment, addedNotesPerBar, 64);
+		utilities.RemoveRandomNotes(&segment, missingNotesPerBar);
+		toccata::SegmentGenerator::Scale(&segment, scale);
+
+		toccata::SegmentGenerator::Append(target, &segment);
 		++n;
 
-		if (current->GetNextCount() > 0) {
-			toccata::Bar *nextBar = current->GetNext(0);
-			current = nextBar;
+		if (current->GetNextCount() > 1) {
+			current = current->GetNext(1);
 		}
-		else current = nullptr;
+		else {
+			current = current->GetNext(0);
+		}
 	}
 
 	return n;
@@ -102,13 +117,13 @@ TEST(DecisionTreeTest, FullSong) {
 	toccata::SongGenerator songGenerator;
 	songGenerator.Seed(0);
 
-	songGenerator.GenerateSong(&library, 4, 8);
-	songGenerator.GenerateSong(&library, 4, 8);
+	songGenerator.GenerateSong(&library, 4, 32);
+	songGenerator.GenerateSong(&library, 4, 32);
 
 	toccata::MusicSegment inputSegment;
 	inputSegment.Length = 0.0;
 
-	GenerateInput(library.GetBar(0), &inputSegment, 36);
+	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.0, 1.0, 0, 0);
 
 	toccata::DecisionTree tree;
 	tree.SetLibrary(&library);
@@ -120,6 +135,131 @@ TEST(DecisionTreeTest, FullSong) {
 	for (int i = 0; i < n; ++i) {
 		tree.Process(i);
 	}
+
+	int longest = -1;
+	for (int i = 0; i < tree.GetDecisionCount(); ++i) {
+		toccata::DecisionTree::Decision *d = tree.GetDecision(i);
+		if (d->GetDepth() > longest && !d->Placeholder) {
+			longest = d->GetDepth();
+		}
+	}
+
+	EXPECT_EQ(longest, 64);
+
+	tree.KillThreads();
+	tree.Destroy();
+}
+
+TEST(DecisionTreeTest, FullSongJitter) {
+	toccata::Library library;
+
+	toccata::SongGenerator songGenerator;
+	songGenerator.Seed(0);
+
+	songGenerator.GenerateSong(&library, 4, 32);
+	songGenerator.GenerateSong(&library, 4, 32);
+
+	toccata::MusicSegment inputSegment;
+	inputSegment.Length = 0.0;
+
+	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.05, 1.0, 0, 0);
+
+	toccata::DecisionTree tree;
+	tree.SetLibrary(&library);
+	tree.SetInputSegment(&inputSegment);
+	tree.Initialize(12);
+	tree.SpawnThreads();
+
+	const int n = inputSegment.NoteContainer.GetCount();
+	for (int i = 0; i < n; ++i) {
+		tree.Process(i);
+	}
+
+	int longest = -1;
+	for (int i = 0; i < tree.GetDecisionCount(); ++i) {
+		toccata::DecisionTree::Decision *d = tree.GetDecision(i);
+		if (d->GetDepth() > longest && !d->Placeholder) {
+			longest = d->GetDepth();
+		}
+	}
+
+	EXPECT_EQ(longest, 64);
+
+	tree.KillThreads();
+	tree.Destroy();
+}
+
+TEST(DecisionTreeTest, HighJitter) {
+	toccata::Library library;
+
+	toccata::SongGenerator songGenerator;
+	songGenerator.Seed(0);
+
+	songGenerator.GenerateSong(&library, 4, 32);
+	songGenerator.GenerateSong(&library, 4, 32);
+
+	toccata::MusicSegment inputSegment;
+	inputSegment.Length = 0.0;
+
+	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.15, 1.0, 0, 0);
+
+	toccata::DecisionTree tree;
+	tree.SetLibrary(&library);
+	tree.SetInputSegment(&inputSegment);
+	tree.Initialize(12);
+	tree.SpawnThreads();
+
+	const int n = inputSegment.NoteContainer.GetCount();
+	for (int i = 0; i < n; ++i) {
+		tree.Process(i);
+	}
+
+	int longest = -1;
+	for (int i = 0; i < tree.GetDecisionCount(); ++i) {
+		toccata::DecisionTree::Decision *d = tree.GetDecision(i);
+		if (d->GetDepth() > longest && !d->Placeholder) {
+			longest = d->GetDepth();
+		}
+	}
+
+	tree.KillThreads();
+	tree.Destroy();
+}
+
+TEST(DecisionTreeTest, NoteMistakes) {
+	toccata::Library library;
+
+	toccata::SongGenerator songGenerator;
+	songGenerator.Seed(0);
+
+	songGenerator.GenerateSong(&library, 4, 32);
+	songGenerator.GenerateSong(&library, 4, 32);
+
+	toccata::MusicSegment inputSegment;
+	inputSegment.Length = 0.0;
+
+	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.01, 2.0, 1, 2);
+
+	toccata::DecisionTree tree;
+	tree.SetLibrary(&library);
+	tree.SetInputSegment(&inputSegment);
+	tree.Initialize(12);
+	tree.SpawnThreads();
+
+	const int n = inputSegment.NoteContainer.GetCount();
+	for (int i = 0; i < n; ++i) {
+		tree.Process(i);
+	}
+
+	int longest = -1;
+	for (int i = 0; i < tree.GetDecisionCount(); ++i) {
+		toccata::DecisionTree::Decision *d = tree.GetDecision(i);
+		if (d->GetDepth() > longest && !d->Placeholder) {
+			longest = d->GetDepth();
+		}
+	}
+
+	EXPECT_EQ(longest, 64);
 
 	tree.KillThreads();
 	tree.Destroy();
