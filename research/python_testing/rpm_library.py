@@ -8,6 +8,17 @@ class Bar(object):
         self.piece_id = piece_id
         self.id = id
 
+    def find_next(self, bar, missed_bars=0):
+        for next in self.next:
+            if next == bar:
+                return True
+            else:
+                if missed_bars > 0:
+                    if next.find_next(bar, missed_bars - 1):
+                        return True
+
+        return False
+
     def add_next(self, next):
         self.next.append(next)
 
