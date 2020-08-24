@@ -22,6 +22,8 @@ namespace toccata {
         void SetId(int id) { m_id = id; }
         int GetId() const { return m_id; }
 
+        bool FindNext(const Bar *next, int skipsAllowed) const;
+
     protected:
         std::vector<Bar *> m_next;
         MusicSegment *m_segment;

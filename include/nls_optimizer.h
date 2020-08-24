@@ -14,9 +14,14 @@ namespace toccata {
         struct Solution {
             double s;
             double t;
+            bool Singularity;
         };
 
+        static constexpr double ScaleIdentity = 1.0;
+        static constexpr double TranslateIdentity = 0.0;
+
         static bool Solve(const Problem &problem, Solution *solution);
+        static bool SolveSingular(const Problem &problem, Solution *solution);
 
     private:
         struct Gradient {
@@ -33,6 +38,8 @@ namespace toccata {
             double dtds;
             double dt2;
         };
+
+        static bool IsSingular(const Problem &problem);
 
         static Gradient CostGradient(const Problem &problem);
         static Hessian CostHessian(const Problem &problem);

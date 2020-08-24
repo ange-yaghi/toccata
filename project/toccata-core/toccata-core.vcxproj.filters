@@ -49,6 +49,18 @@
     <Filter Include="Header Files\legacy">
       <UniqueIdentifier>{cc4c8dc9-f191-4cef-8ef6-9010448f7b12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\midi-input">
+      <UniqueIdentifier>{bbbc7534-d7f3-4f7c-b489-669ec1ed225b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\midi-input">
+      <UniqueIdentifier>{4a88b09e-3f8d-4ae4-975d-ac6836f69c6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\midi">
+      <UniqueIdentifier>{cdce575d-132e-4d8e-82fa-5176ea3bb581}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\midi">
+      <UniqueIdentifier>{5870c05f-ce07-4c26-8cb3-f89dfddb41b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\error_reporting.cpp">
@@ -119,6 +131,24 @@
     </ClCompile>
     <ClCompile Include="..\..\src\song_generator.cpp">
       <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\music_segment.cpp">
+      <Filter>Source Files\pmm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\midi_callback.cpp">
+      <Filter>Source Files\midi-input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\midi_handler.cpp">
+      <Filter>Source Files\midi-input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\midi_stream.cpp">
+      <Filter>Source Files\midi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\midi_device_system.cpp">
+      <Filter>Source Files\midi-input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\decision_thread.cpp">
+      <Filter>Source Files\pmm</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -197,9 +227,6 @@
     <ClInclude Include="..\..\include\search_thread.h">
       <Filter>Header Files\library</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\midi_file.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\bar.h">
       <Filter>Header Files\pmm</Filter>
     </ClInclude>
@@ -211,6 +238,27 @@
     </ClInclude>
     <ClInclude Include="..\..\include\song_generator.h">
       <Filter>Header Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\midi_callback.h">
+      <Filter>Header Files\midi-input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\midi_handler.h">
+      <Filter>Header Files\midi-input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\midi_file.h">
+      <Filter>Header Files\midi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\midi_note.h">
+      <Filter>Header Files\midi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\midi_stream.h">
+      <Filter>Header Files\midi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\midi_device_system.h">
+      <Filter>Header Files\midi-input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\decision_thread.h">
+      <Filter>Header Files\pmm</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

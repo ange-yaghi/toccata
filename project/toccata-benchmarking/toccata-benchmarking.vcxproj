@@ -161,10 +161,12 @@
     <ClCompile Include="..\..\benchmarking\src\basic_solve_benchmark.cpp" />
     <ClCompile Include="..\..\benchmarking\src\benchmarking_test.cpp" />
     <ClCompile Include="..\..\benchmarking\src\main.cpp" />
+    <ClCompile Include="..\..\benchmarking\src\midi_device_testbench.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\benchmarking\include\basic_solve_benchmark.h" />
     <ClInclude Include="..\..\benchmarking\include\benchmarking_test.h" />
+    <ClInclude Include="..\..\benchmarking\include\midi_device_testbench.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

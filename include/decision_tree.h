@@ -11,6 +11,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <thread>
+#include <set>
 
 namespace toccata {
 
@@ -21,25 +22,31 @@ namespace toccata {
 
     public:
         struct Decision {
-            int MappingStart;
-            int MappingEnd;;
-            Decision *ParentDecision;
-            int Children = 0;
-
             const Bar *MatchedBar;
+
+            std::set<int> Notes;
+            int MappedNotes;
+
+            bool Cached = false;
+            int Depth;
+            Decision *ParentDecision;
+
             double s;
             double t;
 
             double AverageError;
-            int MappedNotes;
-
-            bool Placeholder = false;
-            bool Flagged = false;
 
             bool IsSameAs(const Decision *decision) const;
             bool IsBetterFitThan(const Decision *decision) const;
 
-            int GetDepth() const;
+            bool IsCached() const;
+            void InvalidateCache();
+
+            int GetFootprint() const;
+            int GetEnd() const;
+            int GetStart() const;
+
+            bool Overlapping(const Decision *decision, int overlap) const;
         };
 
     protected:
@@ -82,18 +89,23 @@ namespace toccata {
         Decision *GetDecision(int index) { return m_decisions[index]; }
         int GetDecisionCount() const { return (int)m_decisions.size(); }
 
+        void OnNoteChange(int changedNote);
+
         void Initialize(int threadCount);
         void SpawnThreads();
         void KillThreads();
         void Destroy();
         void Process(int startIndex);
 
+        int GetDepth(Decision *decision) const;
+
     protected:
         void DistributeWork();
         void TriggerThreads();
         void WaitForThreads();
         void Integrate();
-        void Prune();
+
+        Decision *FindBestParent(const Decision *decision) const;
 
         bool IntegrateDecision(Decision *decision);
 
@@ -104,9 +116,6 @@ namespace toccata {
         void Work(int threadId, ThreadContext &context);
         void SeedMatch(
             int libraryStart, int libraryEnd,
-            int threadId);
-        void PredictionMatch(
-            int decisionIndexStart, int decisionIndexEnd,
             int threadId);
         Decision *Match(const Bar *bar, int startIndex, ThreadContext &context);
 

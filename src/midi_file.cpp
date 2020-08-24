@@ -3,17 +3,8 @@
 #include <algorithm>
 
 toccata::MidiFile::MidiFile() {
-    m_timeFormat = TimeFormat::Metrical;
-    m_ticksPerQuarterNote = 0;
-    m_negativeSMPTEFormat = 0;
-    m_ticksPerFrame = 0;
-    m_tempo = 100;
-
     m_format = 0;
     m_nTracks = 0;
-
-    m_timeSignatureNumerator = 4;
-    m_timeSignatureDenominator = 4;
 
     m_chunkDataRemaining = 0;
 }
@@ -26,7 +17,7 @@ void toccata::MidiFile::Write(const char *fname) {
     /* TODO */
 }
 
-bool toccata::MidiFile::Read(const char *fname) {
+bool toccata::MidiFile::Read(const char *fname, MidiStream *stream) {
     m_file.open(fname, std::ios::binary | std::ios::in);
 
     if (!m_file.is_open()) {
@@ -43,13 +34,10 @@ bool toccata::MidiFile::Read(const char *fname) {
 
         m_chunkDataRemaining = chunkHeader.Length;
 
-        ReadChunk(&chunkHeader);
+        ReadChunk(&chunkHeader, stream);
     }
 
     m_file.close();
-
-    std::sort(m_notes.begin(), m_notes.end(),
-        [](const MidiNote &a, const MidiNote &b) { return a.Timestamp < b.Timestamp; });
 
     return true;
 }
@@ -81,30 +69,7 @@ void toccata::MidiFile::ByteSwap16(UINT16 *data) {
         ((sdata << 8) & 0xff00);
 }
 
-double toccata::MidiFile::GetTempo() const {
-    return 60.0 / (m_tempo / 1000000.0);
-}
-
-int toccata::MidiFile::GetPreviousNote(BYTE midiNote, UINT32 timestamp) {
-    UINT32 smallestDistance = INT_MAX;
-    int closest = -1;
-    int n = (int)m_notes.size();
-
-    for (int i = 0; i < n; ++i) {
-        if (m_notes[i].Timestamp < timestamp) {
-            UINT32 diff = timestamp - m_notes[i].Timestamp;
-
-            if (diff < smallestDistance) {
-                smallestDistance = diff;
-                closest = i;
-            }
-        }
-    }
-
-    return closest;
-}
-
-void toccata::MidiFile::ReadChunk(MidiChunkHeader *header) {
+void toccata::MidiFile::ReadChunk(MidiChunkHeader *header, MidiStream *stream) {
     if (header->Type[0] == 'M' &&
         header->Type[1] == 'T' &&
         header->Type[2] == 'h' &&
@@ -127,15 +92,15 @@ void toccata::MidiFile::ReadChunk(MidiChunkHeader *header) {
 
         if (timeFormat == 0) {
             // Metrical time
-            m_timeFormat = TimeFormat::Metrical;
-            m_ticksPerQuarterNote = chunkData.Division & 0x7FFF;
+            stream->SetMetricalTimeFormat(chunkData.Division & 0x7FFF);
 
         }
         else {
             // Time-code time
-            m_timeFormat = TimeFormat::TimeCode;
-            m_negativeSMPTEFormat = (chunkData.Division & 0x7FFF) >> 8;
-            m_ticksPerFrame = (chunkData.Division & 0x00FF);
+            stream->SetTimeCodeTimeFormat(
+                (chunkData.Division & 0x7FFF) >> 8,
+                chunkData.Division & 0x00FF
+            );
         }
     }
     else if (header->Type[0] == 'M' &&
@@ -154,12 +119,12 @@ void toccata::MidiFile::ReadChunk(MidiChunkHeader *header) {
         // Read track events until there
         // are no bytes remaining
         while (m_chunkDataRemaining > 0) {
-            currentTime += ReadTrackEvent(currentTime);
+            currentTime += ReadTrackEvent(currentTime, stream);
         }
     }
 }
 
-UINT32 toccata::MidiFile::ReadTrackEvent(UINT32 currentTime) {
+UINT32 toccata::MidiFile::ReadTrackEvent(UINT32 currentTime, MidiStream *stream) {
     UINT32 deltaTime = ReadVariableLengthQuantity();
     currentTime += deltaTime;
 
@@ -203,8 +168,11 @@ UINT32 toccata::MidiFile::ReadTrackEvent(UINT32 currentTime) {
             if (strcmp(text, "Left-hand:") == 0) {
                 m_currentHand = MusicPoint::Hand::LeftHand;
             }
-            else {
+            else if (strcmp(text, "Right-hand:") == 0) {
                 m_currentHand = MusicPoint::Hand::RightHand;
+            }
+            else {
+                m_currentHand = MusicPoint::Hand::Unknown;
             }
 
             m_chunkDataRemaining -= length;
@@ -217,7 +185,7 @@ UINT32 toccata::MidiFile::ReadTrackEvent(UINT32 currentTime) {
 
             ByteSwap24(&tempo);
 
-            m_tempo = tempo;
+            stream->SetRawTempo(tempo);
             m_chunkDataRemaining -= sizeof(BYTE) * 3;
         }
         else if (metaType == 0x2F) {
@@ -239,8 +207,10 @@ UINT32 toccata::MidiFile::ReadTrackEvent(UINT32 currentTime) {
             clocksPerTick = ts[2];
             notated32ndNotesPerBeat = ts[3];
 
-            m_timeSignatureNumerator = (int)numerator;
-            m_timeSignatureDenominator = 2 << ((int)denominator - 1);
+            stream->SetTimeSignature(
+                (int)numerator,
+                2 << ((int)denominator - 1)
+            );
 
             m_chunkDataRemaining -= sizeof(BYTE) * 4;
         }
@@ -250,53 +220,19 @@ UINT32 toccata::MidiFile::ReadTrackEvent(UINT32 currentTime) {
         }
     }
     else {
-        if (type >= 192 && type <= 223) {
-            /* void */
-        }
-
         // Normal MIDI event
-
         BYTE midiStatus;
         BYTE byte1;
         BYTE byte2;
 
-        midiStatus = type;
+        midiStatus = (type & 0xF0) >> 4;
 
-        // Data 1
         m_file.read((char *)&byte1, sizeof(BYTE));
-
-        // Data 2
         m_file.read((char *)&byte2, sizeof(BYTE));
 
+        stream->ProcessMidiEvent(midiStatus, byte1, byte2, currentTime, m_currentHand);
+
         m_chunkDataRemaining -= sizeof(BYTE) * 2;
-
-        if (midiStatus == 0x90 || midiStatus == 0x91) {
-            BYTE key = byte1;
-            BYTE velocity = byte2;
-
-            if (velocity > 0) {
-                // Note is pressed
-                MidiNote newNote;
-
-                newNote.Timestamp = currentTime;
-                newNote.MidiKey = key;
-                newNote.Velocity = velocity;
-                newNote.AssignedHand = m_currentHand;
-
-                m_notes.push_back(newNote);
-            }
-            else {
-                // Note is released
-                int lastNote = GetPreviousNote(key, currentTime);
-
-                if (lastNote != -1) {
-                    m_notes[lastNote].NoteLength = currentTime - m_notes[lastNote].Timestamp;
-                }
-            }
-        }
-        else {
-            /* void */
-        }
     }
 
     return deltaTime;

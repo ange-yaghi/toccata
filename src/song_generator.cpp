@@ -13,13 +13,13 @@ toccata::SongGenerator::~SongGenerator() {
 void toccata::SongGenerator::GenerateSong(Library *library, int sections, int sectionBars) {    
     Bar *previous = nullptr;
 
-    std::uniform_int_distribution<int> randomInt(4, 32);
+    std::uniform_int_distribution<int> randomNoteCount(1, 32);
     int id = 0;
 
     for (int i = 0; i < sections; ++i) {
         Bar *sectionStart = nullptr;
         for (int j = 0; j < sectionBars; ++j) {
-            const int n = randomInt(m_engine);
+            const int n = randomNoteCount(m_engine);
 
             MusicSegment *newSegment = library->NewSegment();
             m_generator.CreateRandomSegmentQuantized(newSegment, n, 16, 1.0, 100);

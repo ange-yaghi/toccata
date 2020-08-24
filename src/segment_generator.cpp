@@ -1,4 +1,6 @@
-#include "..\include\segment_generator.h"
+#include "../include/segment_generator.h"
+
+#include "../include/midi_file.h"
 
 toccata::SegmentGenerator::SegmentGenerator() {
     /* void */
@@ -10,6 +12,57 @@ toccata::SegmentGenerator::~SegmentGenerator() {
 
 void toccata::SegmentGenerator::Seed(unsigned int seed) {
     m_generator.seed(seed);
+}
+
+void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target, int leading8thRests) {
+    const unsigned int eigthNoteLength = midi->GetTicksPerQuarterNote() / 2;
+    const unsigned int barLength = midi->GetBarLength();
+
+    const int n = midi->GetNoteCount();
+
+    const unsigned int offset = leading8thRests * eigthNoteLength;
+    int barIndex = 0;
+    MusicSegment *currentSegment = nullptr;
+    Bar *currentBar = nullptr;
+
+    for (int i = 0; i < n; ++i) {
+        const MidiNote &note = midi->GetNote(i);
+
+        unsigned int timestamp = note.Timestamp + offset;
+
+        const unsigned int barStart = barIndex * barLength;
+        const unsigned int barBoundary = (barIndex + 1) * barLength;
+        if (note.Timestamp >= barBoundary) {
+            Bar *previous = currentBar;
+            currentSegment = target->NewSegment();
+            currentBar = target->NewBar();
+
+            if (previous != nullptr) {
+                previous->AddNext(currentBar);
+            }
+
+            currentSegment->Length = 1.0;
+            currentBar->SetSegment(currentSegment);
+        }
+
+        if (currentSegment == nullptr) {
+            currentSegment = target->NewSegment();
+            currentBar = target->NewBar();
+
+            currentSegment->Length = 1.0;
+            currentBar->SetSegment(currentSegment);
+        }
+
+        const unsigned int noteStart = timestamp - barStart;
+
+        MusicPoint point;
+        point.Timestamp = (noteStart / (double)barLength);
+        point.Pitch = note.MidiKey;
+        point.Velocity = note.Velocity;
+        point.Length = (note.NoteLength / (double)barLength);
+        point.Part = note.AssignedHand;
+        currentSegment->NoteContainer.AddPoint(point);
+    }
 }
 
 void toccata::SegmentGenerator::Copy(const MusicSegment *reference, MusicSegment *segment) {

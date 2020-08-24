@@ -10,16 +10,21 @@ bool toccata::Comparator::CalculateError(const Request &request, Result *result)
     const MusicPoint *referencePoints = request.Reference->NoteContainer.GetPoints();
     const MusicPoint *points = request.Segment->NoteContainer.GetPoints();
 
-    double totalError = 0.0;
-    int mappedNotes = 0;
     int mappingStart = INT_MAX;
     int mappingEnd = INT_MIN;
+
+    double totalError = 0.0;
+    int mappedNotes = 0;
     for (int i = 0; i < n; ++i) {
         int mapped = request.Mapping[i];
         if (mapped == -1) continue;
 
-        if (mapped < mappingStart) mappingStart = mapped;
         if (mapped > mappingEnd) mappingEnd = mapped;
+        if (mapped < mappingStart) mappingStart = mapped;
+
+        if (result->Target != nullptr) {
+            result->Target->insert(mapped);
+        }
 
         const MusicPoint &ref = referencePoints[i];
         const MusicPoint &p = points[request.Mapping[i]];
@@ -32,7 +37,7 @@ bool toccata::Comparator::CalculateError(const Request &request, Result *result)
     }
 
     if (mappedNotes == 0) return false;
-
+    
     result->MappingStart = mappingStart;
     result->MappingEnd = mappingEnd;
     result->MappedNotes = mappedNotes;

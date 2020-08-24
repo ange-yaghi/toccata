@@ -24,12 +24,18 @@
     <ClCompile Include="..\..\benchmarking\src\basic_solve_benchmark.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\benchmarking\src\midi_device_testbench.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\benchmarking\include\benchmarking_test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\benchmarking\include\basic_solve_benchmark.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\benchmarking\include\midi_device_testbench.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

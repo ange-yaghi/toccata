@@ -99,20 +99,18 @@ bool toccata::FullSolver::Solve(const Request &request, Result *result) {
 	bool solvable = toccata::NlsOptimizer::Solve(refineStepRequest, &refinedSolution);
 	if (!solvable) return false;
 
-	Comparator::Result solutionData;
 	Comparator::Request comparatorRequest;
 	comparatorRequest.Mapping = preciseMapping;
 	comparatorRequest.Reference = reference;
 	comparatorRequest.Segment = segment;
 	comparatorRequest.s = refinedSolution.s;
 	comparatorRequest.t = refinedSolution.t;
-	Comparator::CalculateError(comparatorRequest, &solutionData);
+	Comparator::CalculateError(comparatorRequest, &result->Fit);
 
-	int missedNotes = n - solutionData.MappedNotes;
+	int missedNotes = n - result->Fit.MappedNotes;
 	double missedNoteRatio = missedNotes / (double)n;
 
 	if (missedNoteRatio < request.MissingNoteThreshold) {
-		result->Fit = solutionData;
 		result->s = refinedSolution.s;
 		result->t = refinedSolution.t;
 		return true;

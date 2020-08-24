@@ -28,7 +28,7 @@ namespace toccata {
             m_capacity = n;
         }
 
-        void AddPoint(const MusicPoint &point) {
+        int AddPoint(const MusicPoint &point) {
             assert(m_pointCount <= m_capacity);
 
             if (m_pointCount == m_capacity) {
@@ -41,10 +41,10 @@ namespace toccata {
                 m_points = newPoints;
             }
 
-            for (int i = 0; i <= m_pointCount; ++i) {
-                if (i == m_pointCount || m_points[i].Timestamp > point.Timestamp) {
-                    InsertPoint(point, i);
-                    break;
+            for (int i = m_pointCount - 1; i >= -1; --i) {
+                if (i == -1 || m_points[i].Timestamp < point.Timestamp) {
+                    InsertPoint(point, i + 1);
+                    return i + 1;
                 }
             }
         }

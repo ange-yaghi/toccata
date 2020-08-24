@@ -4,6 +4,7 @@
 #include "music_segment.h"
 
 #include <random>
+#include <set>
 
 namespace toccata {
 
@@ -22,6 +23,7 @@ namespace toccata {
             int MappedNotes;
             int MappingStart;
             int MappingEnd;
+            std::set<int> *Target = nullptr;
         };
 
         static bool CalculateError(

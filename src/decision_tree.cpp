@@ -12,6 +12,27 @@ toccata::DecisionTree::~DecisionTree() {
     /* void */
 }
 
+void toccata::DecisionTree::OnNoteChange(int changedNote) {
+    std::vector<Decision *> newDecisionList;
+
+    const int decisionCount = GetDecisionCount();
+    for (int i = 0; i < decisionCount; ++i) {
+        bool valid = true;
+        for (int note : m_decisions[i]->Notes) {
+            if (note >= changedNote) {
+                valid = false;
+                break;
+            }
+        }
+
+        if (valid) {
+            newDecisionList.push_back(m_decisions[i]);
+        }
+    }
+
+    m_decisions = newDecisionList;
+}
+
 void toccata::DecisionTree::Initialize(int threadCount) {
     m_threadCount = threadCount;
     m_threadContexts = Memory::Allocate<ThreadContext>(m_threadCount);
@@ -73,7 +94,6 @@ void toccata::DecisionTree::Process(int startIndex) {
     WaitForThreads();
 
     Integrate();
-    Prune();
 }
 
 void toccata::DecisionTree::DistributeWork() {
@@ -153,45 +173,51 @@ void toccata::DecisionTree::Integrate() {
     }
 }
 
-void toccata::DecisionTree::Prune() {
-    const int n = GetDecisionCount();
+int toccata::DecisionTree::GetDepth(Decision *decision) const {
+    if (!decision->IsCached()) {
+        Decision *bestParent = FindBestParent(decision);
 
-    for (int i = 0; i < n; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-            Decision *a = m_decisions[i];
-            Decision *b = m_decisions[j];
+        if (bestParent != nullptr) {
+            decision->ParentDecision = bestParent;
+            decision->Depth = 1 + GetDepth(bestParent);
+        }
+        else {
+            decision->ParentDecision = nullptr;
+            decision->Depth = 1;
+        }
 
-            if (a->IsSameAs(b)) {
-                if (a->GetDepth() < b->GetDepth()) {
-                    a->Flagged = true;
-                }
-                else if (b->GetDepth() < a->GetDepth()) {
-                    b->Flagged = true;
-                }
-                else if (b->IsBetterFitThan(a)) {
-                    a->Flagged = true;
-                }
-                else if (a->IsBetterFitThan(b)) {
-                    b->Flagged = true;
-                }
+        decision->Cached = true;
+    }
+
+    return decision->Depth;
+}
+
+toccata::DecisionTree::Decision *toccata::DecisionTree::FindBestParent(const Decision *decision) const {
+    int bestDepth = -1;
+    Decision *best = nullptr;
+
+    const int decisions = GetDecisionCount();
+    for (int i = 0; i < decisions; ++i) {
+        Decision *prev = m_decisions[i];
+
+        if (prev == decision) continue;
+        else if (prev->GetEnd() < decision->GetEnd()) {
+            if (!prev->MatchedBar->FindNext(decision->MatchedBar, 1) && 
+                !decision->MatchedBar->FindNext(prev->MatchedBar, 1)) 
+            {
+                continue;
+            }
+
+            const int depth = GetDepth(prev);
+
+            if (depth > bestDepth) {
+                best = prev;
+                bestDepth = depth;
             }
         }
     }
 
-    int newCount = n;
-    for (int i = n - 1; i >= 0; --i) {
-        Decision *decision = m_decisions[i];
-        if (decision->Flagged && decision->Children == 0) {
-            if (decision->ParentDecision != nullptr) {
-                --decision->ParentDecision->Children;
-            }
-
-            DestroyDecision(decision);
-            m_decisions[i] = m_decisions[--newCount];
-        }
-    }
-
-    m_decisions.resize(newCount);
+    return best;
 }
 
 bool toccata::DecisionTree::IntegrateDecision(Decision *decision) {
@@ -199,46 +225,24 @@ bool toccata::DecisionTree::IntegrateDecision(Decision *decision) {
     for (int i = 0; i < decisionCount; ++i) {
         Decision *currentDecision = m_decisions[i];
 
-        if (decision->IsSameAs(currentDecision)) {
-            if (decision->ParentDecision != currentDecision->ParentDecision) {
-                continue;
-            }
-            else {
-                if (decision->IsBetterFitThan(currentDecision)) {
-                    currentDecision->Placeholder = decision->Placeholder;
-                    currentDecision->AverageError = decision->AverageError;
-                    currentDecision->MappedNotes = decision->MappedNotes;
-                    currentDecision->MappingEnd = decision->MappingEnd;
-                    currentDecision->MappingStart = decision->MappingStart;
-                    currentDecision->s = decision->s;
-                    currentDecision->t = decision->t;
-                }
+        const int minNoteCount = std::min(currentDecision->MappedNotes, decision->MappedNotes);
+        const int overlap = (int)std::ceil(0.5 * minNoteCount);
 
-                return false;
+        if (decision->Overlapping(currentDecision, overlap)) {
+            if (decision->IsBetterFitThan(currentDecision)) {
+                currentDecision->AverageError = decision->AverageError;
+                currentDecision->MappedNotes = decision->MappedNotes;
+                currentDecision->Notes = decision->Notes;
+                currentDecision->s = decision->s;
+                currentDecision->t = decision->t;
+                currentDecision->MatchedBar = decision->MatchedBar;
             }
+
+            return false;
         }
     }
 
-    if (decision->ParentDecision != nullptr) {
-        ++decision->ParentDecision->Children;
-    }
-
     m_decisions.push_back(decision);
-
-    const int n_next = decision->MatchedBar->GetNextCount();
-    for (int i = 0; i < n_next; ++i) {
-        toccata::Bar *next = decision->MatchedBar->GetNext(i);
-        Decision *placeholder = AllocateDecision();
-        placeholder->Placeholder = true;
-        placeholder->MatchedBar = next;
-        placeholder->ParentDecision = decision;
-        placeholder->MappingEnd = decision->MappingStart;
-
-        m_decisions.push_back(placeholder);
-
-        ++decision->Children;
-    }
-
     return true;
 }
 
@@ -263,7 +267,6 @@ void toccata::DecisionTree::WorkerThread(int threadId) {
 
 void toccata::DecisionTree::Work(int threadId, ThreadContext &context) {
     SeedMatch(context.LibraryStart, context.LibraryEnd, threadId);
-    PredictionMatch(context.DecisionStart, context.DecisionEnd, threadId);
 }
 
 void toccata::DecisionTree::SeedMatch(
@@ -282,39 +285,17 @@ void toccata::DecisionTree::SeedMatch(
     }
 }
 
-void toccata::DecisionTree::PredictionMatch(
-    int decisionIndexStart, int decisionIndexEnd, int threadId) 
-{
-    ThreadContext &context = m_threadContexts[threadId];
-
-    for (int i = decisionIndexStart; i <= decisionIndexEnd; ++i) {
-        Decision *decision = m_decisions[i];
-        const Bar *bar = decision->MatchedBar;
-
-        int startIndex = context.StartIndex;
-        if (startIndex <= decision->MappingEnd) startIndex = decision->MappingEnd + 1;
-        if (startIndex >= m_segment->NoteContainer.GetCount()) continue;
-        
-        int lookaheadCount = bar->GetNextCount();
-        for (int j = 0; j < lookaheadCount; ++j) {
-            Bar *next = bar->GetNext(j);
-            Decision *newDecision = Match(next, startIndex, context);
-
-            if (newDecision != nullptr) {
-                newDecision->ParentDecision = decision;
-                context.NewDecisions.push(newDecision);
-            }
-        }
-    }
-}
-
 toccata::DecisionTree::Decision *toccata::DecisionTree::Match(
     const Bar *reference, int startIndex, ThreadContext &context) 
 {
     const int n = reference->GetSegment()->NoteContainer.GetCount();
     const int k = m_segment->NoteContainer.GetCount();
 
+    std::set<int> mappedNotes;
+
     FullSolver::Result result;
+    result.Fit.Target = &mappedNotes;
+
     FullSolver::Request request;
     request.StartIndex = startIndex;
     request.EndIndex = startIndex + (int)std::ceil(n * (1.0 + m_margin)) - 1;
@@ -329,35 +310,24 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::Match(
     newDecision->AverageError = result.Fit.AverageError;
     newDecision->s = result.s;
     newDecision->t = result.t;
-    newDecision->MappingStart = result.Fit.MappingStart;
-    newDecision->MappingEnd = result.Fit.MappingEnd;
+    newDecision->Notes = mappedNotes;
     newDecision->MappedNotes = result.Fit.MappedNotes;
     newDecision->MatchedBar = reference;
-
-    if (newDecision->AverageError > request.CorrelationThreshold * reference->GetSegment()->Length) {
-        int a = 0;
-    }
 
     return newDecision;
 }
 
 bool toccata::DecisionTree::Decision::IsSameAs(const Decision *decision) const {
     if (MatchedBar != decision->MatchedBar) return false;
-    else if (decision->Placeholder || Placeholder) return true;
-    else if (MappingEnd <= decision->MappingEnd && MappingStart >= decision->MappingStart) return true;
-    else if (decision->MappingEnd <= MappingEnd && decision->MappingStart >= MappingStart) return true;
-    else return false;
+    else return true;
 }
 
 bool toccata::DecisionTree::Decision::IsBetterFitThan(const Decision *decision) const {
-    if (decision->Placeholder && !Placeholder) return true;
-    else if (!decision->Placeholder && Placeholder) return false;
-
     if (MappedNotes > decision->MappedNotes) return true;
     else if (MappedNotes < decision->MappedNotes) return false;
 
-    const int footprint0 = MappingEnd - MappingStart;
-    const int footprint1 = decision->MappingEnd - decision->MappingStart;
+    const int footprint0 = decision->GetFootprint();
+    const int footprint1 = decision->GetFootprint();
 
     if (footprint0 < footprint1) return true;
     else if (footprint1 > footprint0) return false;
@@ -366,7 +336,40 @@ bool toccata::DecisionTree::Decision::IsBetterFitThan(const Decision *decision) 
     else return false;
 }
 
-int toccata::DecisionTree::Decision::GetDepth() const {
-    if (ParentDecision == nullptr) return 1;
-    else return 1 + ParentDecision->GetDepth();
+bool toccata::DecisionTree::Decision::IsCached() const {
+    if (!Cached) return false;
+    
+    if (ParentDecision != nullptr) {
+        return ParentDecision->IsCached();
+    }
+    else return true;
+}
+
+void toccata::DecisionTree::Decision::InvalidateCache() {
+    Cached = false;
+    ParentDecision = nullptr;
+    Depth = 0;
+}
+
+int toccata::DecisionTree::Decision::GetFootprint() const {
+    return GetEnd() - GetStart() + 1;
+}
+
+int toccata::DecisionTree::Decision::GetEnd() const {
+    return *(Notes.rbegin());
+}
+
+int toccata::DecisionTree::Decision::GetStart() const {
+    return *Notes.begin();
+}
+
+bool toccata::DecisionTree::Decision::Overlapping(const Decision *decision, int overlap) const {
+    int sharedNotes = 0;
+    for (int n0 : Notes) {
+        if (decision->Notes.count(n0) > 0) {
+            if (++sharedNotes >= overlap) return true;
+        }
+    }
+
+    return false;
 }

@@ -12,9 +12,10 @@ TEST(NlsOptimizerTest, SanityCheck) {
 	problem.p_set = p;
 	problem.N = 2;
 
-	bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
+	const bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
 
 	EXPECT_TRUE(valid);
+	EXPECT_FALSE(solution.Singularity);
 	EXPECT_NEAR(solution.s, 0.2, 1E-4);
 	EXPECT_NEAR(solution.t, 0.0, 1E-4);
 }
@@ -29,9 +30,10 @@ TEST(NlsOptimizerTest, Test3Points) {
 	problem.p_set = p;
 	problem.N = 3;
 
-	bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
+	const bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
 
 	EXPECT_TRUE(valid);
+	EXPECT_FALSE(solution.Singularity);
 	EXPECT_NEAR(solution.s, 0.2, 1E-4);
 	EXPECT_NEAR(solution.t, 0.0, 1E-4);
 }
@@ -49,9 +51,10 @@ TEST(NlsOptimizerTest, Test3PointsScaleOffset) {
 	problem.p_set = p;
 	problem.N = 3;
 
-	bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
+	const bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
 
 	EXPECT_TRUE(valid);
+	EXPECT_FALSE(solution.Singularity);
 	EXPECT_NEAR(solution.s, 1 / scale, 1E-4);
 	EXPECT_NEAR(solution.t, -offset / scale, 1E-4);
 }
@@ -66,11 +69,12 @@ TEST(NlsOptimizerTest, TestBadReference) {
 	problem.p_set = p;
 	problem.N = 2;
 
-	bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
+	const bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
 
 	EXPECT_TRUE(valid);
-	EXPECT_NEAR(solution.s, 0.0, 1E-4);
-	EXPECT_NEAR(solution.t, 1.0, 1E-4);
+	EXPECT_TRUE(solution.Singularity);
+	EXPECT_NEAR(solution.s, 1.0, 1E-4);
+	EXPECT_NEAR(solution.t, -2.0, 1E-4);
 }
 
 TEST(NlsOptimizerTest, TestImperfectFit) {
@@ -83,9 +87,10 @@ TEST(NlsOptimizerTest, TestImperfectFit) {
 	problem.p_set = p;
 	problem.N = 2;
 
-	bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
+	const bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
 
 	EXPECT_TRUE(valid);
+	EXPECT_FALSE(solution.Singularity);
 	EXPECT_NEAR(solution.s, 0.8, 1E-4);
 	EXPECT_NEAR(solution.t, 0.0, 1E-4);
 }
@@ -100,7 +105,10 @@ TEST(NlsOptimizerTest, TestMalformed) {
 	problem.p_set = p;
 	problem.N = 2;
 
-	bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
+	const bool valid = toccata::NlsOptimizer::Solve(problem, &solution);
 
-	EXPECT_FALSE(valid);
+	EXPECT_TRUE(valid);
+	EXPECT_TRUE(solution.Singularity);
+	EXPECT_NEAR(solution.s, 1.0, 1E-4);
+	EXPECT_NEAR(solution.t, 0.5, 1E-4);
 }

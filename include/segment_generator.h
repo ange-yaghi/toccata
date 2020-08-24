@@ -2,6 +2,8 @@
 #define TOCCATA_CORE_SEGMENT_GENERATOR_H
 
 #include "music_segment.h"
+#include "midi_file.h"
+#include "library.h"
 
 #include <random>
 
@@ -13,6 +15,8 @@ namespace toccata {
         ~SegmentGenerator();
 
         void Seed(unsigned int seed);
+
+        static void Convert(const MidiStream *stream, Library *target, int leading8thRests = 0);
 
         static void Copy(const MusicSegment *reference, MusicSegment *segment);
         static void Append(MusicSegment *target, const MusicSegment *segment);

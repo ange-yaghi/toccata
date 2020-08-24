@@ -3,51 +3,75 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="..\..\test\set_time_fsm_unit_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\sanity_check_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\nls_optimizer_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\point_container_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\test_pattern_generator_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\note_mapper_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\munkres_solver_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\comparator_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\test_pattern_evaluator_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\segment_utilities_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\search_thread_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\midi_file_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\decision_tree_test.cpp">
-      <Filter>Tests</Filter>
+      <Filter>SourceFiles\tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\midi_conversion_test.cpp">
+      <Filter>SourceFiles\tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\utilities.cpp">
+      <Filter>SourceFiles\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\decision_thread_test.cpp">
+      <Filter>SourceFiles\tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="..\..\test\utilities.h">
+      <Filter>Header Files\utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Tests">
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{3d66a9c5-34e6-4c08-b780-90c5ed6d6e4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SourceFiles">
+      <UniqueIdentifier>{fc8167b4-5048-4774-a4fb-32c76baeeae2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SourceFiles\tests">
       <UniqueIdentifier>{fc6e94c1-acab-4f4c-9d21-333cf8122584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utilities">
+      <UniqueIdentifier>{545c9b04-c226-46a4-b9a6-f0d57381ce93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SourceFiles\utilities">
+      <UniqueIdentifier>{129de43d-9fff-4971-a1b2-531defd258ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
