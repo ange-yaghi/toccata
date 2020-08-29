@@ -105,16 +105,10 @@ TEST(DecisionTreeTest, FullSong) {
 		tree.Process(i);
 	}
 
-	int longest = -1;
-	for (int i = 0; i < tree.GetDecisionCount(); ++i) {
-		toccata::DecisionTree::Decision *d = tree.GetDecision(i);
-		int depth = tree.GetDepth(d);
-		if (depth > longest) {
-			longest = depth;
-		}
-	}
+	auto results = tree.GetPieces();
 
-	EXPECT_EQ(longest, 64);
+	EXPECT_EQ(results.size(), 1);
+	EXPECT_EQ(results[0].Bars.size(), 64);
 
 	tree.KillThreads();
 	tree.Destroy();
@@ -145,16 +139,10 @@ TEST(DecisionTreeTest, FullSongJitter) {
 		tree.Process(i);
 	}
 
-	int longest = -1;
-	for (int i = 0; i < tree.GetDecisionCount(); ++i) {
-		toccata::DecisionTree::Decision *d = tree.GetDecision(i);
-		int depth = tree.GetDepth(d);
-		if (depth > longest) {
-			longest = depth;
-		}
-	}
+	auto results = tree.GetPieces();
 
-	EXPECT_EQ(longest, 64);
+	EXPECT_EQ(results.size(), 1);
+	EXPECT_EQ(results[0].Bars.size(), 64);
 
 	tree.KillThreads();
 	tree.Destroy();
@@ -265,18 +253,10 @@ TEST(DecisionTreeTest, SimilarSongs) {
 		tree.Process(i);
 	}
 
-	int longest = -1;
-	for (int i = 0; i < tree.GetDecisionCount(); ++i) {
-		toccata::DecisionTree::Decision *d = tree.GetDecision(i);
-		int depth = tree.GetDepth(d);
-		if (depth > longest) {
-			longest = depth;
-		}
-	}
+	auto results = tree.GetPieces();
 
-	tree.GetPieces();
-
-	EXPECT_EQ(longest, 3 * 32);
+	EXPECT_EQ(results.size(), 1);
+	EXPECT_EQ(results[0].Bars.size(), 3 * 32);
 
 	tree.KillThreads();
 	tree.Destroy();

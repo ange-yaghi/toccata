@@ -256,31 +256,6 @@ void toccata::DecisionTree::Prune() {
         }
     }
 
-    /*
-    int newSize = 0;
-    for (int i = 0; i < n; ++i) {
-        const Decision *parent = m_decisions[i]->ParentDecision;
-
-        bool deleted = false;
-        if (parent != nullptr) {
-            if (rightDepth[i] + 1 < rightDepth[parent->Index]) {
-                DeleteDecision(m_decisions[i]);
-
-                delete m_decisions[i];
-                m_decisions[i] = nullptr;
-
-                deleted = true;
-            }
-        }
-
-        if (!deleted) {
-            m_decisions[newSize] = m_decisions[i];
-
-            ++newSize;
-        }
-    }
-    */
-
     int newSize0 = 0;
     for (int i = 0; i < n; ++i) {
         Decision *d0 = m_decisions[i];
@@ -382,19 +357,22 @@ int toccata::DecisionTree::GetBranchEnd(Decision *decision) {
     return end;
 }
 
-std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPieces() {
-    struct Leaf {
-        Decision *Decision;
-        int Depth;
-        int NoteCount;
-        double AverageError;
-    };
+void toccata::DecisionTree::Clear() {
+    for (Decision *decision : m_decisions) {
+        delete decision;
+    }
 
+    m_decisions.clear();
+}
+
+std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPieces() {
     const int n = GetDecisionCount();
 
     std::vector<bool> isLeaf(n, true);
 
-    for (const Decision *decision : m_decisions) {
+    for (Decision *decision : m_decisions) {
+        GetDepth(decision);
+
         if (decision->ParentDecision != nullptr) {
             isLeaf[decision->ParentDecision->Index] = false;
         }
@@ -405,17 +383,33 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
         if (isLeaf[i]) ++leafCount;
     }
 
-    std::vector<Leaf> leaves(leafCount);
-    int j = 0;
+    std::vector<MatchedPiece> results;
+
     for (int i = 0; i < n; ++i) {
         if (!isLeaf[i]) continue;
-        leaves[j].Decision = m_decisions[i];
-        leaves[j].Depth = GetDepth(m_decisions[i]);
 
-        ++j;
+        MatchedPiece newPiece;
+        Decision *decision = m_decisions[i];
+
+        while (decision != nullptr) {
+            MatchedBar bar;
+            bar.MatchedBar = decision->MatchedBar;
+            bar.Start = decision->GetStart();
+            bar.End = decision->GetEnd();
+            bar.s = decision->s;
+            bar.t = decision->t;
+
+            newPiece.Bars.push_back(bar);
+
+            decision = decision->ParentDecision;
+        }
+
+        std::reverse(newPiece.Bars.begin(), newPiece.Bars.end());
+
+        results.push_back(newPiece);
     }
 
-    return std::vector<MatchedPiece>();
+    return results;
 }
 
 toccata::DecisionTree::Decision *toccata::DecisionTree::FindBestParent(const Decision *decision) const {

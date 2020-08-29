@@ -122,6 +122,7 @@ namespace toccata {
         int GetBranchStart(Decision *decision) const;
         int GetBranchEnd(Decision *decision);
 
+        void Clear();
         std::vector<MatchedPiece> GetPieces();
 
         void Prune();
