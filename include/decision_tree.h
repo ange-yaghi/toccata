@@ -47,6 +47,8 @@ namespace toccata {
             int Depth;
             Decision *ParentDecision;
 
+            std::vector<Decision *> OverlappingDecisions;
+
             double s;
             double t;
 
@@ -129,6 +131,11 @@ namespace toccata {
         void TriggerThreads();
         void WaitForThreads();
         void Integrate();
+
+        void UpdateDecision(Decision *target, Decision *source);
+        void DeleteDecision(Decision *decision);
+        void UpdateOverlapMatrix(Decision *decision);
+        void CleanOverlapMatrix(Decision *decision);
 
         Decision *FindBestParent(const Decision *decision) const;
 

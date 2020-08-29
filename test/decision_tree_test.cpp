@@ -274,12 +274,6 @@ TEST(DecisionTreeTest, SimilarSongs) {
 		}
 	}
 
-	tree.Prune();
-	tree.Prune();
-	tree.Prune();
-	tree.Prune();
-	tree.Prune();
-	tree.Prune();
 	tree.GetPieces();
 
 	EXPECT_EQ(longest, 3 * 32);

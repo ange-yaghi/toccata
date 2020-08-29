@@ -26,6 +26,8 @@ void toccata::DecisionTree::OnNoteChange(int changedNote) {
     int j = 0;
     for (int i = 0; i < decisionCount; ++i) {
         if (m_decisions[i]->GetEnd() >= changedNote) {
+            DeleteDecision(m_decisions[j]);
+
             m_decisions[j] = m_decisions[i];
             m_decisions[j]->Index = j;
 
@@ -175,6 +177,54 @@ void toccata::DecisionTree::Integrate() {
     }
 }
 
+void toccata::DecisionTree::UpdateDecision(Decision *target, Decision *source) {
+    target->AverageError = source->AverageError;
+    target->MappedNotes = source->MappedNotes;
+    target->Notes = source->Notes;
+    target->s = source->s;
+    target->t = source->t;
+    target->MatchedBar = source->MatchedBar;
+
+    InvalidateAfter(target->GetEnd());
+
+    UpdateOverlapMatrix(target);
+}
+
+void toccata::DecisionTree::DeleteDecision(Decision *decision) {
+    CleanOverlapMatrix(decision);
+}
+
+void toccata::DecisionTree::UpdateOverlapMatrix(Decision *d0) {
+    CleanOverlapMatrix(d0);
+
+    for (Decision *d1 : m_decisions) {
+        if (d0 == d1) continue;
+
+        const int minNoteCount = std::min(d0->MappedNotes, d1->MappedNotes);
+        const int overlap = (int)std::ceil(0.5 * minNoteCount);
+
+        if (d0->Overlapping(d1, overlap)) {
+            d0->OverlappingDecisions.push_back(d1);
+            d1->OverlappingDecisions.push_back(d0);
+        }
+    }
+}
+
+void toccata::DecisionTree::CleanOverlapMatrix(Decision *decision) {
+    for (Decision *overlap : decision->OverlappingDecisions) {
+        for (auto i = overlap->OverlappingDecisions.begin();
+            i != overlap->OverlappingDecisions.end(); ++i) 
+        {
+            if (*i == decision) {
+                overlap->OverlappingDecisions.erase(i);
+                break;
+            }
+        }
+    }
+
+    decision->OverlappingDecisions.clear();
+}
+
 void toccata::DecisionTree::Prune() {
     const int n = (int)m_decisions.size();
 
@@ -206,6 +256,7 @@ void toccata::DecisionTree::Prune() {
         }
     }
 
+    /*
     int newSize = 0;
     for (int i = 0; i < n; ++i) {
         const Decision *parent = m_decisions[i]->ParentDecision;
@@ -213,6 +264,8 @@ void toccata::DecisionTree::Prune() {
         bool deleted = false;
         if (parent != nullptr) {
             if (rightDepth[i] + 1 < rightDepth[parent->Index]) {
+                DeleteDecision(m_decisions[i]);
+
                 delete m_decisions[i];
                 m_decisions[i] = nullptr;
 
@@ -226,42 +279,23 @@ void toccata::DecisionTree::Prune() {
             ++newSize;
         }
     }
-
-    std::vector<std::vector<bool>> overlapping(newSize, std::vector<bool>(newSize, false));
-    for (int i = 0; i < newSize; ++i) {
-        for (int j = i + 1; j < newSize; ++j) {
-            const Decision *d0 = m_decisions[i];
-            const Decision *d1 = m_decisions[j];
-
-            const int minNoteCount = std::min(d0->MappedNotes, d1->MappedNotes);
-            const int overlap = (int)std::ceil(0.5 * minNoteCount);
-
-            if (d0->GetEnd() >= d1->GetStart() && d0->GetStart() <= d1->GetEnd()) {
-                if (d0->Overlapping(d1, overlap)) {
-                    overlapping[i][j] = overlapping[j][i] = true;
-                }
-            }
-        }
-    }
+    */
 
     int newSize0 = 0;
-    for (int i = 0; i < newSize; ++i) {
+    for (int i = 0; i < n; ++i) {
+        Decision *d0 = m_decisions[i];
+
         bool pruned = false;
 
-        for (int j = 0; j < newSize; ++j) {
-            if (i == j) continue;
-
-            const Decision *d0 = m_decisions[i];
-            const Decision *d1 = m_decisions[j];
-
-            if (overlapping[i][j] && rightDepth[d0->Index] < rightDepth[d1->Index]) {
+        for (Decision *d1: m_decisions[i]->OverlappingDecisions) {
+            if (rightDepth[d0->Index] < rightDepth[d1->Index]) {
                 pruned = true;
                 break;
             }
         }
 
-        if (pruned) continue;
-        m_decisions[newSize0++] = m_decisions[i];
+        if (pruned) DeleteDecision(m_decisions[i]);
+        else m_decisions[newSize0++] = m_decisions[i];
     }
 
     for (int i = 0; i < newSize0; ++i) {
@@ -425,14 +459,7 @@ bool toccata::DecisionTree::IntegrateDecision(Decision *decision) {
                 GetDepth(currentDecision) < GetDepth(decision))
             {
                 if (decision->IsBetterFitThan(currentDecision)) {
-                    currentDecision->AverageError = decision->AverageError;
-                    currentDecision->MappedNotes = decision->MappedNotes;
-                    currentDecision->Notes = decision->Notes;
-                    currentDecision->s = decision->s;
-                    currentDecision->t = decision->t;
-                    currentDecision->MatchedBar = decision->MatchedBar;
-
-                    InvalidateAfter(currentDecision->GetEnd());
+                    UpdateDecision(currentDecision, decision);
                 }
             }
 
@@ -448,6 +475,8 @@ bool toccata::DecisionTree::IntegrateDecision(Decision *decision) {
     m_decisions.push_back(decision);
 
     InvalidateAfter(decision->GetEnd());
+
+    UpdateOverlapMatrix(decision);
 
     return true;
 }
