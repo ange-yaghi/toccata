@@ -21,8 +21,24 @@ namespace toccata {
         static constexpr bool ForceMultithreaded = false;
 
     public:
+        struct MatchedBar {
+            const Bar *MatchedBar;
+
+            int Start;
+            int End;
+
+            double s;
+            double t;
+        };
+
+        struct MatchedPiece {
+            std::vector<MatchedBar> Bars;
+        };
+
         struct Decision {
             const Bar *MatchedBar;
+
+            int Index;
 
             std::set<int> Notes;
             int MappedNotes;
@@ -89,6 +105,7 @@ namespace toccata {
         Decision *GetDecision(int index) { return m_decisions[index]; }
         int GetDecisionCount() const { return (int)m_decisions.size(); }
 
+        void InvalidateAfter(int index);
         void OnNoteChange(int changedNote);
 
         void Initialize(int threadCount);
@@ -98,6 +115,14 @@ namespace toccata {
         void Process(int startIndex);
 
         int GetDepth(Decision *decision) const;
+        int GetBranchNoteCount(Decision *decision) const;
+        double GetBranchAverageError(Decision *decision) const;
+        int GetBranchStart(Decision *decision) const;
+        int GetBranchEnd(Decision *decision);
+
+        std::vector<MatchedPiece> GetPieces();
+
+        void Prune();
 
     protected:
         void DistributeWork();

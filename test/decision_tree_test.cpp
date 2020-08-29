@@ -237,3 +237,92 @@ TEST(DecisionTreeTest, NoteMistakes) {
 	tree.KillThreads();
 	tree.Destroy();
 }
+
+TEST(DecisionTreeTest, SimilarSongs) {
+	toccata::Library library;
+
+	toccata::SongGenerator songGenerator;
+
+	songGenerator.Seed(0);
+	songGenerator.GenerateSong(&library, 2, 32);
+
+	songGenerator.Seed(0);
+	songGenerator.GenerateSong(&library, 3, 32);
+
+	toccata::MusicSegment inputSegment;
+	inputSegment.Length = 0.0;
+
+	GenerateInput(library.GetBar(64), &inputSegment, 3 * 32, 0.0, 1.0, 0, 0);
+
+	toccata::DecisionTree tree;
+	tree.SetLibrary(&library);
+	tree.SetInputSegment(&inputSegment);
+	tree.Initialize(12);
+	tree.SpawnThreads();
+
+	const int n = inputSegment.NoteContainer.GetCount();
+	for (int i = 0; i < n; ++i) {
+		tree.Process(i);
+	}
+
+	int longest = -1;
+	for (int i = 0; i < tree.GetDecisionCount(); ++i) {
+		toccata::DecisionTree::Decision *d = tree.GetDecision(i);
+		int depth = tree.GetDepth(d);
+		if (depth > longest) {
+			longest = depth;
+		}
+	}
+
+	tree.Prune();
+	tree.Prune();
+	tree.Prune();
+	tree.Prune();
+	tree.Prune();
+	tree.Prune();
+	tree.GetPieces();
+
+	EXPECT_EQ(longest, 3 * 32);
+
+	tree.KillThreads();
+	tree.Destroy();
+}
+
+TEST(DecisionTreeTest, Repeat) {
+	toccata::Library library;
+
+	toccata::SongGenerator songGenerator;
+
+	songGenerator.Seed(0);
+	songGenerator.GenerateSong(&library, 2, 32);
+
+	toccata::MusicSegment inputSegment;
+	inputSegment.Length = 0.0;
+
+	GenerateInput(library.GetBar(0), &inputSegment, 3 * 32, 0.0, 1.0, 0, 0);
+
+	toccata::DecisionTree tree;
+	tree.SetLibrary(&library);
+	tree.SetInputSegment(&inputSegment);
+	tree.Initialize(12);
+	tree.SpawnThreads();
+
+	const int n = inputSegment.NoteContainer.GetCount();
+	for (int i = 0; i < n; ++i) {
+		tree.Process(i);
+	}
+
+	int longest = -1;
+	for (int i = 0; i < tree.GetDecisionCount(); ++i) {
+		toccata::DecisionTree::Decision *d = tree.GetDecision(i);
+		int depth = tree.GetDepth(d);
+		if (depth > longest) {
+			longest = depth;
+		}
+	}
+
+	EXPECT_EQ(longest, 3 * 32);
+
+	tree.KillThreads();
+	tree.Destroy();
+}

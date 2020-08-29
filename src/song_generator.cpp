@@ -14,7 +14,7 @@ void toccata::SongGenerator::GenerateSong(Library *library, int sections, int se
     Bar *previous = nullptr;
 
     std::uniform_int_distribution<int> randomNoteCount(1, 32);
-    int id = 0;
+    int id = library->GetBarCount();
 
     for (int i = 0; i < sections; ++i) {
         Bar *sectionStart = nullptr;
