@@ -391,6 +391,9 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
         if (!isLeaf[i]) continue;
 
         MatchedPiece newPiece;
+        newPiece.Start = INT_MAX;
+        newPiece.End = INT_MIN;
+
         Decision *decision = m_decisions[i];
 
         while (decision != nullptr) {
@@ -401,6 +404,9 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
             bar.s = decision->s;
             bar.t = decision->t;
 
+            newPiece.Start = std::min(bar.Start, newPiece.Start);
+            newPiece.End = std::max(bar.End, newPiece.End);
+
             newPiece.Bars.push_back(bar);
 
             decision = decision->ParentDecision;
@@ -410,6 +416,42 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
 
         results.push_back(newPiece);
     }
+
+    std::sort(results.begin(), results.end(),
+        [](MatchedPiece &a, MatchedPiece &b) {
+            return (a.End - a.Start + 1) > (b.End - b.Start + 1);
+        });
+
+    int pieceCount = (int)results.size();
+    std::vector<bool> filtered(pieceCount, false);
+    for (int i = 0; i < pieceCount; ++i) {
+        MatchedPiece &piece0 = results[i];
+        const int length0 = piece0.End - piece0.Start + 1;
+
+        for (int j = i + 1; j < pieceCount; ++j) {
+            MatchedPiece &piece1 = results[j];
+            const int length1 = piece1.End - piece1.Start + 1;
+
+            const int start = std::max(piece0.Start, piece1.Start);
+            const int end = std::min(piece0.End, piece1.End);
+
+            const int overlap = std::max(0, end - start + 1);
+            const int overlapThreshold = std::ceil(0.25 * std::min(length0, length1));
+
+            if (overlap >= overlapThreshold) {
+                filtered[j] = true;
+            }
+        }
+    }
+
+    int newSize = 0;
+    for (int i = 0; i < pieceCount; ++i) {
+        if (filtered[i]) continue;
+
+        results[newSize++] = results[i];
+    }
+
+    results.resize(newSize);
 
     return results;
 }
@@ -434,9 +476,17 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::FindBestParent(const Dec
 
             if (isOverlapping) continue;
 
-            if (!prev->MatchedBar->FindNext(decision->MatchedBar, 1)) {
+            const int nextOffset = prev->MatchedBar->FindNext(decision->MatchedBar, 1);
+            if (nextOffset == -1) {
                 continue;
             }
+
+            const int margin = std::ceil(nextOffset * 1.25 + 4);
+
+            const int distance = decision->GetStart() - prev->GetEnd();
+            const int delta = std::abs(nextOffset - distance);
+
+            if (delta > margin) continue;
 
             const int depth = GetDepth(prev);
             if (best == nullptr || depth > bestDepth || prev->GetEnd() > best->GetEnd()) {

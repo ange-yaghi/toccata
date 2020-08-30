@@ -32,6 +32,9 @@ namespace toccata {
         };
 
         struct MatchedPiece {
+            int Start;
+            int End;
+
             std::vector<MatchedBar> Bars;
         };
 
