@@ -29,7 +29,7 @@ int GenerateInput(
 		if (current->GetNextCount() > 1) {
 			current = current->GetNext(1);
 		}
-		else {
+		else if (current->GetNextCount() == 1) {
 			current = current->GetNext(0);
 		}
 	}

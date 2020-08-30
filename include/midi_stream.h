@@ -10,6 +10,18 @@ namespace toccata {
 
     class MidiStream {
     public:
+        enum class KeyEvent {
+            On,
+            Length
+        };
+
+        struct MidiEvent {
+            KeyEvent Event;
+            int Key;
+            unsigned int Timestamp0;
+            unsigned int Timestamp1;
+        };
+
         enum class TimeFormat {
             Metrical,
             TimeCode
@@ -29,9 +41,14 @@ namespace toccata {
         const MidiNote &GetNote(int i) const { return m_notes[i]; }
         int GetNoteCount() const { return (int)m_notes.size(); }
 
+        void ClearEvents();
+        void AddEvent(const MidiEvent &newEvent) { m_events.push_back(newEvent); }
+        int GetEventCount() const;
+        MidiEvent GetEvent(int index) const;
+
         bool IsMetrical() const { return m_timeFormat == TimeFormat::Metrical; }
         int GetTicksPerQuarterNote() const { return m_ticksPerQuarterNote; }
-
+        
         unsigned int GetBarLength() const;
 
         void Sort();
@@ -69,6 +86,7 @@ namespace toccata {
 
     protected:
         std::vector<MidiNote> m_notes;
+        std::vector<MidiEvent> m_events;
     };
 
 } /* namespace toccata */

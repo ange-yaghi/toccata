@@ -8,6 +8,7 @@
 #include <mutex>
 #include <atomic>
 #include <thread>
+#include <vector>
 
 namespace toccata {
 
@@ -29,6 +30,8 @@ namespace toccata {
         bool IsComplete() { return m_complete; }
 
         DecisionTree *GetTree() { return &m_tree; }
+
+        std::vector<DecisionTree::MatchedPiece> GetPieces();
 
     protected:
         std::mutex m_bufferLock;

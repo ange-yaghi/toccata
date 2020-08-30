@@ -10,6 +10,9 @@ toccata::MidiHandler::MidiHandler() {
 
     // 120 bpm = 500000 us per quarter note
     m_buffer.SetRawTempo(500000);
+
+    m_timestampOffset = 0;
+    m_lastTimestamp = 0;
 }
 
 toccata::MidiHandler::~MidiHandler() {
@@ -23,7 +26,7 @@ toccata::MidiHandler *toccata::MidiHandler::Get() {
 }
 
 void toccata::MidiHandler::Extract(MidiStream *targetBuffer) {
-    LockBuffer();
+    m_bufferLock.lock();
 
     const int noteCount = m_buffer.GetNoteCount();
     for (int i = 0; i < noteCount; ++i) {
@@ -34,27 +37,31 @@ void toccata::MidiHandler::Extract(MidiStream *targetBuffer) {
         }
     }
 
+    const int eventCount = m_buffer.GetEventCount();
+    for (int i = 0; i < eventCount; ++i) {
+        targetBuffer->AddEvent(m_buffer.GetEvent(i));
+    }
+
+    m_buffer.ClearEvents();
     m_buffer.ClearCommittedNotes();
 
-    UnlockBuffer();
-}
-
-void toccata::MidiHandler::LockBuffer() {
-    m_bufferLock.lock();
-}
-
-void toccata::MidiHandler::UnlockBuffer() {
     m_bufferLock.unlock();
 }
 
 void toccata::MidiHandler::ProcessEvent(int status, int midiByte1, int midiByte2, unsigned long timestamp) {
-    LockBuffer();
+    m_bufferLock.lock();
 
-    m_buffer.ProcessMidiEvent(status, midiByte1, midiByte2, timestamp);
+    m_lastTimestamp = timestamp;
 
-    UnlockBuffer();
+    m_buffer.ProcessMidiEvent(status, midiByte1, midiByte2, timestamp + m_timestampOffset);
+
+    m_bufferLock.unlock();
 }
 
 void toccata::MidiHandler::ProcessMidiTick(unsigned long timestamp) {
     /* void */
+}
+
+void toccata::MidiHandler::AlignTimestampOffset() {
+    m_timestampOffset = m_lastTimestamp;
 }

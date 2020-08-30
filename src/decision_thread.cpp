@@ -68,3 +68,15 @@ void toccata::DecisionThread::AddNote(const MusicPoint &point) {
 
     m_bufferLock.unlock();
 }
+
+std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionThread::GetPieces() {
+    std::vector<toccata::DecisionTree::MatchedPiece> result;
+    
+    m_bufferLock.lock();
+
+    result = m_tree.GetPieces();
+
+    m_bufferLock.unlock();
+
+    return result;
+}

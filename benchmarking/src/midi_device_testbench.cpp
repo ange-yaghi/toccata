@@ -2,6 +2,7 @@
 
 #include "../../include/midi_handler.h"
 #include "../../include/midi_device_system.h"
+#include "../../include/song_generator.h"
 
 #include <iostream>
 
@@ -14,6 +15,8 @@ toccata::MidiDeviceTestbench::~MidiDeviceTestbench() {
 }
 
 void toccata::MidiDeviceTestbench::Run() {
+    InitializeDecisionThread();
+
     MidiDeviceSystem system;
     system.Refresh();
 
@@ -51,16 +54,33 @@ void toccata::MidiDeviceTestbench::Run() {
         if (!system.IsConnected()) {
             const bool reconnected = system.Reconnect();
             if (reconnected) {
+                toccata::MidiHandler::Get()->AlignTimestampOffset();
                 std::wcout << "Reconnected to " << system.GetLastDeviceName() << "\n";
             }
         }
 
         ProcessMidiInput();
+        std::vector<DecisionTree::MatchedPiece> pieces = m_decisionThread.GetPieces();
+
+        std::cout << "Pieces: " << pieces.size() << "               \r";
     }
 }
 
+void toccata::MidiDeviceTestbench::InitializeDecisionThread() {
+    toccata::SongGenerator songGenerator;
+}
+
 void toccata::MidiDeviceTestbench::InitializeMidiInput() {
-    
+    const std::string path = "../../test/midi/simple_passage.midi";
+
+    toccata::MidiStream stream;
+    toccata::MidiFile midiFile;
+    midiFile.Read(path.c_str(), &stream);
+
+    toccata::SegmentGenerator::Convert(&stream, &m_library, 0);
+
+    m_decisionThread.Initialize(&m_library, 12);
+    m_decisionThread.StartThreads();
 }
 
 void toccata::MidiDeviceTestbench::ProcessMidiInput() {
@@ -70,6 +90,17 @@ void toccata::MidiDeviceTestbench::ProcessMidiInput() {
     const int noteCount = targetStream.GetNoteCount();
     for (int i = 0; i < noteCount; ++i) {
         const MidiNote &note = targetStream.GetNote(i);
-        std::cout << "{ key=" << note.MidiKey << ", vel=" << note.Velocity << ", len=" << note.NoteLength << " }\n";
+        std::cout
+            << "{ key=" << note.MidiKey 
+            << ", vel=" << note.Velocity
+            << ", len=" << note.NoteLength 
+            << ", offset=" << note.Timestamp << " }\n";
+
+        MusicPoint point;
+        point.Pitch = note.MidiKey;
+        point.Timestamp = (double)note.Timestamp;
+        point.Velocity = note.Velocity;
+        point.Length = 0.0;
+        m_decisionThread.AddNote(point);
     }
 }

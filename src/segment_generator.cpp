@@ -28,9 +28,8 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
     for (int i = 0; i < n; ++i) {
         const MidiNote &note = midi->GetNote(i);
 
-        unsigned int timestamp = note.Timestamp + offset;
+        const unsigned int timestamp = note.Timestamp + offset;
 
-        const unsigned int barStart = barIndex * barLength;
         const unsigned int barBoundary = (barIndex + 1) * barLength;
         if (note.Timestamp >= barBoundary) {
             Bar *previous = currentBar;
@@ -43,6 +42,8 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
 
             currentSegment->Length = 1.0;
             currentBar->SetSegment(currentSegment);
+
+            ++barIndex;
         }
 
         if (currentSegment == nullptr) {
@@ -53,6 +54,7 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
             currentBar->SetSegment(currentSegment);
         }
 
+        const unsigned int barStart = barIndex * barLength;
         const unsigned int noteStart = timestamp - barStart;
 
         MusicPoint point;

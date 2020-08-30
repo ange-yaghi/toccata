@@ -37,7 +37,7 @@ void toccata::MidiStream::SetTimeCodeTimeFormat(
 }
 
 unsigned int toccata::MidiStream::GetBarLength() const {
-    return (GetTicksPerQuarterNote() * GetTimeSignatureNumerator() / 4) * GetTimeSignatureDenominator();
+    return ((GetTicksPerQuarterNote() * GetTimeSignatureNumerator()) / 4) * GetTimeSignatureDenominator();
 }
 
 double toccata::MidiStream::GetTempo() const {
@@ -59,6 +59,18 @@ void toccata::MidiStream::ClearCommittedNotes() {
     }
 }
 
+void toccata::MidiStream::ClearEvents() {
+    m_events.clear();
+}
+
+int toccata::MidiStream::GetEventCount() const {
+    return (int)m_events.size();
+}
+
+toccata::MidiStream::MidiEvent toccata::MidiStream::GetEvent(int index) const {
+    return m_events[index];
+}
+
 void toccata::MidiStream::ProcessMidiEvent(
     int status, int byte1, int byte2, unsigned int timestamp, MusicPoint::Hand hand)
 {
@@ -77,15 +89,31 @@ void toccata::MidiStream::ProcessMidiEvent(
             newNote.Valid = false;
 
             AddNote(newNote);
+
+            MidiEvent newEvent;
+            newEvent.Event = KeyEvent::On;
+            newEvent.Timestamp0 = timestamp;
+            newEvent.Timestamp1 = timestamp;
+            newEvent.Key = key;
+
+            m_events.push_back(newEvent);
         }
         else {
             // Note is released
-            int lastNote = GetPreviousNote(key, timestamp);
+            const int lastNote = GetPreviousNote(key, timestamp);
 
             if (lastNote != -1) {
                 m_notes[lastNote].NoteLength = timestamp - m_notes[lastNote].Timestamp;
                 m_notes[lastNote].Valid = true;
             }
+
+            MidiEvent newEvent;
+            newEvent.Event = KeyEvent::On;
+            newEvent.Timestamp0 = m_notes[lastNote].Timestamp;
+            newEvent.Timestamp1 = timestamp;
+            newEvent.Key = key;
+
+            m_events.push_back(newEvent);
         }
     }
 }
@@ -93,11 +121,11 @@ void toccata::MidiStream::ProcessMidiEvent(
 int toccata::MidiStream::GetPreviousNote(unsigned int midiNote, unsigned int timestamp) {
     unsigned int smallestDistance = UINT_MAX;
     int closest = -1;
-    int n = (int)m_notes.size();
+    const int n = (int)m_notes.size();
 
     for (int i = 0; i < n; ++i) {
         if (m_notes[i].Timestamp < timestamp && m_notes[i].MidiKey == midiNote) {
-            unsigned int diff = timestamp - m_notes[i].Timestamp;
+            const unsigned int diff = timestamp - m_notes[i].Timestamp;
 
             if (diff < smallestDistance) {
                 smallestDistance = diff;

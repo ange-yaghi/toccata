@@ -34,6 +34,8 @@ void toccata::DecisionTree::OnNoteChange(int changedNote) {
             ++j;
         }
     }
+
+    m_decisions.resize(j);
 }
 
 void toccata::DecisionTree::Initialize(int threadCount) {
@@ -422,15 +424,22 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::FindBestParent(const Dec
 
         if (prev == decision) continue;
         else if (prev->GetEnd() < decision->GetEnd()) {
-            if (!prev->MatchedBar->FindNext(decision->MatchedBar, 1) && 
-                !decision->MatchedBar->FindNext(prev->MatchedBar, 1)) 
-            {
+            bool isOverlapping = false;
+            for (Decision *overlapping : prev->OverlappingDecisions) {
+                if (overlapping == decision) {
+                    isOverlapping = true;
+                    break;
+                }
+            }
+
+            if (isOverlapping) continue;
+
+            if (!prev->MatchedBar->FindNext(decision->MatchedBar, 1)) {
                 continue;
             }
 
             const int depth = GetDepth(prev);
-
-            if (depth > bestDepth) {
+            if (best == nullptr || depth > bestDepth || prev->GetEnd() > best->GetEnd()) {
                 best = prev;
                 bestDepth = depth;
             }

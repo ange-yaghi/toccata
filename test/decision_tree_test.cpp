@@ -300,3 +300,39 @@ TEST(DecisionTreeTest, Repeat) {
 	tree.KillThreads();
 	tree.Destroy();
 }
+
+TEST(DecisionTreeTest, SimpleStructure) {
+	const std::string path = "../../../test/midi/simple_passage.midi";
+
+	toccata::Library library;
+
+	toccata::MidiStream stream;
+	toccata::MidiFile midiFile;
+	midiFile.Read(path.c_str(), &stream);
+
+	toccata::SegmentGenerator::Convert(&stream, &library, 0);
+
+	toccata::MusicSegment inputSegment;
+	inputSegment.Length = 0.0;
+
+	GenerateInput(library.GetBar(0), &inputSegment, 3, 0.0, 1.0, 0, 0);
+
+	toccata::DecisionTree tree;
+	tree.SetLibrary(&library);
+	tree.SetInputSegment(&inputSegment);
+	tree.Initialize(1);
+	tree.SpawnThreads();
+
+	const int n = inputSegment.NoteContainer.GetCount();
+	for (int i = 0; i < n; ++i) {
+		tree.Process(i);
+	}
+
+	auto results = tree.GetPieces();
+
+	EXPECT_EQ(results.size(), 1);
+	EXPECT_EQ(results[0].Bars.size(), 3);
+
+	tree.KillThreads();
+	tree.Destroy();
+}
