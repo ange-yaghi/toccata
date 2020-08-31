@@ -52,6 +52,7 @@ namespace toccata {
 
             std::vector<Decision *> OverlappingDecisions;
 
+            bool Singular;
             double s;
             double t;
 

@@ -31,6 +31,7 @@ namespace toccata {
 
         struct Result {
             Comparator::Result Fit;
+            bool Singular;
             double s;
             double t;
         };

@@ -1,9 +1,13 @@
 #include "../include/application.h"
 
+#include "../include/midi_stream.h"
+#include "../include/midi_handler.h"
+#include "../include/midi_file.h"
+#include "../include/segment_generator.h"
+#include "../include/transform.h"
+
 toccata::Application::Application() {
-    m_demoTexture = nullptr;
-    m_currentRotation = 0.0f;
-    m_temperature = 0.0f;
+    /* void */
 }
 
 toccata::Application::~Application() {
@@ -42,109 +46,147 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
 
     m_engine.CreateGameWindow(settings);
 
-    m_engine.SetClearColor(ysColor::srgbiToLinear(0x34, 0x98, 0xdb));
+    m_engine.SetClearColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
 
     m_assetManager.SetEngine(&m_engine);
 
-    m_assetManager.LoadTexture((assetPath + "/chicken.png").c_str(), "Chicken");
-    m_demoTexture = m_assetManager.GetTexture("Chicken")->GetTexture();
-
-    m_assetManager.CompileInterchangeFile((assetPath + "/icosphere").c_str(), 1.0f, true);
-    m_assetManager.LoadSceneFile((assetPath + "/icosphere").c_str(), true);
-
     m_engine.SetCameraMode(dbasic::DeltaEngine::CameraMode::Target);
+
+    m_midiDisplay.Initialize(&m_engine);
 }
 
 void toccata::Application::Process() {
-    if (m_engine.IsKeyDown(ysKeyboard::KEY_SPACE)) {
-        m_currentRotation += m_engine.GetFrameLength();
-    }
+    int windowWidth, windowHeight;
+    windowWidth = m_engine.GetScreenWidth();
+    windowHeight = m_engine.GetScreenHeight();
 
-    if (m_engine.IsKeyDown(ysKeyboard::KEY_UP)) {
-        m_temperature += m_engine.GetFrameLength() * 0.5f;
-    }
-    else if (m_engine.IsKeyDown(ysKeyboard::KEY_DOWN)) {
-        m_temperature -= m_engine.GetFrameLength() * 0.5f;
-    }
-
-    if (m_temperature < 0.0f) m_temperature = 0.0f;
-    if (m_temperature > 1.0f) m_temperature = 1.0f;
+    m_midiDisplay.SetKeyRangeStart(0);
+    m_midiDisplay.SetKeyRangeEnd(88);
+    m_midiDisplay.SetSize(ysMath::LoadVector(windowWidth, windowHeight * 0.8));
+    m_midiDisplay.SetInputSegment(&m_testSegment);
+    m_midiDisplay.SetReferenceSegment(&m_referenceSegment);
+    m_midiDisplay.SetTimeOffset(0.0);
+    m_midiDisplay.SetTimeRange(10.0);
 }
 
 void toccata::Application::Render() {
-    m_engine.SetCameraPosition(ysMath::LoadVector(4.0f, 4.0f, 2.0f));
-    m_engine.SetCameraUp(ysMath::Constants::ZAxis);
+    m_midiDisplay.Render();
+}
 
-    m_engine.ResetLights();
-    m_engine.SetAmbientLight(ysMath::GetVector4(ysColor::srgbiToLinear(0x34, 0x98, 0xdb)));
+void toccata::Application::ProcessMidiInput() {
+    MidiStream targetStream;
+    MidiHandler::Get()->Extract(&targetStream);
 
-    dbasic::Light light;
-    light.Active = 1;
-    light.Attenuation0 = 0.0f;
-    light.Attenuation1 = 0.0f;
-    light.Color = ysVector4(0.85f, 0.85f, 0.8f, 1.0f);
-    light.Direction = ysVector4(0.0f, 0.0f, 0.0f, 0.0f);
-    light.FalloffEnabled = 0;
-    light.Position = ysVector4(10.0f, 10.0f, 10.0f);
-    m_engine.AddLight(light);
+    const int noteCount = targetStream.GetNoteCount();
+    for (int i = 0; i < noteCount; ++i) {
+        const MidiNote &note = targetStream.GetNote(i);
+        MusicPoint point;
+        point.Pitch = note.MidiKey;
+        point.Timestamp = (double)note.Timestamp / 1000.0;
+        point.Velocity = note.Velocity;
+        point.Length = note.NoteLength / 1000.0;
+        m_decisionThread.AddNote(point);
+        m_testSegment.NoteContainer.AddPoint(point);
+    }
+}
 
-    dbasic::Light light2;
-    light2.Active = 1;
-    light2.Attenuation0 = 0.0f;
-    light2.Attenuation1 = 0.0f;
-    light2.Color = ysVector4(0.3f, 0.3f, 0.5f, 1.0f);
-    light2.Direction = ysVector4(0.0f, 0.0f, 0.0f, 0.0f);
-    light2.FalloffEnabled = 0;
-    light2.Position = ysVector4(-10.0f, 10.0f, 10.0f);
-    m_engine.AddLight(light2);
+void toccata::Application::CheckMidiStatus() {
+    const bool connected = m_midiSystem.IsConnected();
+    const bool status = m_midiSystem.Refresh();
+    if (!status) {
+        if (m_midiSystem.GetLastErrorCode() == MidiDeviceSystem::ErrorCode::DeviceListChangedDuringUpdate) {
 
-    dbasic::Light glow;
-    glow.Active = 1;
-    glow.Attenuation0 = 0.0f;
-    glow.Attenuation1 = 0.0f;
-    glow.Color = ysVector4(5.0f * m_temperature, 0.0f, 0.0f, 1.0f);
-    glow.Direction = ysVector4(0.0f, 0.0f, 0.0f, 0.0f);
-    glow.FalloffEnabled = 1;
-    glow.Position = ysVector4(0.0f, 0.0f, 0.0f);
-    m_engine.AddLight(glow);
+        }
+        else {
+            // TODO
+        }
+    }
 
-    ysMatrix rotationTurntable = ysMath::RotationTransform(ysMath::Constants::ZAxis, m_currentRotation); 
+    if (connected) {
+        ProcessMidiInput();
+    }
+    else {
+        const bool reconnected = m_midiSystem.Reconnect();
+        if (reconnected) {
+            toccata::MidiHandler::Get()->AlignTimestampOffset();
+        }
+    }
+}
 
-    m_engine.ResetBrdfParameters();
-    m_engine.SetMetallic(0.8f); 
-    m_engine.SetIncidentSpecular(0.8f);
-    m_engine.SetSpecularRoughness(0.7f);
-    m_engine.SetSpecularMix(1.0f);
-    m_engine.SetDiffuseMix(1.0f); 
-    m_engine.SetEmission(ysMath::Mul(ysColor::srgbiToLinear(0xff, 0x0, 0x0), ysMath::LoadScalar(m_temperature))); 
-    m_engine.SetBaseColor(ysColor::srgbiToLinear(0x34, 0x49, 0x5e));
-    m_engine.SetObjectTransform(ysMath::MatMult(ysMath::TranslationTransform(ysMath::LoadVector(0.0f, 0.0f, 0.0f)), rotationTurntable));
-    m_engine.DrawModel(m_assetManager.GetModelAsset("Icosphere"), 1.0f, nullptr);
+void toccata::Application::ConstructReferenceNotes() {
+    m_referenceSegment.NoteContainer.Clear();
 
-    m_engine.ResetBrdfParameters();
-    m_engine.SetMetallic(0.0f);
-    m_engine.SetIncidentSpecular(0.0f);
-    m_engine.SetSpecularRoughness(0.8f);
-    m_engine.SetSpecularMix(0.1f);
-    m_engine.SetDiffuseMix(1.0f);
-    m_engine.SetBaseColor(ysColor::srgbiToLinear(0xbd, 0xc3, 0xc7));
-    m_engine.SetObjectTransform(ysMath::MatMult(ysMath::TranslationTransform(ysMath::LoadVector(0.0f, 0.0f, 0.0f)), rotationTurntable));
-    m_engine.SetObjectTransform(ysMath::MatMult(ysMath::TranslationTransform(ysMath::LoadVector(0.0f, 0.0f, -1.0f)), rotationTurntable));
-    m_engine.DrawModel(m_assetManager.GetModelAsset("Floor"), 1.0f, nullptr);
+    auto pieces = m_decisionThread.GetPieces();
+    for (const DecisionTree::MatchedPiece &piece : pieces) {
+        for (const DecisionTree::MatchedBar &bar : piece.Bars) {
+            MusicSegment *segment = bar.MatchedBar->GetSegment();
+            const int n = segment->NoteContainer.GetCount();
+
+            for (int i = 0; i < n; ++i) {
+                const MusicPoint &reference = segment->NoteContainer.GetPoints()[i];
+
+                MusicPoint newPoint;
+                newPoint.Length = Transform::inv_f(reference.Length, bar.s, 0.0);
+                newPoint.Timestamp = Transform::inv_f(reference.Timestamp, bar.s, bar.t);
+                newPoint.Pitch = reference.Pitch;
+                newPoint.Velocity = reference.Velocity;
+
+                m_referenceSegment.NoteContainer.AddPoint(newPoint);
+            }
+        }
+    }
 }
 
 void toccata::Application::Run() {
+    InitializeMidiInput();
+    InitializeLibrary();
+    InitializeDecisionThread();
+
     while (m_engine.IsOpen()) {
         m_engine.StartFrame();
+
+        CheckMidiStatus();
+        ConstructReferenceNotes();
 
         Process();
         Render();
 
         m_engine.EndFrame();
     }
+
+    m_decisionThread.KillThreads();
+    m_decisionThread.Destroy();
 }
 
 void toccata::Application::Destroy() {
     m_assetManager.Destroy();
     m_engine.Destroy();
+}
+
+void toccata::Application::InitializeLibrary() {
+    const std::string path = "../../test/midi/simple_passage.midi";
+
+    toccata::MidiStream stream;
+    toccata::MidiFile midiFile;
+    midiFile.Read(path.c_str(), &stream);
+
+    toccata::SegmentGenerator::Convert(&stream, &m_library, 0);
+}
+
+void toccata::Application::InitializeDecisionThread() {
+    m_decisionThread.Initialize(&m_library, 12);
+    m_decisionThread.StartThreads();
+}
+
+void toccata::Application::InitializeMidiInput() {
+    m_midiSystem.Refresh();
+
+    const bool connectSuccess = m_midiSystem.Connect(1);
+
+    if (connectSuccess) {
+        // TODO
+    }
+    else {
+        // TODO
+    }
 }

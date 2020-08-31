@@ -62,7 +62,11 @@ void toccata::MidiDeviceTestbench::Run() {
         ProcessMidiInput();
         std::vector<DecisionTree::MatchedPiece> pieces = m_decisionThread.GetPieces();
 
-        std::cout << "Pieces: " << pieces.size() << "               \r";
+        for (DecisionTree::MatchedPiece &piece : pieces) {
+            std::cout << "[" << piece.Start << " -> " << piece.End << " // " << piece.Bars.size() << "]";
+        }
+
+        std::cout << "                                          \r";
     }
 }
 
@@ -91,9 +95,9 @@ void toccata::MidiDeviceTestbench::ProcessMidiInput() {
     for (int i = 0; i < noteCount; ++i) {
         const MidiNote &note = targetStream.GetNote(i);
         std::cout
-            << "{ key=" << note.MidiKey 
+            << "{ key=" << note.MidiKey
             << ", vel=" << note.Velocity
-            << ", len=" << note.NoteLength 
+            << ", len=" << note.NoteLength
             << ", offset=" << note.Timestamp << " }\n";
 
         MusicPoint point;

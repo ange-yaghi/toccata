@@ -186,6 +186,7 @@ void toccata::DecisionTree::UpdateDecision(Decision *target, Decision *source) {
     target->s = source->s;
     target->t = source->t;
     target->MatchedBar = source->MatchedBar;
+    target->Singular = source->Singular;
 
     InvalidateAfter(target->GetEnd());
 
@@ -390,19 +391,39 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
     for (int i = 0; i < n; ++i) {
         if (!isLeaf[i]) continue;
 
+        Decision *decision = m_decisions[i];
+        float s_avg = 0.0;
+        int s_samples = 0;
+        while (decision != nullptr) {
+            if (!decision->Singular) {
+                s_avg += decision->s;
+                ++s_samples;
+            }
+
+            decision = decision->ParentDecision;
+        }
+
+        s_avg /= s_samples;
+
         MatchedPiece newPiece;
         newPiece.Start = INT_MAX;
         newPiece.End = INT_MIN;
 
-        Decision *decision = m_decisions[i];
-
+        decision = m_decisions[i];
         while (decision != nullptr) {
             MatchedBar bar;
             bar.MatchedBar = decision->MatchedBar;
             bar.Start = decision->GetStart();
             bar.End = decision->GetEnd();
-            bar.s = decision->s;
-            bar.t = decision->t;
+
+            if (decision->Singular) {
+                bar.s = s_avg;
+                bar.t = decision->t * s_avg;
+            }
+            else {
+                bar.s = decision->s;
+                bar.t = decision->t;
+            }
 
             newPiece.Start = std::min(bar.Start, newPiece.Start);
             newPiece.End = std::max(bar.End, newPiece.End);
@@ -452,6 +473,11 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
     }
 
     results.resize(newSize);
+
+    std::sort(results.begin(), results.end(),
+        [](MatchedPiece &a, MatchedPiece &b) {
+            return a.End < b.End;
+        });
 
     return results;
 }
@@ -602,6 +628,7 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::Match(
     newDecision->Notes = mappedNotes;
     newDecision->MappedNotes = result.Fit.MappedNotes;
     newDecision->MatchedBar = reference;
+    newDecision->Singular = result.Singular;
 
     return newDecision;
 }

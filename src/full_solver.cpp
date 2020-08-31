@@ -115,6 +115,7 @@ bool toccata::FullSolver::Solve(const Request &request, Result *result) {
 	{
 		result->s = refinedSolution.s;
 		result->t = refinedSolution.t;
+		result->Singular = refinedSolution.Singularity;
 		return true;
 	}
 	else return false;
