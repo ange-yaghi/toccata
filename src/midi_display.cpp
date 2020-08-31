@@ -1,5 +1,7 @@
 #include "../include/midi_display.h"
 
+#include "../include/transform.h"
+
 toccata::MidiDisplay::MidiDisplay() {
     m_engine = nullptr;
     m_position = ysMath::Constants::Zero;
@@ -116,6 +118,36 @@ void toccata::MidiDisplay::Render() {
         m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
 
         m_engine->DrawBox(noteWidth, channelHeight * 0.333f);
+    }
+
+    for (MatchedBar &bar : m_bars) {
+        const float length = bar.Bar.MatchedBar->GetSegment()->Length;
+        const float start = Transform::inv_f(0.0, bar.Bar.s, bar.Bar.t);
+        const float end = Transform::inv_f(length, bar.Bar.s, bar.Bar.t);
+
+        if (start >= m_timeOffset && start <= m_timeOffset + m_timeRange) {
+            const float x_offset = ((start - m_timeOffset) / m_timeRange) * width;
+            const ysVector positionStart = ysMath::LoadVector(x_offset + start_x, ysMath::GetY(m_position));
+
+            m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
+            m_engine->SetObjectTransform(ysMath::TranslationTransform(positionStart));
+            m_engine->SetLit(false);
+            m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
+
+            m_engine->DrawBox(2.0, height);
+        }
+
+        if (end >= m_timeOffset && end <= m_timeOffset + m_timeRange) {
+            const float x_offset = ((end - m_timeOffset) / m_timeRange) * width;
+            const ysVector positionEnd = ysMath::LoadVector(x_offset + start_x, ysMath::GetY(m_position));
+
+            m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
+            m_engine->SetObjectTransform(ysMath::TranslationTransform(positionEnd));
+            m_engine->SetLit(false);
+            m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0xFF));
+
+            m_engine->DrawBox(2.0, height);
+        }
     }
 }
 

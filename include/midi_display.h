@@ -2,12 +2,18 @@
 #define TOCCATA_UI_MIDI_DISPLAY_H
 
 #include "music_segment.h"
+#include "decision_tree.h"
 
 #include "delta.h"
 
 namespace toccata {
 
     class MidiDisplay {
+    public:
+        struct MatchedBar {
+            DecisionTree::MatchedBar Bar;
+        };
+
     public:
         MidiDisplay();
         ~MidiDisplay();
@@ -43,6 +49,9 @@ namespace toccata {
         void SetTimeOffset(double offset) { m_timeOffset = offset; }
         double GetTimeOffset() const { return m_timeOffset; }
 
+        void ClearBars() { m_bars.clear(); }
+        void AddBar(const DecisionTree::MatchedBar &bar) { m_bars.push_back({ bar }); }
+
     protected:
         ysVector m_position;
         ysVector m_size;
@@ -57,6 +66,8 @@ namespace toccata {
 
         MusicSegment *m_inputSegment;
         MusicSegment *m_referenceSegment;
+
+        std::vector<MatchedBar> m_bars;
     };
 
 } /* namespace toccata */

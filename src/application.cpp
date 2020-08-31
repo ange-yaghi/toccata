@@ -116,9 +116,13 @@ void toccata::Application::CheckMidiStatus() {
 void toccata::Application::ConstructReferenceNotes() {
     m_referenceSegment.NoteContainer.Clear();
 
+    m_midiDisplay.ClearBars();
+
     auto pieces = m_decisionThread.GetPieces();
     for (const DecisionTree::MatchedPiece &piece : pieces) {
         for (const DecisionTree::MatchedBar &bar : piece.Bars) {
+            m_midiDisplay.AddBar(bar);
+
             MusicSegment *segment = bar.MatchedBar->GetSegment();
             const int n = segment->NoteContainer.GetCount();
 
