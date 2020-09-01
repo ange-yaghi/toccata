@@ -5,6 +5,7 @@
 #include "../include/midi_file.h"
 #include "../include/segment_generator.h"
 #include "../include/transform.h"
+#include "../include/midi_callback.h"
 
 #include <sstream>
 
@@ -82,6 +83,8 @@ void toccata::Application::Process() {
     m_midiDisplay.SetReferenceSegment(&m_referenceSegment);
     m_midiDisplay.SetTimeOffset(windowStart);
     m_midiDisplay.SetTimeRange(10.0);
+
+    MockMidiInput();
 }
 
 void toccata::Application::Render() {
@@ -93,6 +96,27 @@ void toccata::Application::Render() {
 
     m_engine.GetConsole()->MoveToOrigin();
     m_engine.GetConsole()->DrawGeneralText(ss.str().c_str());
+}
+
+void toccata::Application::MockMidiInput() {
+    MockMidiKey(ysKeyboard::KEY_A, 48);
+    MockMidiKey(ysKeyboard::KEY_S, 50);
+    MockMidiKey(ysKeyboard::KEY_D, 52);
+    MockMidiKey(ysKeyboard::KEY_F, 53);
+    MockMidiKey(ysKeyboard::KEY_G, 55);
+    MockMidiKey(ysKeyboard::KEY_H, 57);
+
+}
+
+void toccata::Application::MockMidiKey(ysKeyboard::KEY_CODE key, int midiKey) {
+    const unsigned int timestamp = std::round(m_currentOffset * 1000);
+
+    if (m_engine.ProcessKeyDown(key)) {
+        MidiHandler::Get()->ProcessEvent(0x9, midiKey, 100, timestamp);
+    }
+    else if (m_engine.ProcessKeyUp(key)) {
+        MidiHandler::Get()->ProcessEvent(0x8, midiKey, 0, timestamp);
+    }
 }
 
 void toccata::Application::ProcessMidiInput() {
@@ -124,15 +148,14 @@ void toccata::Application::CheckMidiStatus() {
         }
     }
 
-    if (connected) {
-        ProcessMidiInput();
-    }
-    else {
+    if (!connected) {
         const bool reconnected = m_midiSystem.Reconnect();
         if (reconnected) {
             toccata::MidiHandler::Get()->AlignTimestampOffset();
         }
     }
+
+    ProcessMidiInput();
 }
 
 void toccata::Application::ConstructReferenceNotes() {
@@ -193,7 +216,7 @@ void toccata::Application::InitializeLibrary() {
     const std::string paths[] = 
     {
         "../../test/midi/simple_passage.midi",
-        //"../../test/midi/simple_passage_2.mid"
+        "../../test/midi/simple_passage_2.mid"
     };
 
     for (const std::string &path : paths) {
@@ -213,7 +236,7 @@ void toccata::Application::InitializeDecisionThread() {
 void toccata::Application::InitializeMidiInput() {
     m_midiSystem.Refresh();
 
-    const bool connectSuccess = m_midiSystem.Connect(1);
+    const bool connectSuccess = m_midiSystem.Connect(0);
 
     if (connectSuccess) {
         // TODO

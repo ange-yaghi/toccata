@@ -99,7 +99,7 @@ void toccata::DecisionTree::Process(int startIndex) {
     WaitForThreads();
 
     Integrate();
-    Prune();
+    //Prune();
 }
 
 void toccata::DecisionTree::DistributeWork() {
@@ -310,8 +310,9 @@ int toccata::DecisionTree::GetBranchNoteCount(Decision *decision) const {
     int noteCount = 0;
 
     Decision *i = decision;
-    while (i->ParentDecision != nullptr) {
+    while (i != nullptr) {
         noteCount += i->MappedNotes;
+        i = i->ParentDecision;
     }
 
     return noteCount;
@@ -408,6 +409,7 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
         MatchedPiece newPiece;
         newPiece.Start = INT_MAX;
         newPiece.End = INT_MIN;
+        newPiece.MatchedNotes = GetBranchNoteCount(m_decisions[i]);
 
         decision = m_decisions[i];
         while (decision != nullptr) {
@@ -440,12 +442,17 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
 
     std::sort(results.begin(), results.end(),
         [](MatchedPiece &a, MatchedPiece &b) {
-            return (a.End - a.Start + 1) > (b.End - b.Start + 1);
+            if (a.MatchedNotes == b.MatchedNotes) {
+                return (a.End - a.Start + 1) < (b.End - b.Start + 1);
+            }
+            else return a.MatchedNotes > b.MatchedNotes;
         });
 
-    int pieceCount = (int)results.size();
+    const int pieceCount = (int)results.size();
     std::vector<bool> filtered(pieceCount, false);
     for (int i = 0; i < pieceCount; ++i) {
+        if (filtered[i]) continue;
+
         MatchedPiece &piece0 = results[i];
         const int length0 = piece0.End - piece0.Start + 1;
 
@@ -534,8 +541,8 @@ bool toccata::DecisionTree::IntegrateDecision(Decision *decision) {
         const int overlap = (int)std::ceil(0.5 * minNoteCount);
         
         if (decision->Overlapping(currentDecision, overlap)) {
-            if (decision->IsSameAs(currentDecision) ||
-                GetDepth(currentDecision) < GetDepth(decision))
+            if (decision->IsSameAs(currentDecision)) // ||
+               // GetDepth(currentDecision) < GetDepth(decision))
             {
                 if (decision->IsBetterFitThan(currentDecision)) {
                     UpdateDecision(currentDecision, decision);
@@ -544,11 +551,11 @@ bool toccata::DecisionTree::IntegrateDecision(Decision *decision) {
                 return false;
             }
 
-            if (decision->IsSameAs(currentDecision) || 
-                GetDepth(currentDecision) != GetDepth(decision)) 
-            {
-                return false;
-            }
+            //if (decision->IsSameAs(currentDecision) || 
+            //    GetDepth(currentDecision) != GetDepth(decision)) 
+            ///{
+            //    return false;
+            //}
         }
     }
 

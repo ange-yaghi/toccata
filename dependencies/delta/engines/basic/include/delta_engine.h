@@ -124,6 +124,7 @@ namespace dbasic {
         // Input Device
         bool IsKeyDown(ysKeyboard::KEY_CODE key);
         bool ProcessKeyDown(ysKeyboard::KEY_CODE key);
+        bool ProcessKeyUp(ysKeyboard::KEY_CODE key);
 
         bool IsMouseKeyDown(ysMouse::Button key);
         int GetMouseWheel();

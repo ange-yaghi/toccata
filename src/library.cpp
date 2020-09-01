@@ -1,7 +1,7 @@
 #include "../include/library.h"
 
 toccata::Library::Library() {
-    /* void */
+    m_currentBarId = 0;
 }
 
 toccata::Library::~Library() {
@@ -25,6 +25,7 @@ int toccata::Library::GetSegmentCount() const {
 
 toccata::Bar *toccata::Library::NewBar() {
     Bar *newBar = new Bar;
+    newBar->SetId(m_currentBarId++);
     m_bars.push_back(newBar);
 
     return newBar;

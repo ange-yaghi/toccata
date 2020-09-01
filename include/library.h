@@ -24,6 +24,8 @@ namespace toccata {
     protected:
         std::vector<MusicSegment *> m_segments;
         std::vector<Bar *> m_bars;
+
+        int m_currentBarId;
     };
 
 } /* namespace toccata */

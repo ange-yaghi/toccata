@@ -24,6 +24,9 @@ namespace toccata {
         void Process();
         void Render();
 
+        void MockMidiInput();
+        void MockMidiKey(ysKeyboard::KEY_CODE key, int midiKey);
+
         void InitializeLibrary();
         void InitializeDecisionThread();
         void InitializeMidiInput();
