@@ -1,8 +1,8 @@
 #ifndef DELTA_BASIC_CONSOLE_H
 #define DELTA_BASIC_CONSOLE_H
 
+#include "font.h"
 #include "delta_core.h"
-
 #include "shader_controls.h"
 
 #include <string>
@@ -50,9 +50,9 @@ namespace dbasic {
 
     class Console : public ysObject {
     public:
-        static const int BUFFER_WIDTH = 175;
-        static const int BUFFER_HEIGHT = 75;
-        static const int BUFFER_SIZE = BUFFER_WIDTH * BUFFER_HEIGHT; // Maximum of 4096 characters displayed at once
+        static const int BufferWidth = 175;
+        static const int BufferHeight = 75;
+        static const int BufferSize = BufferWidth * BufferHeight; // Maximum of 4096 characters displayed at once
 
     public:
         Console();
@@ -77,7 +77,7 @@ namespace dbasic {
         ysGPUBuffer *m_mainIndexBuffer;
 
         // Textures
-        ysTexture *m_font;
+        ysTexture *m_fontTexture;
 
         ysShader *m_vertexShader;
         ysShader *m_pixelShader;
@@ -88,6 +88,8 @@ namespace dbasic {
 
         // Vertex buffer
         ConsoleVertex *m_vertexData;
+
+        Font *m_font;
 
     protected:
         // Settings
@@ -114,7 +116,7 @@ namespace dbasic {
         GuiPoint m_nominalLocation;
         GuiPoint m_actualLocation;
 
-        bool m_fontBold;
+        char *m_buffer;
 
     public:
         // ----------------------------------------------------
@@ -126,8 +128,6 @@ namespace dbasic {
 
         // Drawing Text
         ysError SetCharacter(char character);
-
-        void SetFontBold(bool fontBold) { m_fontBold = fontBold; }
 
         void Clear();
 

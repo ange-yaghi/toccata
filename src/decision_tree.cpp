@@ -540,6 +540,8 @@ bool toccata::DecisionTree::IntegrateDecision(Decision *decision) {
                 if (decision->IsBetterFitThan(currentDecision)) {
                     UpdateDecision(currentDecision, decision);
                 }
+
+                return false;
             }
 
             if (decision->IsSameAs(currentDecision) || 

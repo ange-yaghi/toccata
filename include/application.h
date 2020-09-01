@@ -42,6 +42,8 @@ namespace toccata {
 
         Library m_library;
         DecisionThread m_decisionThread;
+
+        float m_currentOffset;
     };
 
 } /* namespace toccata */

@@ -6,8 +6,10 @@
 #include "../include/segment_generator.h"
 #include "../include/transform.h"
 
+#include <sstream>
+
 toccata::Application::Application() {
-    /* void */
+    m_currentOffset = 0.0;
 }
 
 toccata::Application::~Application() {
@@ -60,17 +62,37 @@ void toccata::Application::Process() {
     windowWidth = m_engine.GetScreenWidth();
     windowHeight = m_engine.GetScreenHeight();
 
+    const float dt = m_engine.GetFrameLength();
+    m_currentOffset += dt;
+
+    const int n = m_testSegment.NoteContainer.GetCount();
+    double windowStart = m_midiDisplay.GetTimeOffset();
+    if (n > 0) {
+        MusicPoint &lastPoint = m_testSegment.NoteContainer.GetPoints()[n - 1];
+
+        if (lastPoint.Timestamp + 2.0 > m_midiDisplay.GetTimeRange() + m_midiDisplay.GetTimeOffset()) {
+            windowStart = lastPoint.Timestamp + 2.0 - 10.0;
+        }
+    }
+
     m_midiDisplay.SetKeyRangeStart(0);
     m_midiDisplay.SetKeyRangeEnd(88);
-    m_midiDisplay.SetSize(ysMath::LoadVector(windowWidth, windowHeight * 0.8));
+    m_midiDisplay.SetSize(ysMath::LoadVector(windowWidth, windowHeight * 0.9));
     m_midiDisplay.SetInputSegment(&m_testSegment);
     m_midiDisplay.SetReferenceSegment(&m_referenceSegment);
-    m_midiDisplay.SetTimeOffset(0.0);
+    m_midiDisplay.SetTimeOffset(windowStart);
     m_midiDisplay.SetTimeRange(10.0);
 }
 
 void toccata::Application::Render() {
     m_midiDisplay.Render();
+
+    std::stringstream ss; 
+    ss << "TOCCATA" << "\n";
+    ss << m_engine.GetAverageFramerate() << "\n";
+
+    m_engine.GetConsole()->MoveToOrigin();
+    m_engine.GetConsole()->DrawGeneralText(ss.str().c_str());
 }
 
 void toccata::Application::ProcessMidiInput() {
@@ -168,13 +190,19 @@ void toccata::Application::Destroy() {
 }
 
 void toccata::Application::InitializeLibrary() {
-    const std::string path = "../../test/midi/simple_passage.midi";
+    const std::string paths[] = 
+    {
+        "../../test/midi/simple_passage.midi",
+        //"../../test/midi/simple_passage_2.mid"
+    };
 
-    toccata::MidiStream stream;
-    toccata::MidiFile midiFile;
-    midiFile.Read(path.c_str(), &stream);
+    for (const std::string &path : paths) {
+        toccata::MidiStream stream;
+        toccata::MidiFile midiFile;
+        midiFile.Read(path.c_str(), &stream);
 
-    toccata::SegmentGenerator::Convert(&stream, &m_library, 0);
+        toccata::SegmentGenerator::Convert(&stream, &m_library, 0);
+    }
 }
 
 void toccata::Application::InitializeDecisionThread() {
