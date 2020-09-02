@@ -466,12 +466,6 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::FindBestParent(const Dec
                 continue;
             }
 
-            const int margin = std::ceil(next.Offset * 1.25 + 4);
-            const int distance = decision->GetStart() - prev->GetEnd();
-            const int delta = std::abs(next.Offset - distance);
-
-            //if (delta > margin) continue;
-
             const double prevLength = prev->MatchedBar->GetSegment()->Length;
             const double length = decision->MatchedBar->GetSegment()->Length;
             const double decisionStart = Transform::inv_f(0.0, decision->s, decision->t);
@@ -515,7 +509,6 @@ bool toccata::DecisionTree::IntegrateDecision(Decision *decision) {
     m_decisions.push_back(decision);
 
     InvalidateAfter(decision->GetEnd());
-
     UpdateOverlapMatrix(decision);
 
     return true;
