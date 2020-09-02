@@ -17,17 +17,18 @@ toccata::Bar *toccata::Bar::GetNext(int index) const {
     return m_next[index];
 }
 
-int toccata::Bar::FindNext(const Bar *next, int skipsAllowed) const {
+toccata::Bar::SearchResult toccata::Bar::FindNext(const Bar *next, int skipsAllowed) const {
+    const double length = GetSegment()->Length;
     for (const Bar *n : m_next) {
-        if (n == next) return 0;
+        if (n == next) return { 0, 0.0 };
         else if (skipsAllowed > 0) {
             const int nextLength = next->GetSegment()->NoteContainer.GetCount();
-            const int nextOffset = n->FindNext(next, skipsAllowed - 1);
-            if (nextOffset != -1) {
-                return nextOffset + nextLength;
+            const SearchResult result = n->FindNext(next, skipsAllowed - 1);
+            if (result.Offset != -1) {
+                return { result.Offset + nextLength, result.Distance + length };
             }
         }
     }
 
-    return -1;
+    return { -1, -1 };
 }

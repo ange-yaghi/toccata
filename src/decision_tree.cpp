@@ -1,6 +1,7 @@
 #include "../include/decision_tree.h"
 
 #include "../include/memory.h"
+#include "../include/transform.h"
 
 toccata::DecisionTree::DecisionTree() {
     m_library = nullptr;
@@ -26,8 +27,10 @@ void toccata::DecisionTree::OnNoteChange(int changedNote) {
     int j = 0;
     for (int i = 0; i < decisionCount; ++i) {
         if (m_decisions[i]->GetEnd() >= changedNote) {
-            DeleteDecision(m_decisions[j]);
-
+            DeleteDecision(m_decisions[i]);
+            delete m_decisions[i];
+        }
+        else {
             m_decisions[j] = m_decisions[i];
             m_decisions[j]->Index = j;
 
@@ -99,7 +102,6 @@ void toccata::DecisionTree::Process(int startIndex) {
     WaitForThreads();
 
     Integrate();
-    //Prune();
 }
 
 void toccata::DecisionTree::DistributeWork() {
@@ -189,12 +191,17 @@ void toccata::DecisionTree::UpdateDecision(Decision *target, Decision *source) {
     target->Singular = source->Singular;
 
     InvalidateAfter(target->GetEnd());
-
     UpdateOverlapMatrix(target);
 }
 
 void toccata::DecisionTree::DeleteDecision(Decision *decision) {
     CleanOverlapMatrix(decision);
+
+    for (Decision *d : m_decisions) {
+        if (d->ParentDecision == decision) {
+            d->InvalidateCache();
+        }
+    }
 }
 
 void toccata::DecisionTree::UpdateOverlapMatrix(Decision *d0) {
@@ -226,61 +233,6 @@ void toccata::DecisionTree::CleanOverlapMatrix(Decision *decision) {
     }
 
     decision->OverlappingDecisions.clear();
-}
-
-void toccata::DecisionTree::Prune() {
-    const int n = (int)m_decisions.size();
-
-    std::vector<bool> isLeaf(n, true);
-    std::vector<int> rightDepth(n, 0);
-
-    for (Decision *decision : m_decisions) {
-        GetDepth(decision);
-
-        if (decision->ParentDecision != nullptr) {
-            isLeaf[decision->ParentDecision->Index] = false;
-        }
-    }
-
-    for (const Decision *leaf : m_decisions) {
-        if (!isLeaf[leaf->Index]) continue;
-
-        rightDepth[leaf->Index] = 1;
-
-        const Decision *child = leaf;
-        const Decision *parent = leaf->ParentDecision;
-        while (parent != nullptr) {
-            rightDepth[parent->Index] = std::max(
-                rightDepth[child->Index] + 1,
-                rightDepth[parent->Index]);
-            
-            child = parent;
-            parent = child->ParentDecision;
-        }
-    }
-
-    int newSize0 = 0;
-    for (int i = 0; i < n; ++i) {
-        Decision *d0 = m_decisions[i];
-
-        bool pruned = false;
-
-        for (Decision *d1: m_decisions[i]->OverlappingDecisions) {
-            if (rightDepth[d0->Index] < rightDepth[d1->Index]) {
-                pruned = true;
-                break;
-            }
-        }
-
-        if (pruned) DeleteDecision(m_decisions[i]);
-        else m_decisions[newSize0++] = m_decisions[i];
-    }
-
-    for (int i = 0; i < newSize0; ++i) {
-        m_decisions[i]->Index = i;
-    }
-
-    m_decisions.resize(newSize0);
 }
 
 int toccata::DecisionTree::GetDepth(Decision *decision) const {
@@ -453,11 +405,11 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
     for (int i = 0; i < pieceCount; ++i) {
         if (filtered[i]) continue;
 
-        MatchedPiece &piece0 = results[i];
+        const MatchedPiece &piece0 = results[i];
         const int length0 = piece0.End - piece0.Start + 1;
 
         for (int j = i + 1; j < pieceCount; ++j) {
-            MatchedPiece &piece1 = results[j];
+            const MatchedPiece &piece1 = results[j];
             const int length1 = piece1.End - piece1.Start + 1;
 
             const int start = std::max(piece0.Start, piece1.Start);
@@ -490,7 +442,7 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
 }
 
 toccata::DecisionTree::Decision *toccata::DecisionTree::FindBestParent(const Decision *decision) const {
-    int bestDepth = -1;
+    int bestNoteCount = -1;
     Decision *best = nullptr;
 
     const int decisions = GetDecisionCount();
@@ -509,22 +461,30 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::FindBestParent(const Dec
 
             if (isOverlapping) continue;
 
-            const int nextOffset = prev->MatchedBar->FindNext(decision->MatchedBar, 1);
-            if (nextOffset == -1) {
+            const Bar::SearchResult next = prev->MatchedBar->FindNext(decision->MatchedBar, 1);
+            if (next.Offset == -1) {
                 continue;
             }
 
-            const int margin = std::ceil(nextOffset * 1.25 + 4);
-
+            const int margin = std::ceil(next.Offset * 1.25 + 4);
             const int distance = decision->GetStart() - prev->GetEnd();
-            const int delta = std::abs(nextOffset - distance);
+            const int delta = std::abs(next.Offset - distance);
 
-            if (delta > margin) continue;
+            //if (delta > margin) continue;
 
-            const int depth = GetDepth(prev);
-            if (best == nullptr || depth > bestDepth || prev->GetEnd() > best->GetEnd()) {
+            const double prevLength = prev->MatchedBar->GetSegment()->Length;
+            const double length = decision->MatchedBar->GetSegment()->Length;
+            const double decisionStart = Transform::inv_f(0.0, decision->s, decision->t);
+            const double prevEnd = Transform::inv_f(prevLength, prev->s, prev->t);
+            const double trueDistance = Transform::f(decisionStart - prevEnd, decision->s, 0.0);
+
+            if (trueDistance > next.Distance + length * 0.5) continue;
+
+            GetDepth(prev);
+            const int noteCount = GetBranchNoteCount(prev);
+            if (best == nullptr || noteCount > bestNoteCount || prev->GetEnd() > best->GetEnd()) {
                 best = prev;
-                bestDepth = depth;
+                bestNoteCount = noteCount;
             }
         }
     }
@@ -541,21 +501,13 @@ bool toccata::DecisionTree::IntegrateDecision(Decision *decision) {
         const int overlap = (int)std::ceil(0.5 * minNoteCount);
         
         if (decision->Overlapping(currentDecision, overlap)) {
-            if (decision->IsSameAs(currentDecision)) // ||
-               // GetDepth(currentDecision) < GetDepth(decision))
-            {
+            if (decision->IsSameAs(currentDecision)) {
                 if (decision->IsBetterFitThan(currentDecision)) {
                     UpdateDecision(currentDecision, decision);
                 }
 
                 return false;
             }
-
-            //if (decision->IsSameAs(currentDecision) || 
-            //    GetDepth(currentDecision) != GetDepth(decision)) 
-            ///{
-            //    return false;
-            //}
         }
     }
 

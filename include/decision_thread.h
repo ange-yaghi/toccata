@@ -31,6 +31,7 @@ namespace toccata {
 
         DecisionTree *GetTree() { return &m_tree; }
 
+        void Clear();
         std::vector<DecisionTree::MatchedPiece> GetPieces();
 
     protected:

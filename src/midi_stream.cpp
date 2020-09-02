@@ -78,7 +78,7 @@ void toccata::MidiStream::ProcessMidiEvent(
         const int key = byte1;
         const int velocity = byte2;
 
-        if (velocity > 0) {
+        if (velocity > 0 && status != 0x8) {
             // Note is pressed
             MidiNote newNote;
 
@@ -105,15 +105,15 @@ void toccata::MidiStream::ProcessMidiEvent(
             if (lastNote != -1) {
                 m_notes[lastNote].NoteLength = timestamp - m_notes[lastNote].Timestamp;
                 m_notes[lastNote].Valid = true;
+
+                MidiEvent newEvent;
+                newEvent.Event = KeyEvent::On;
+                newEvent.Timestamp0 = m_notes[lastNote].Timestamp;
+                newEvent.Timestamp1 = timestamp;
+                newEvent.Key = key;
+
+                m_events.push_back(newEvent);
             }
-
-            MidiEvent newEvent;
-            newEvent.Event = KeyEvent::On;
-            newEvent.Timestamp0 = m_notes[lastNote].Timestamp;
-            newEvent.Timestamp1 = timestamp;
-            newEvent.Key = key;
-
-            m_events.push_back(newEvent);
         }
     }
 }

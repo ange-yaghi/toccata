@@ -41,12 +41,15 @@ namespace toccata {
                 m_points = newPoints;
             }
 
-            for (int i = m_pointCount - 1; i >= -1; --i) {
-                if (i == -1 || m_points[i].Timestamp < point.Timestamp) {
+            for (int i = m_pointCount - 1; i >= 0; --i) {
+                if (m_points[i].Timestamp < point.Timestamp) {
                     InsertPoint(point, i + 1);
                     return i + 1;
                 }
             }
+
+            InsertPoint(point, 0);
+            return 0;
         }
 
         void RemovePoint(int index) {

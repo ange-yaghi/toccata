@@ -3,12 +3,11 @@
 #include "../include/midi_handler.h"
 
 void toccata::MidiCallback(
-    HMIDIIN hMidiIn, 
-    UINT wMsg, 
-    DWORD_PTR dwInstance, 
-    DWORD_PTR dwParam1, 
-    DWORD_PTR dwParam2) 
-{
+    HMIDIIN hMidiIn,
+    UINT wMsg,
+    DWORD_PTR dwInstance,
+    DWORD_PTR dwParam1,
+    DWORD_PTR dwParam2) {
     if (wMsg == MIM_DATA) {
         DWORD dwMidiMessage = dwParam1;
         DWORD dwTimestamp = dwParam2;

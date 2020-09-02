@@ -9,6 +9,12 @@ namespace toccata {
 
     class Bar {
     public:
+        struct SearchResult {
+            int Offset;
+            double Distance;
+        };
+
+    public:
         Bar();
         ~Bar();
 
@@ -22,7 +28,7 @@ namespace toccata {
         void SetId(int id) { m_id = id; }
         int GetId() const { return m_id; }
 
-        int FindNext(const Bar *next, int skipsAllowed) const;
+        SearchResult FindNext(const Bar *next, int skipsAllowed) const;
 
     protected:
         std::vector<Bar *> m_next;

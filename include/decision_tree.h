@@ -130,8 +130,6 @@ namespace toccata {
         void Clear();
         std::vector<MatchedPiece> GetPieces();
 
-        void Prune();
-
     protected:
         void DistributeWork();
         void TriggerThreads();
