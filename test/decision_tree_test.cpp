@@ -114,6 +114,44 @@ TEST(DecisionTreeTest, FullSong) {
 	tree.Destroy();
 }
 
+TEST(DecisionTreeTest, FullSongPrecisionLoss) {
+	toccata::Library library;
+
+	toccata::SongGenerator songGenerator;
+	songGenerator.Seed(0);
+
+	songGenerator.GenerateSong(&library, 4, 32);
+	songGenerator.GenerateSong(&library, 4, 32);
+
+	toccata::MusicSegment inputSegment;
+	inputSegment.Length = 0.0;
+
+	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.0, 1.0, 0, 0);
+
+	for (int i = 0; i < inputSegment.NoteContainer.GetCount(); ++i) {
+		inputSegment.NoteContainer.GetPoints()[i].Timestamp += 72 * 3600.0;
+	}
+
+	toccata::DecisionTree tree;
+	tree.SetLibrary(&library);
+	tree.SetInputSegment(&inputSegment);
+	tree.Initialize(12);
+	tree.SpawnThreads();
+
+	const int n = inputSegment.NoteContainer.GetCount();
+	for (int i = 0; i < n; ++i) {
+		tree.Process(i);
+	}
+
+	auto results = tree.GetPieces();
+
+	EXPECT_EQ(results.size(), 1);
+	EXPECT_EQ(results[0].Bars.size(), 64);
+
+	tree.KillThreads();
+	tree.Destroy();
+}
+
 TEST(DecisionTreeTest, FullSongJitter) {
 	toccata::Library library;
 

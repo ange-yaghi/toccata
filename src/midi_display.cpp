@@ -3,23 +3,12 @@
 #include "../include/transform.h"
 
 toccata::MidiDisplay::MidiDisplay() {
-    m_engine = nullptr;
-    m_position = ysMath::Constants::Zero;
-    m_size = ysMath::Constants::Zero;
-
     m_keyStart = 0;
     m_keyEnd = 0;
-
-    m_timeOffset = 0.0;
-    m_timeRange = 10.0;
 }
 
 toccata::MidiDisplay::~MidiDisplay() {
     /* void */
-}
-
-void toccata::MidiDisplay::Initialize(dbasic::DeltaEngine *engine) {
-    m_engine = engine;
 }
 
 void toccata::MidiDisplay::Process() {
@@ -27,12 +16,12 @@ void toccata::MidiDisplay::Process() {
 }
 
 void toccata::MidiDisplay::Render() {
-    const float width = ysMath::GetX(m_size);
-    const float height = ysMath::GetY(m_size);
+    const float width = m_timeline->GetWidth();
+    const float height = m_height;
 
     const float channelHeight = height / (m_keyEnd - m_keyStart + 1);
-    const float start_y = ysMath::GetY(m_position);
-    const float start_x = ysMath::GetX(m_position);
+    const float start_y = m_positionY;
+    const float start_x = m_timeline->GetPositionX();
     const float middle_x = start_x + width / 2;
     const float middle_y = start_y - height / 2;
 
@@ -70,19 +59,20 @@ void toccata::MidiDisplay::Render() {
         m_engine->DrawBox(width, 1);
     }
 
-    const int n_ref = m_referenceSegment->NoteContainer.GetCount();
+    MusicSegment *referenceSegment = m_timeline->GetReferenceSegment();
+    const int n_ref = referenceSegment->NoteContainer.GetCount();
     for (int i = 0; i < n_ref; ++i) {
-        const MusicPoint &point = m_referenceSegment->NoteContainer.GetPoints()[i];
+        const MusicPoint &point = referenceSegment->NoteContainer.GetPoints()[i];
 
         if (point.Pitch > m_keyEnd || point.Pitch < m_keyStart) continue;
-        if (point.Timestamp + point.Length < m_timeOffset) continue;
-        if (point.Timestamp > m_timeOffset + m_timeRange) continue;
+        if (!m_timeline->InRange(point.Timestamp, point.Timestamp + point.Length)) continue;
 
-        const float noteWidth = (point.Length / m_timeRange) * width;
-        const float x_offset = ((point.Timestamp - m_timeOffset) / m_timeRange) * width;
+        const float noteStart = m_timeline->GetWorldX(point.Timestamp);
+        const float noteEnd = m_timeline->GetWorldX(point.Timestamp + point.Length);
+        const float noteWidth = noteEnd - noteStart;
 
         const float y = lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2;
-        const float x = start_x + x_offset + noteWidth / 2;
+        const float x = noteStart + noteWidth / 2;
 
         const ysVector position = ysMath::LoadVector(x, y);
 
@@ -94,19 +84,20 @@ void toccata::MidiDisplay::Render() {
         m_engine->DrawBox(noteWidth, channelHeight * 0.8f);
     }
 
-    const int n = m_inputSegment->NoteContainer.GetCount();
+    MusicSegment *inputSegment = m_timeline->GetInputSegment();
+    const int n = inputSegment->NoteContainer.GetCount();
     for (int i = 0; i < n; ++i) {
-        const MusicPoint &point = m_inputSegment->NoteContainer.GetPoints()[i];
+        const MusicPoint &point = inputSegment->NoteContainer.GetPoints()[i];
 
         if (point.Pitch > m_keyEnd || point.Pitch < m_keyStart) continue;
-        if (point.Timestamp + point.Length < m_timeOffset) continue;
-        if (point.Timestamp > m_timeOffset + m_timeRange) continue;
+        if (!m_timeline->InRange(point.Timestamp, point.Timestamp + point.Length)) continue;
 
-        const float noteWidth = (point.Length / m_timeRange) * width;
-        const float x_offset = ((point.Timestamp - m_timeOffset) / m_timeRange) * width;
+        const float noteStart = m_timeline->GetWorldX(point.Timestamp);
+        const float noteEnd = m_timeline->GetWorldX(point.Timestamp + point.Length);
+        const float noteWidth = noteEnd - noteStart;
 
         const float y = lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2;
-        const float x = start_x + x_offset + noteWidth / 2;
+        const float x = noteStart + noteWidth / 2;
 
         const ysVector position = ysMath::LoadVector(x, y);
 
@@ -118,14 +109,17 @@ void toccata::MidiDisplay::Render() {
         m_engine->DrawBox(noteWidth, channelHeight * 0.333f);
     }
 
-    for (MatchedBar &bar : m_bars) {
+    const int barCount = m_timeline->GetBarCount();
+    for (int i = 0; i < barCount; ++i) {
+        const Timeline::MatchedBar &bar = m_timeline->GetBar(i);
+
         const float length = bar.Bar.MatchedBar->GetSegment()->Length;
         const float start = Transform::inv_f(0.0, bar.Bar.s, bar.Bar.t);
         const float end = Transform::inv_f(length, bar.Bar.s, bar.Bar.t);
 
-        if (start >= m_timeOffset && start <= m_timeOffset + m_timeRange) {
-            const float x_offset = ((start - m_timeOffset) / m_timeRange) * width;
-            const ysVector positionStart = ysMath::LoadVector(x_offset + start_x, middle_y);
+        if (m_timeline->InRange(start)) {
+            const float x = m_timeline->GetWorldX(start);
+            const ysVector positionStart = ysMath::LoadVector(x, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
             m_engine->SetObjectTransform(ysMath::TranslationTransform(positionStart));
@@ -135,9 +129,9 @@ void toccata::MidiDisplay::Render() {
             m_engine->DrawBox(2.0, height);
         }
 
-        if (end >= m_timeOffset && end <= m_timeOffset + m_timeRange) {
-            const float x_offset = ((end - m_timeOffset) / m_timeRange) * width;
-            const ysVector positionEnd = ysMath::LoadVector(x_offset + start_x, middle_y);
+        if (m_timeline->InRange(end)) {
+            const float x = m_timeline->GetWorldX(end);
+            const ysVector positionEnd = ysMath::LoadVector(x, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
             m_engine->SetObjectTransform(ysMath::TranslationTransform(positionEnd));

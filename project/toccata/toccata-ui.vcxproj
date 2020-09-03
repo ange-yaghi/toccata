@@ -19,16 +19,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\include\timeline_element.cpp" />
     <ClCompile Include="..\..\src\bar_display.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\application.cpp" />
     <ClCompile Include="..\..\src\midi_display.cpp" />
+    <ClCompile Include="..\..\src\timeline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\bar_display.h" />
     <ClInclude Include="..\..\include\delta.h" />
     <ClInclude Include="..\..\include\application.h" />
     <ClInclude Include="..\..\include\midi_display.h" />
+    <ClInclude Include="..\..\include\timeline.h" />
+    <ClInclude Include="..\..\include\timeline_element.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dependencies\submodules\delta-studios\project\delta-basic-engine\delta-basic-engine.vcxproj">

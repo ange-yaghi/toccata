@@ -55,7 +55,6 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
 
     m_engine.SetCameraMode(dbasic::DeltaEngine::CameraMode::Target);
 
-    m_midiDisplay.Initialize(&m_engine);
     m_barDisplay.Initialize(&m_engine); 
 
     m_textRenderer.SetEngine(&m_engine);
@@ -74,31 +73,36 @@ void toccata::Application::Process() {
     m_currentOffset += dt;
 
     const int n = m_testSegment.NoteContainer.GetCount();
-    double windowStart = m_midiDisplay.GetTimeOffset();
+    double windowStart = m_timeline.GetTimeOffset();
     if (n > 0) {
         MusicPoint &lastPoint = m_testSegment.NoteContainer.GetPoints()[n - 1];
 
-        if (lastPoint.Timestamp + 2.0 > m_midiDisplay.GetTimeRange() + m_midiDisplay.GetTimeOffset()) {
-            windowStart = lastPoint.Timestamp + 2.0 - 10.0;
+        if (lastPoint.Timestamp + 2.0 > m_timeline.GetTimeRange() + m_timeline.GetTimeOffset()) {
+            windowStart = lastPoint.Timestamp + 2.0 - 5.0;
         }
     }
 
-    m_midiDisplay.SetPosition(ysMath::LoadVector(-windowWidth / 2.0, windowHeight / 2.0 - windowHeight * 0.2));
+    m_timeline.SetPositionX(-windowWidth / 2);
+    m_timeline.SetInputSegment(&m_testSegment);
+    m_timeline.SetReferenceSegment(&m_referenceSegment);
+    m_timeline.SetTimeOffset(windowStart);
+    m_timeline.SetTimeRange(5.0);
+    m_timeline.SetWidth(windowWidth);
+
+    m_midiDisplay.SetEngine(&m_engine);
+    m_midiDisplay.SetTextRenderer(&m_textRenderer);
+    m_midiDisplay.SetHeight(windowHeight * 0.7f);
     m_midiDisplay.SetKeyRangeStart(0);
     m_midiDisplay.SetKeyRangeEnd(88);
-    m_midiDisplay.SetSize(ysMath::LoadVector(windowWidth, windowHeight * 0.7));
-    m_midiDisplay.SetInputSegment(&m_testSegment);
-    m_midiDisplay.SetReferenceSegment(&m_referenceSegment);
-    m_midiDisplay.SetTimeOffset(windowStart);
-    m_midiDisplay.SetTimeRange(10.0);
+    m_midiDisplay.SetPositionY(windowHeight / 2.0 - windowHeight * 0.2);
+    m_midiDisplay.SetTimeline(&m_timeline);
 
-    m_barDisplay.SetPosition(ysMath::LoadVector(-windowWidth / 2.0, windowHeight / 2.0));
-    m_barDisplay.SetSize(ysMath::LoadVector(windowWidth, windowHeight * 0.2));
-    m_barDisplay.SetChannelCount(3);
-    m_barDisplay.SetInputSegment(&m_testSegment);
-    m_barDisplay.SetReferenceSegment(&m_referenceSegment);
-    m_barDisplay.SetTimeOffset(windowStart);
-    m_barDisplay.SetTimeRange(10.0);
+    m_barDisplay.SetEngine(&m_engine);
+    m_barDisplay.SetHeight(windowHeight * 0.2);
+    m_barDisplay.SetMinimumChannelCount(3);
+    m_barDisplay.SetPositionY(windowHeight / 2.0);
+    m_barDisplay.SetTextRenderer(&m_textRenderer);
+    m_barDisplay.SetTimeline(&m_timeline);
 
     MockMidiInput();
 }
@@ -126,7 +130,7 @@ void toccata::Application::MockMidiInput() {
 }
 
 void toccata::Application::MockMidiKey(ysKeyboard::KEY_CODE key, int midiKey) {
-    const unsigned int timestamp = std::round(m_currentOffset * 1000);
+    const unsigned int timestamp = std::round((m_currentOffset + 300000) * 1000);
 
     if (m_engine.ProcessKeyDown(key)) {
         MidiHandler::Get()->ProcessEvent(0x9, midiKey, 100, timestamp);
@@ -178,14 +182,12 @@ void toccata::Application::CheckMidiStatus() {
 void toccata::Application::ConstructReferenceNotes() {
     m_referenceSegment.NoteContainer.Clear();
 
-    m_midiDisplay.ClearBars();
-    m_barDisplay.ClearBars();
+    m_timeline.ClearBars();
 
     auto pieces = m_decisionThread.GetPieces();
     for (const DecisionTree::MatchedPiece &piece : pieces) {
         for (const DecisionTree::MatchedBar &bar : piece.Bars) {
-            m_midiDisplay.AddBar(bar);
-            m_barDisplay.AddBar(bar);
+            m_timeline.AddBar(bar);
 
             MusicSegment *segment = bar.MatchedBar->GetSegment();
             const int n = segment->NoteContainer.GetCount();

@@ -7,6 +7,7 @@
 #include "music_segment.h"
 #include "midi_device_system.h"
 #include "decision_thread.h"
+#include "timeline.h"
 
 #include "delta.h"
 
@@ -44,6 +45,7 @@ namespace toccata {
         MidiDisplay m_midiDisplay;
         MusicSegment m_testSegment;
         MusicSegment m_referenceSegment;
+        Timeline m_timeline;
 
         MidiDeviceSystem m_midiSystem;
 
