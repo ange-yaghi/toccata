@@ -18,6 +18,8 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
     const unsigned int eigthNoteLength = midi->GetTicksPerQuarterNote() / 2;
     const unsigned int barLength = midi->GetBarLength();
 
+    const float barLengthSeconds = 60 * ((float)barLength / midi->GetTicksPerQuarterNote()) / 120.0;
+
     const int n = midi->GetNoteCount();
 
     const unsigned int offset = leading8thRests * eigthNoteLength;
@@ -39,7 +41,7 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
                 previous->AddNext(currentBar);
             }
 
-            currentSegment->Length = 1.0;
+            currentSegment->Length = barLengthSeconds;
             currentBar->SetSegment(currentSegment);
 
             ++barIndex;
@@ -49,7 +51,7 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
             currentSegment = target->NewSegment();
             currentBar = target->NewBar();
 
-            currentSegment->Length = 1.0;
+            currentSegment->Length = barLengthSeconds;
             currentBar->SetSegment(currentSegment);
         }
 
@@ -57,10 +59,10 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
         const unsigned int noteStart = timestamp - barStart;
 
         MusicPoint point;
-        point.Timestamp = (noteStart / (double)barLength);
+        point.Timestamp = (noteStart / (double)barLength) * currentSegment->Length;
         point.Pitch = note.MidiKey;
         point.Velocity = note.Velocity;
-        point.Length = (note.NoteLength / (double)barLength);
+        point.Length = (note.NoteLength / (double)barLength) * currentSegment->Length;
         point.Part = note.AssignedHand;
         currentSegment->NoteContainer.AddPoint(point);
     }

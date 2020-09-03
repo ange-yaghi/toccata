@@ -56,6 +56,13 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
     m_engine.SetCameraMode(dbasic::DeltaEngine::CameraMode::Target);
 
     m_midiDisplay.Initialize(&m_engine);
+    m_barDisplay.Initialize(&m_engine); 
+
+    m_textRenderer.SetEngine(&m_engine);
+    m_textRenderer.SetRenderer(m_engine.GetUiRenderer());
+    m_textRenderer.SetFont(m_engine.GetConsole()->GetFont());
+
+    m_barDisplay.SetTextRenderer(&m_textRenderer);
 }
 
 void toccata::Application::Process() {
@@ -76,19 +83,29 @@ void toccata::Application::Process() {
         }
     }
 
+    m_midiDisplay.SetPosition(ysMath::LoadVector(-windowWidth / 2.0, windowHeight / 2.0 - windowHeight * 0.2));
     m_midiDisplay.SetKeyRangeStart(0);
     m_midiDisplay.SetKeyRangeEnd(88);
-    m_midiDisplay.SetSize(ysMath::LoadVector(windowWidth, windowHeight * 0.9));
+    m_midiDisplay.SetSize(ysMath::LoadVector(windowWidth, windowHeight * 0.7));
     m_midiDisplay.SetInputSegment(&m_testSegment);
     m_midiDisplay.SetReferenceSegment(&m_referenceSegment);
     m_midiDisplay.SetTimeOffset(windowStart);
     m_midiDisplay.SetTimeRange(10.0);
+
+    m_barDisplay.SetPosition(ysMath::LoadVector(-windowWidth / 2.0, windowHeight / 2.0));
+    m_barDisplay.SetSize(ysMath::LoadVector(windowWidth, windowHeight * 0.2));
+    m_barDisplay.SetChannelCount(3);
+    m_barDisplay.SetInputSegment(&m_testSegment);
+    m_barDisplay.SetReferenceSegment(&m_referenceSegment);
+    m_barDisplay.SetTimeOffset(windowStart);
+    m_barDisplay.SetTimeRange(10.0);
 
     MockMidiInput();
 }
 
 void toccata::Application::Render() {
     m_midiDisplay.Render();
+    m_barDisplay.Render();
 
     std::stringstream ss; 
     ss << "TOCCATA" << "\n";
@@ -162,11 +179,13 @@ void toccata::Application::ConstructReferenceNotes() {
     m_referenceSegment.NoteContainer.Clear();
 
     m_midiDisplay.ClearBars();
+    m_barDisplay.ClearBars();
 
     auto pieces = m_decisionThread.GetPieces();
     for (const DecisionTree::MatchedPiece &piece : pieces) {
         for (const DecisionTree::MatchedBar &bar : piece.Bars) {
             m_midiDisplay.AddBar(bar);
+            m_barDisplay.AddBar(bar);
 
             MusicSegment *segment = bar.MatchedBar->GetSegment();
             const int n = segment->NoteContainer.GetCount();

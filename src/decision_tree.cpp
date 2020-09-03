@@ -370,7 +370,7 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
             bar.Start = decision->GetStart();
             bar.End = decision->GetEnd();
 
-            if (decision->Singular) {
+            if (decision->Singular && s_samples > 0) {
                 bar.s = s_avg;
                 bar.t = decision->t * s_avg;
             }

@@ -27,20 +27,20 @@ void toccata::MidiDisplay::Process() {
 }
 
 void toccata::MidiDisplay::Render() {
-    float width = ysMath::GetX(m_size);
-    float height = ysMath::GetY(m_size);
-
-    m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
-    m_engine->SetObjectTransform(ysMath::TranslationTransform(m_position));
-    m_engine->SetLit(false);
-    m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0xFF, 0xFF));
-    m_engine->DrawBox(width, height);
+    const float width = ysMath::GetX(m_size);
+    const float height = ysMath::GetY(m_size);
 
     const float channelHeight = height / (m_keyEnd - m_keyStart + 1);
-    const float start_y = (ysMath::GetY(m_position) - (height / 2)) + (channelHeight / 2);
+    const float start_y = ysMath::GetY(m_position);
+    const float start_x = ysMath::GetX(m_position);
+    const float middle_x = start_x + width / 2;
+    const float middle_y = start_y - height / 2;
+
+    const float lower_y = start_y - height;
     for (int i = m_keyStart; i <= m_keyEnd; ++i) {
         const int j = (i - m_keyStart);
-        const ysVector channelPosition = ysMath::LoadVector(ysMath::GetX(m_position), start_y + channelHeight * j);
+        const ysVector channelPosition = 
+            ysMath::LoadVector(middle_x, lower_y + channelHeight * j + channelHeight / 2);
 
         m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
         m_engine->SetObjectTransform(ysMath::TranslationTransform(channelPosition));
@@ -56,10 +56,10 @@ void toccata::MidiDisplay::Render() {
         m_engine->DrawBox(width, channelHeight);
     }
 
-    const float lineStart_y = (ysMath::GetY(m_position) - (height / 2));
     for (int i = m_keyStart; i <= m_keyEnd + 1; ++i) {
         const int j = (i - m_keyStart);
-        const ysVector linePosition = ysMath::LoadVector(ysMath::GetX(m_position), (int)(lineStart_y + channelHeight * j));
+        const ysVector linePosition = 
+            ysMath::LoadVector(middle_x, (int)(lower_y + channelHeight * j));
 
         m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
         m_engine->SetObjectTransform(ysMath::TranslationTransform(linePosition));
@@ -69,8 +69,6 @@ void toccata::MidiDisplay::Render() {
 
         m_engine->DrawBox(width, 1);
     }
-
-    const float start_x = ysMath::GetX(m_position) - (width / 2);
 
     const int n_ref = m_referenceSegment->NoteContainer.GetCount();
     for (int i = 0; i < n_ref; ++i) {
@@ -83,7 +81,7 @@ void toccata::MidiDisplay::Render() {
         const float noteWidth = (point.Length / m_timeRange) * width;
         const float x_offset = ((point.Timestamp - m_timeOffset) / m_timeRange) * width;
 
-        const float y = start_y + channelHeight * (point.Pitch - m_keyStart);
+        const float y = lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2;
         const float x = start_x + x_offset + noteWidth / 2;
 
         const ysVector position = ysMath::LoadVector(x, y);
@@ -107,7 +105,7 @@ void toccata::MidiDisplay::Render() {
         const float noteWidth = (point.Length / m_timeRange) * width;
         const float x_offset = ((point.Timestamp - m_timeOffset) / m_timeRange) * width;
 
-        const float y = start_y + channelHeight * (point.Pitch - m_keyStart);
+        const float y = lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2;
         const float x = start_x + x_offset + noteWidth / 2;
 
         const ysVector position = ysMath::LoadVector(x, y);
@@ -127,7 +125,7 @@ void toccata::MidiDisplay::Render() {
 
         if (start >= m_timeOffset && start <= m_timeOffset + m_timeRange) {
             const float x_offset = ((start - m_timeOffset) / m_timeRange) * width;
-            const ysVector positionStart = ysMath::LoadVector(x_offset + start_x, ysMath::GetY(m_position));
+            const ysVector positionStart = ysMath::LoadVector(x_offset + start_x, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
             m_engine->SetObjectTransform(ysMath::TranslationTransform(positionStart));
@@ -139,7 +137,7 @@ void toccata::MidiDisplay::Render() {
 
         if (end >= m_timeOffset && end <= m_timeOffset + m_timeRange) {
             const float x_offset = ((end - m_timeOffset) / m_timeRange) * width;
-            const ysVector positionEnd = ysMath::LoadVector(x_offset + start_x, ysMath::GetY(m_position));
+            const ysVector positionEnd = ysMath::LoadVector(x_offset + start_x, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
             m_engine->SetObjectTransform(ysMath::TranslationTransform(positionEnd));

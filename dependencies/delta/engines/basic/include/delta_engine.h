@@ -161,6 +161,7 @@ namespace dbasic {
         int GetScreenHeight();
 
         Console *GetConsole() { return &m_console; }
+        UiRenderer *GetUiRenderer() { return &m_uiRenderer; }
 
         ysAudioDevice *GetAudioDevice() const { return m_audioDevice; }
         ysBreakdownTimer &GetBreakdownTimer() { return m_breakdownTimer; }
@@ -233,6 +234,7 @@ namespace dbasic {
         ysInputLayout *m_consoleInputLayout;
 
         // Text Support
+        UiRenderer m_uiRenderer;
         Console m_console;
 
         bool m_initialized;

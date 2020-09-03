@@ -19,11 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\bar_display.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\application.cpp" />
     <ClCompile Include="..\..\src\midi_display.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\bar_display.h" />
     <ClInclude Include="..\..\include\delta.h" />
     <ClInclude Include="..\..\include\application.h" />
     <ClInclude Include="..\..\include\midi_display.h" />

@@ -2,6 +2,7 @@
 #define TOCCATA_UI_APPLICATION_H
 
 #include "midi_display.h"
+#include "bar_display.h"
 
 #include "music_segment.h"
 #include "midi_device_system.h"
@@ -37,6 +38,9 @@ namespace toccata {
         dbasic::DeltaEngine m_engine;
         dbasic::AssetManager m_assetManager;
 
+        dbasic::TextRenderer m_textRenderer;
+
+        BarDisplay m_barDisplay;
         MidiDisplay m_midiDisplay;
         MusicSegment m_testSegment;
         MusicSegment m_referenceSegment;
