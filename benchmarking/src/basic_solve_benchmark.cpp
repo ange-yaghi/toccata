@@ -78,8 +78,8 @@ void toccata::BasicSolveBenchmark::Run() {
 		
 		bool found = toccata::TestPatternEvaluator::Solve(request, &output);
 
-		double current_s = output.s;
-		double current_t = output.t;
+		double current_s = output.T.s;
+		double current_t = output.T.t;
 
 		for (int j = 0; j < 1; ++j) {
 			toccata::NoteMapper::InjectiveMappingRequest mappingRequest;
@@ -88,8 +88,9 @@ void toccata::BasicSolveBenchmark::Run() {
 			mappingRequest.Segment = &segment;
 			mappingRequest.Target = memorySpace.Mapping;
 			mappingRequest.Memory = memorySpace.MappingMemory;
-			mappingRequest.s = current_s;
-			mappingRequest.t = current_t;
+			mappingRequest.T.s = current_s;
+			mappingRequest.T.t = current_t;
+			mappingRequest.T.t_coarse = 0;
 
 			const int *preciseMapping = toccata::NoteMapper::GetInjectiveMapping(&mappingRequest);
 
@@ -106,8 +107,8 @@ void toccata::BasicSolveBenchmark::Run() {
 					const MusicPoint &referencePoint = referencePoints[i];
 					const MusicPoint &point = points[noteIndex];
 
-					r[validPointCount] = referencePoint.Timestamp;
-					p[validPointCount] = point.Timestamp;
+					r[validPointCount] = reference.Normalize(referencePoint.Timestamp);
+					p[validPointCount] = segment.Normalize(point.Timestamp);
 
 					++validPointCount;
 				}
@@ -124,15 +125,15 @@ void toccata::BasicSolveBenchmark::Run() {
 			current_t = refinedSolution.t;
 		}
 
-		if (Math::Abs(output.s) < 1E-4) {
+		if (Math::Abs(output.T.s) < 1E-4) {
 			continue;
 		}
 		
 		cumulativeScaleErrRefined += Math::Abs(current_s - (1 / 5.0));
 		cumulativeShiftErrRefined += Math::Abs(current_t - (-2.0 / 5.0));
 
-		cumulativeScaleErrRough += Math::Abs(output.s - (1 / 5.0));
-		cumulativeShiftErrRough += Math::Abs(output.t - (-2.0 / 5.0));
+		cumulativeScaleErrRough += Math::Abs(output.T.s - (1 / 5.0));
+		cumulativeShiftErrRough += Math::Abs(output.T.t - (-2.0 / 5.0));
 	}
 	auto end = std::chrono::steady_clock::now();
 

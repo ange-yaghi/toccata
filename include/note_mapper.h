@@ -3,6 +3,7 @@
 
 #include "music_segment.h"
 #include "munkres_solver.h"
+#include "transform.h"
 
 #include <random>
 
@@ -15,8 +16,7 @@ namespace toccata {
             const MusicSegment *Segment;
             int Start = -1;
             int End = -1;
-            double s;
-            double t;
+            Transform T;
             double CorrelationThreshold;
             int *const *NotesByPitch = nullptr; // Optional
 
@@ -43,8 +43,7 @@ namespace toccata {
             int Start = -1;
             int End = -1;
 
-            double s;
-            double t;
+            Transform T;
             double CorrelationThreshold;
 
             MemorySpace Memory;
@@ -52,8 +51,8 @@ namespace toccata {
             int *Target; // size = n
         };
 
-        static int GetClosestNote(const MusicPoint *points, int start, int end, double timestamp, int pitch);
-        static int GetClosestNote(const MusicPoint *points, const int *indices, int n, double timestamp);
+        static int GetClosestNote(const MusicSegment *segment, const Transform &coarse, int start, int end, double timestamp, int pitch);
+        static int GetClosestNote(const MusicSegment *segment, const Transform &coarse, const int *indices, int n, double timestamp);
 
         static void AllocateMemorySpace(InjectiveMappingRequest::MemorySpace *memory, int referenceNoteCount, int noteCount);
         static void FreeMemorySpace(InjectiveMappingRequest::MemorySpace *memory);

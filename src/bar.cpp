@@ -18,7 +18,7 @@ toccata::Bar *toccata::Bar::GetNext(int index) const {
 }
 
 toccata::Bar::SearchResult toccata::Bar::FindNext(const Bar *next, int skipsAllowed) const {
-    const double length = GetSegment()->Length;
+    const double length = GetSegment()->GetNormalizedLength();
     for (const Bar *n : m_next) {
         if (n == next) return { 0, 0.0 };
         else if (skipsAllowed > 0) {

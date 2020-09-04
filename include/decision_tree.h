@@ -5,6 +5,7 @@
 #include "library.h"
 #include "full_solver.h"
 #include "bar.h"
+#include "transform.h"
 
 #include <vector>
 #include <queue>
@@ -27,8 +28,7 @@ namespace toccata {
             int Start;
             int End;
 
-            double s;
-            double t;
+            Transform T;
         };
 
         struct MatchedPiece {
@@ -54,8 +54,7 @@ namespace toccata {
             std::vector<Decision *> OverlappingDecisions;
 
             bool Singular;
-            double s;
-            double t;
+            Transform T;
 
             double AverageError;
 

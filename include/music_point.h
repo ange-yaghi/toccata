@@ -3,6 +3,8 @@
 
 namespace toccata {
 
+    typedef long long timestamp;
+
     struct MusicPoint {
         enum class Hand {
             Unknown,
@@ -10,10 +12,10 @@ namespace toccata {
             LeftHand
         };
 
-        double Timestamp = 0.0;
-        int Pitch = 0;
-        double Length = 0.0;
-        int Velocity = 0;
+        timestamp Timestamp = 0;
+        unsigned short Pitch = 0;
+        unsigned short Length = 0;
+        unsigned short Velocity = 0;
         Hand Part = Hand::Unknown;
     };
 

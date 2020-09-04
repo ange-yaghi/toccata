@@ -67,8 +67,7 @@ bool toccata::FullSolver::Solve(const Request &request, Result *result) {
 	mappingRequest.End = request.EndIndex;
 	mappingRequest.Target = m_memorySpace.Mapping;
 	mappingRequest.Memory = m_memorySpace.MappingMemory;
-	mappingRequest.s = output.s;
-	mappingRequest.t = output.t;
+	mappingRequest.T = output.T;
 
 	const int *preciseMapping = toccata::NoteMapper::GetInjectiveMapping(&mappingRequest);
 
@@ -84,8 +83,8 @@ bool toccata::FullSolver::Solve(const Request &request, Result *result) {
 			const MusicPoint &referencePoint = referencePoints[i];
 			const MusicPoint &point = points[noteIndex];
 
-			r[validPointCount] = referencePoint.Timestamp;
-			p[validPointCount] = point.Timestamp;
+			r[validPointCount] = reference->Normalize(referencePoint.Timestamp);
+			p[validPointCount] = segment->Normalize(output.T.Local(point.Timestamp));
 
 			++validPointCount;
 		}
@@ -103,8 +102,8 @@ bool toccata::FullSolver::Solve(const Request &request, Result *result) {
 	comparatorRequest.Mapping = preciseMapping;
 	comparatorRequest.Reference = reference;
 	comparatorRequest.Segment = segment;
-	comparatorRequest.s = refinedSolution.s;
-	comparatorRequest.t = refinedSolution.t;
+	comparatorRequest.T.s = refinedSolution.s;
+	comparatorRequest.T.t = refinedSolution.t;
 	Comparator::CalculateError(comparatorRequest, &result->Fit);
 
 	int missedNotes = n - result->Fit.MappedNotes;
@@ -113,8 +112,9 @@ bool toccata::FullSolver::Solve(const Request &request, Result *result) {
 	if (missedNoteRatio <= request.MissingNoteThreshold ||
 		(request.MissingNoteThreshold == 1.0 && result->Fit.MappedNotes >= 1)) 
 	{
-		result->s = refinedSolution.s;
-		result->t = refinedSolution.t;
+		result->T.s = refinedSolution.s;
+		result->T.t = refinedSolution.t;
+		result->T.t_coarse = output.T.t_coarse;
 		result->Singular = refinedSolution.Singularity;
 		return true;
 	}

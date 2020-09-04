@@ -41,13 +41,16 @@ void toccata::SearchThread::Search(const MusicSegment *segment, const Library *l
 	double minError = DBL_MAX;
 	double minErrorRate = INT_MAX;
 	int best = -1;
-	double best_s = 0.0;
-	double best_t = 0.0;
+	Transform best_T;
 	
 	for (int i = m_searchStart; i <= m_searchEnd; ++i) {
-        const MusicSegment *reference = library->GetSegment(i);
+		Transform coarse;
+		coarse.s = 1.0;
+		coarse.t = 0.0;
+		coarse.t_coarse = segment->NoteContainer.GetPoints()[i].Timestamp;
 
-        int n = reference->NoteContainer.GetCount();
+        const MusicSegment *reference = library->GetSegment(i);
+        const int n = reference->NoteContainer.GetCount();
 
         SegmentUtilities::SortByPitch(segment, 0, segment->NoteContainer.GetCount() - 1, MaxPitches, m_notesByPitchBuffer);
 
@@ -69,12 +72,12 @@ void toccata::SearchThread::Search(const MusicSegment *segment, const Library *l
         request.SegmentNotesByPitch = m_notesByPitchBuffer;
 		request.Memory = m_memorySpace;
 
-        bool found = toccata::TestPatternEvaluator::Solve(request, &output);
+        const bool found = toccata::TestPatternEvaluator::Solve(request, &output);
 
 		if (!found) continue;
 
-		double current_s = output.s;
-		double current_t = output.t;
+		double current_s = output.T.s;
+		double current_t = output.T.t;
 
 		toccata::NoteMapper::InjectiveMappingRequest mappingRequest;
 		mappingRequest.CorrelationThreshold = 0.1;
@@ -84,8 +87,9 @@ void toccata::SearchThread::Search(const MusicSegment *segment, const Library *l
 		mappingRequest.End = segment->NoteContainer.GetCount() - 1;
 		mappingRequest.Target = m_memorySpace.Mapping;
 		mappingRequest.Memory = m_memorySpace.MappingMemory;
-		mappingRequest.s = current_s;
-		mappingRequest.t = current_t;
+		mappingRequest.T.s = current_s;
+		mappingRequest.T.t = current_t;
+		mappingRequest.T.t_coarse = coarse.t_coarse;
 
 		const int *preciseMapping = toccata::NoteMapper::GetInjectiveMapping(&mappingRequest);
 
@@ -98,11 +102,8 @@ void toccata::SearchThread::Search(const MusicSegment *segment, const Library *l
 			if (preciseMapping[i] != -1) {
 				const int noteIndex = preciseMapping[i];
 
-				const MusicPoint &referencePoint = referencePoints[i];
-				const MusicPoint &point = points[noteIndex];
-
-				r[validPointCount] = referencePoint.Timestamp;
-				p[validPointCount] = point.Timestamp;
+				r[validPointCount] = reference->Normalize(referencePoints[i].Timestamp);
+				p[validPointCount] = segment->Normalize(points[noteIndex].Timestamp);
 
 				++validPointCount;
 			}
@@ -123,33 +124,33 @@ void toccata::SearchThread::Search(const MusicSegment *segment, const Library *l
 		comparatorRequest.Mapping = preciseMapping;
 		comparatorRequest.Reference = request.ReferenceSegment;
 		comparatorRequest.Segment = request.Segment;
-		comparatorRequest.s = refinedSolution.s;
-		comparatorRequest.t = refinedSolution.t;
+		comparatorRequest.T.s = refinedSolution.s;
+		comparatorRequest.T.t = refinedSolution.t;
+		comparatorRequest.T.t_coarse = coarse.t_coarse;
 
 		Comparator::CalculateError(comparatorRequest, &solutionError);
 
-		int missedNotes = n - solutionError.MappedNotes;
-		int footprint = solutionError.MappingEnd - solutionError.MappingStart + 1;
-		int addedNotes = footprint - solutionError.MappedNotes;
-		int errors = addedNotes + missedNotes;
+		const int missedNotes = n - solutionError.MappedNotes;
+		const int footprint = solutionError.MappingEnd - solutionError.MappingStart + 1;
+		const int addedNotes = footprint - solutionError.MappedNotes;
+		const int errors = addedNotes + missedNotes;
 
-		double errorRate = errors / (double)n;
+		const double errorRate = errors / (double)n;
 
-		if (errorRate < minErrorRate)
-		{
+		if (errorRate < minErrorRate) {
 			minError = solutionError.AverageError;
 			minErrorRate = errorRate;
 			best = i;
-			best_s = refinedSolution.s;
-			best_t = refinedSolution.t;
+			best_T.s = refinedSolution.s;
+			best_T.t = refinedSolution.t;
+			best_T.t_coarse = coarse.t_coarse;
 		}
     }
 
 	if (best != -1) {
 		result->MatchedSegment = library->GetSegment(best);
 		result->Error = minError;
-		result->s = best_s;
-		result->t = best_t;
+		result->T = best_T;
 		result->MatchedNotes = 0;
 	}
 	else {

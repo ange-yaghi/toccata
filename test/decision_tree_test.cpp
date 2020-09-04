@@ -37,25 +37,25 @@ TEST(DecisionTreeTest, BasicIdentificationTest) {
 	toccata::Library library;
 
 	toccata::MusicSegment *segment0 = library.NewSegment();
-	segment0->NoteContainer.AddPoint({ 1.0, 1 });
-	segment0->NoteContainer.AddPoint({ 2.0, 0 });
-	segment0->NoteContainer.AddPoint({ 3.0, 2 });
-	segment0->Length = 4.0;
+	segment0->NoteContainer.AddPoint({ 1, 1 });
+	segment0->NoteContainer.AddPoint({ 2, 0 });
+	segment0->NoteContainer.AddPoint({ 3, 2 });
+	segment0->PulseUnit = 1.0;
 
 	toccata::MusicSegment *segment1 = library.NewSegment();
-	segment1->NoteContainer.AddPoint({ 1.0, 1 });
-	segment1->NoteContainer.AddPoint({ 2.0, 5 });
-	segment1->NoteContainer.AddPoint({ 3.0, 2 });
-	segment1->Length = 4.0;
+	segment1->NoteContainer.AddPoint({ 1, 1 });
+	segment1->NoteContainer.AddPoint({ 2, 5 });
+	segment1->NoteContainer.AddPoint({ 3, 2 });
+	segment1->PulseUnit = 1.0;
 
 	toccata::MusicSegment input;
-	input.NoteContainer.AddPoint({ 1.0, 1 });
-	input.NoteContainer.AddPoint({ 2.0, 0 });
-	input.NoteContainer.AddPoint({ 3.0, 2 });
-	input.NoteContainer.AddPoint({ 4.0, 1 });
-	input.NoteContainer.AddPoint({ 5.0, 5 });
-	input.NoteContainer.AddPoint({ 6.0, 2 });
-	input.Length = 7.0;
+	input.NoteContainer.AddPoint({ 1, 1 });
+	input.NoteContainer.AddPoint({ 2, 0 });
+	input.NoteContainer.AddPoint({ 3, 2 });
+	input.NoteContainer.AddPoint({ 4, 1 });
+	input.NoteContainer.AddPoint({ 5, 5 });
+	input.NoteContainer.AddPoint({ 6, 2 });
+	input.PulseUnit = 1.0;
 
 	toccata::Bar *bar0 = library.NewBar();
 	bar0->SetSegment(segment0);
@@ -90,7 +90,7 @@ TEST(DecisionTreeTest, FullSong) {
 	songGenerator.GenerateSong(&library, 4, 32);
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.Length = 0.0;
+	inputSegment.PulseUnit = 1.0;
 
 	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.0, 1.0, 0, 0);
 
@@ -124,12 +124,12 @@ TEST(DecisionTreeTest, FullSongPrecisionLoss) {
 	songGenerator.GenerateSong(&library, 4, 32);
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.Length = 0.0;
+	inputSegment.PulseUnit = 1.0;
 
 	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.0, 1.0, 0, 0);
 
 	for (int i = 0; i < inputSegment.NoteContainer.GetCount(); ++i) {
-		inputSegment.NoteContainer.GetPoints()[i].Timestamp += 72 * 3600.0;
+		inputSegment.NoteContainer.GetPoints()[i].Timestamp += 72 * 3600;
 	}
 
 	toccata::DecisionTree tree;
@@ -162,7 +162,7 @@ TEST(DecisionTreeTest, FullSongJitter) {
 	songGenerator.GenerateSong(&library, 4, 32);
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.Length = 0.0;
+	inputSegment.PulseUnit = 1.0;
 
 	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.05, 1.0, 0, 0);
 
@@ -196,7 +196,7 @@ TEST(DecisionTreeTest, HighJitter) {
 	songGenerator.GenerateSong(&library, 4, 32);
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.Length = 0.0;
+	inputSegment.PulseUnit = 1.0;
 
 	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.15, 1.0, 0, 0);
 
@@ -234,7 +234,7 @@ TEST(DecisionTreeTest, NoteMistakes) {
 	songGenerator.GenerateSong(&library, 4, 32);
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.Length = 0.0;
+	inputSegment.PulseUnit = 1.0;
 
 	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.01, 2.0, 1, 2);
 
@@ -276,7 +276,7 @@ TEST(DecisionTreeTest, SimilarSongs) {
 	songGenerator.GenerateSong(&library, 3, 32);
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.Length = 0.0;
+	inputSegment.PulseUnit = 1.0;
 
 	GenerateInput(library.GetBar(64), &inputSegment, 3 * 32, 0.0, 1.0, 0, 0);
 
@@ -309,7 +309,7 @@ TEST(DecisionTreeTest, Repeat) {
 	songGenerator.GenerateSong(&library, 2, 32);
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.Length = 0.0;
+	inputSegment.PulseUnit = 1.0;
 
 	GenerateInput(library.GetBar(0), &inputSegment, 3 * 32, 0.0, 1.0, 0, 0);
 
@@ -351,7 +351,7 @@ TEST(DecisionTreeTest, SimpleStructure) {
 	toccata::SegmentGenerator::Convert(&stream, &library, 0);
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.Length = 0.0;
+	inputSegment.PulseUnit = 0.0;
 
 	GenerateInput(library.GetBar(0), &inputSegment, 3, 0.0, 1.0, 0, 0);
 
@@ -395,7 +395,7 @@ TEST(DecisionTreeTest, SimilarSongs_2) {
 	}
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.Length = 0.0;
+	inputSegment.PulseUnit = 1.0;
 
 	GenerateInput(library.GetBar(0), &inputSegment, 3, 0.0, 1.0, 0, 0);
 

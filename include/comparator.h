@@ -2,6 +2,7 @@
 #define TOCCATA_CORE_COMPARATOR_H
 
 #include "music_segment.h"
+#include "transform.h"
 
 #include <random>
 #include <set>
@@ -14,8 +15,7 @@ namespace toccata {
             const MusicSegment *Reference;
             const MusicSegment *Segment;
             const int *Mapping;
-            double s;
-            double t;
+            Transform T;
         };
 
         struct Result {
@@ -30,8 +30,6 @@ namespace toccata {
             const Request &request,
             Result *result
         );
-
-        static int CalculateAddedNotes(const Request &request);
     };
 
 } /* namespace toccata */

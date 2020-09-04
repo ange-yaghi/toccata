@@ -54,6 +54,12 @@ bool toccata::TestPatternEvaluator::Solve(const Request &request, Output *output
     bestMatchData.MappedNotes = 0;
     bestMatchData.MappingEnd = -1;
     bestMatchData.MappingStart = -1;
+
+    Transform coarse;
+    coarse.s = 0.0;
+    coarse.t = 0.0;
+    coarse.t_coarse = 
+        request.Segment->NoteContainer.GetPoints()[request.Start].Timestamp;
     
     while (true) {
         const bool complete = Advance(request);
@@ -66,11 +72,11 @@ bool toccata::TestPatternEvaluator::Solve(const Request &request, Output *output
                 const int refNoteIndex = testPattern[i];
                 const MusicPoint &referencePoint = referencePoints[refNoteIndex];
 
-                int noteIndex = notesByPitch[referencePoint.Pitch][mapping[i]];
+                const int noteIndex = notesByPitch[referencePoint.Pitch][mapping[i]];
                 const MusicPoint &point = points[noteIndex];
 
-                r[validPointCount] = referencePoint.Timestamp;
-                p[validPointCount] = point.Timestamp;
+                r[validPointCount] = request.ReferenceSegment->Normalize(referencePoint.Timestamp);
+                p[validPointCount] = request.Segment->Normalize(coarse.Local(point.Timestamp));
 
                 ++validPointCount;
             }
@@ -86,8 +92,9 @@ bool toccata::TestPatternEvaluator::Solve(const Request &request, Output *output
         if (!solvable) continue;
 
         NoteMapper::NNeighborMappingRequest nnMappingRequest;
-        nnMappingRequest.s = solution.s;
-        nnMappingRequest.t = solution.t;
+        nnMappingRequest.T.s = solution.s;
+        nnMappingRequest.T.t = solution.t;
+        nnMappingRequest.T.t_coarse = coarse.t_coarse;
         nnMappingRequest.Target = request.Memory.Mapping;
         nnMappingRequest.ReferenceSegment = request.ReferenceSegment;
         nnMappingRequest.Start = request.Start;
@@ -114,8 +121,9 @@ bool toccata::TestPatternEvaluator::Solve(const Request &request, Output *output
             mappingRequest.Memory = request.Memory.MappingMemory;
             mappingRequest.Start = request.Start;
             mappingRequest.End = request.End;
-            mappingRequest.s = solution.s;
-            mappingRequest.t = solution.t;
+            mappingRequest.T.s = solution.s;
+            mappingRequest.T.t = solution.t;
+            mappingRequest.T.t_coarse = coarse.t_coarse;
 
             fullMapping = NoteMapper::GetInjectiveMapping(&mappingRequest);
 
@@ -133,8 +141,9 @@ bool toccata::TestPatternEvaluator::Solve(const Request &request, Output *output
         comparatorRequest.Mapping = fullMapping;
         comparatorRequest.Reference = request.ReferenceSegment;
         comparatorRequest.Segment = request.Segment;
-        comparatorRequest.s = solution.s;
-        comparatorRequest.t = solution.t;
+        comparatorRequest.T.s = solution.s;
+        comparatorRequest.T.t = solution.t;
+        comparatorRequest.T.t_coarse = coarse.t_coarse;
 
         Comparator::CalculateError(comparatorRequest, &solutionData);
 
@@ -153,8 +162,9 @@ bool toccata::TestPatternEvaluator::Solve(const Request &request, Output *output
         output->MappedNotes = bestMatchData.MappedNotes;
         output->MappingEnd = bestMatchData.MappingEnd;
         output->MappingStart = bestMatchData.MappingStart;
-        output->s = best_s;
-        output->t = best_t;
+        output->T.s = best_s;
+        output->T.t = best_t;
+        output->T.t_coarse = coarse.t_coarse;
 
         return true;
     }

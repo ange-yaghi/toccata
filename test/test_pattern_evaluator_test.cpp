@@ -8,16 +8,16 @@
 
 TEST(TestPatternEvaluatorTest, SanityCheck) {
 	toccata::MusicSegment reference;
-	reference.Length = 1.0f;
-	reference.NoteContainer.AddPoint({ 0.0, 1 });
-	reference.NoteContainer.AddPoint({ 1.0, 2 });
-	reference.NoteContainer.AddPoint({ 2.0, 3 });
+	reference.PulseUnit = 1.0f;
+	reference.NoteContainer.AddPoint({ 0, 1 });
+	reference.NoteContainer.AddPoint({ 1, 2 });
+	reference.NoteContainer.AddPoint({ 2, 3 });
 
 	toccata::MusicSegment segment;
-	segment.Length = 1.0f;
-	segment.NoteContainer.AddPoint({ 0.0, 1 });
-	segment.NoteContainer.AddPoint({ 1.0, 2 });
-	segment.NoteContainer.AddPoint({ 2.0, 3 });
+	segment.PulseUnit = 1.0f;
+	segment.NoteContainer.AddPoint({ 0, 1 });
+	segment.NoteContainer.AddPoint({ 1, 2 });
+	segment.NoteContainer.AddPoint({ 2, 3 });
 
 	const int testPattern[] = { 0, 1 };
 
@@ -42,23 +42,23 @@ TEST(TestPatternEvaluatorTest, SanityCheck) {
 	toccata::TestPatternEvaluator::FreeMemorySpace(&request.Memory);
 
 	EXPECT_TRUE(found);
-	EXPECT_NEAR(output.s, 1.0, 1E-4);
-	EXPECT_NEAR(output.t, 0.0, 1E-4);
+	EXPECT_NEAR(output.T.s, 1.0, 1E-4);
+	EXPECT_NEAR(output.T.t, 0.0, 1E-4);
 }
 
 TEST(TestPatternEvaluatorTest, TwoOptions) {
 	toccata::MusicSegment reference;
-	reference.Length = 1.0f;
-	reference.NoteContainer.AddPoint({ 0.0, 1 });
-	reference.NoteContainer.AddPoint({ 1.0, 2 });
-	reference.NoteContainer.AddPoint({ 2.0, 3 });
+	reference.PulseUnit = 1.0f;
+	reference.NoteContainer.AddPoint({ 0, 1 });
+	reference.NoteContainer.AddPoint({ 1, 2 });
+	reference.NoteContainer.AddPoint({ 2, 3 });
 
 	toccata::MusicSegment segment;
-	segment.Length = 1.0f;
-	segment.NoteContainer.AddPoint({ 0.0, 1 });
-	segment.NoteContainer.AddPoint({ 1.0, 2 });
-	segment.NoteContainer.AddPoint({ 2.0, 3 });
-	segment.NoteContainer.AddPoint({ 5.0, 1 });
+	segment.PulseUnit = 1.0f;
+	segment.NoteContainer.AddPoint({ 0, 1 });
+	segment.NoteContainer.AddPoint({ 1, 2 });
+	segment.NoteContainer.AddPoint({ 2, 3 });
+	segment.NoteContainer.AddPoint({ 5, 1 });
 
 	const int testPattern[] = { 0, 1 };
 
@@ -83,23 +83,23 @@ TEST(TestPatternEvaluatorTest, TwoOptions) {
 	toccata::TestPatternEvaluator::FreeMemorySpace(&request.Memory);
 
 	EXPECT_TRUE(found);
-	EXPECT_NEAR(output.s, 1.0, 1E-4);
-	EXPECT_NEAR(output.t, 0.0, 1E-4);
+	EXPECT_NEAR(output.T.s, 1.0, 1E-4);
+	EXPECT_NEAR(output.T.t, 0.0, 1E-4);
 }
 
 TEST(TestPatternEvaluatorTest, TwoCloseOptions) {
 	toccata::MusicSegment reference;
-	reference.Length = 1.0f;
-	reference.NoteContainer.AddPoint({ 0.0, 1 });
-	reference.NoteContainer.AddPoint({ 1.0, 2 });
-	reference.NoteContainer.AddPoint({ 2.0, 3 });
+	reference.PulseUnit = 1.0f;
+	reference.NoteContainer.AddPoint({ 0, 1 });
+	reference.NoteContainer.AddPoint({ 1, 2 });
+	reference.NoteContainer.AddPoint({ 2, 3 });
 
 	toccata::MusicSegment segment;
-	segment.Length = 1.0f;
-	segment.NoteContainer.AddPoint({ -0.1, 1 });
-	segment.NoteContainer.AddPoint({ 0.0, 1 });
-	segment.NoteContainer.AddPoint({ 2.0, 2 });
-	segment.NoteContainer.AddPoint({ 4.0, 3 });
+	segment.PulseUnit = 10.0f;
+	segment.NoteContainer.AddPoint({ -1, 1 });
+	segment.NoteContainer.AddPoint({ 0, 1 });
+	segment.NoteContainer.AddPoint({ 20, 2 });
+	segment.NoteContainer.AddPoint({ 40, 3 });
 
 	const int testPattern[] = { 0, 1 };
 
@@ -123,24 +123,24 @@ TEST(TestPatternEvaluatorTest, TwoCloseOptions) {
 	toccata::TestPatternEvaluator::FreeMemorySpace(&request.Memory);
 
 	EXPECT_TRUE(found);
-	EXPECT_NEAR(output.s, 0.5, 1E-4);
-	EXPECT_NEAR(output.t, 0.0, 1E-4);
+	EXPECT_NEAR(output.T.s, 0.5, 1E-4);
+	EXPECT_NEAR(output.T.t, 0.0, 1E-4);
 }
 
 TEST(TestPatternEvaluatorTest, OneBadPatternPoint) {
 	toccata::MusicSegment reference;
-	reference.Length = 1.0f;
-	reference.NoteContainer.AddPoint({ 0.0, 1 });
-	reference.NoteContainer.AddPoint({ 1.0, 2 });
-	reference.NoteContainer.AddPoint({ 2.0, 3 });
-	reference.NoteContainer.AddPoint({ 3.0, 4 });
+	reference.PulseUnit = 1.0f;
+	reference.NoteContainer.AddPoint({ 0, 1 });
+	reference.NoteContainer.AddPoint({ 1, 2 });
+	reference.NoteContainer.AddPoint({ 2, 3 });
+	reference.NoteContainer.AddPoint({ 3, 4 });
 
 	toccata::MusicSegment segment;
-	segment.Length = 1.0f;
-	segment.NoteContainer.AddPoint({ 0.0, 1 });
-	segment.NoteContainer.AddPoint({ 2.0, 2 });
-	segment.NoteContainer.AddPoint({ 4.0, 3 });
-	segment.NoteContainer.AddPoint({ 100.0, 4 });
+	segment.PulseUnit = 1.0f;
+	segment.NoteContainer.AddPoint({ 0, 1 });
+	segment.NoteContainer.AddPoint({ 2, 2 });
+	segment.NoteContainer.AddPoint({ 4, 3 });
+	segment.NoteContainer.AddPoint({ 100, 4 });
 
 	const int testPattern[] = { 0, 1, 3 };
 
@@ -165,8 +165,8 @@ TEST(TestPatternEvaluatorTest, OneBadPatternPoint) {
 	toccata::TestPatternEvaluator::FreeMemorySpace(&request.Memory);
 
 	EXPECT_TRUE(found);
-	EXPECT_NEAR(output.s, 0.5, 1E-4);
-	EXPECT_NEAR(output.t, 0.0, 1E-4);
+	EXPECT_NEAR(output.T.s, 0.5, 1E-4);
+	EXPECT_NEAR(output.T.t, 0.0, 1E-4);
 }
 
 TEST(TestPatternEvaluatorTest, LargeData) {
@@ -201,6 +201,6 @@ TEST(TestPatternEvaluatorTest, LargeData) {
 	EXPECT_EQ(output.MappingEnd, 15);
 	EXPECT_EQ(output.MappingStart, 0);
 	EXPECT_NEAR(output.AverageError, 0.0, 1E-4);
-	EXPECT_NEAR(output.s, 1.0, 1E-4);
-	EXPECT_NEAR(output.t, 0.0, 1E-4);
+	EXPECT_NEAR(output.T.s, 1.0, 1E-4);
+	EXPECT_NEAR(output.T.t, 0.0, 1E-4);
 }

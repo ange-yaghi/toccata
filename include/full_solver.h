@@ -4,6 +4,7 @@
 #include "test_pattern_generator.h"
 #include "test_pattern_evaluator.h"
 #include "comparator.h"
+#include "transform.h"
 
 namespace toccata {
 
@@ -32,8 +33,7 @@ namespace toccata {
         struct Result {
             Comparator::Result Fit;
             bool Singular;
-            double s;
-            double t;
+            Transform T;
         };
 
     public:

@@ -29,8 +29,8 @@ bool toccata::Comparator::CalculateError(const Request &request, Result *result)
         const MusicPoint &ref = referencePoints[i];
         const MusicPoint &p = points[request.Mapping[i]];
 
-        const double p_t = Transform::f(p.Timestamp, request.s, request.t);
-        const double diff = Math::Abs(ref.Timestamp - p_t);
+        const double p_t = request.T.f(request.Segment->Normalize(p.Timestamp));
+        const double diff = Math::Abs(request.Reference->Normalize(ref.Timestamp) - p_t);
 
         totalError += diff;
         ++mappedNotes;
@@ -44,30 +44,4 @@ bool toccata::Comparator::CalculateError(const Request &request, Result *result)
     result->AverageError = totalError / mappedNotes;
 
     return true;
-}
-
-int toccata::Comparator::CalculateAddedNotes(const Request &request) {
-    const int n = request.Reference->NoteContainer.GetCount();
-    const int n0 = request.Segment->NoteContainer.GetCount();
-    const MusicPoint *referencePoints = request.Reference->NoteContainer.GetPoints();
-    const MusicPoint *points = request.Segment->NoteContainer.GetPoints();
-
-    std::vector<bool> mapped(n0, false);
-
-    for (int i = 0; i < n; ++i) {
-        if (request.Mapping[i] == -1) continue;
-        mapped[request.Mapping[i]] = true;
-    }
-
-    int addedNotes = 0;
-    for (int i = 0; i < n0; ++i) {
-        if (mapped[i]) continue;
-
-        const MusicPoint &p = points[i];
-        const double timestamp = Transform::f(p.Timestamp, request.s, request.t);
-
-        if (timestamp > 0.0 || timestamp < request.Reference->Length) ++addedNotes;
-    }
-
-    return addedNotes;
 }

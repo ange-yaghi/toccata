@@ -3,6 +3,7 @@
 
 #include "test_pattern_evaluator.h"
 #include "test_pattern_generator.h"
+#include "transform.h"
 #include "library.h"
 
 namespace toccata {
@@ -17,8 +18,7 @@ namespace toccata {
             const MusicSegment *MatchedSegment;
             int MatchedNotes;
             double Error;
-            double s;
-            double t;
+            Transform T;
         };
 
     public:

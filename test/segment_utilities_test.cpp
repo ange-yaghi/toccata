@@ -5,10 +5,10 @@
 
 TEST(SegmentUtilitiesTest, SanityCheck) {
 	toccata::MusicSegment segment;
-	segment.Length = 1.0f;
-	segment.NoteContainer.AddPoint({ 0.0, 0 });
-	segment.NoteContainer.AddPoint({ 1.0, 1 });
-	segment.NoteContainer.AddPoint({ 2.0, 2 });
+	segment.PulseUnit = 1.0f;
+	segment.NoteContainer.AddPoint({ 0, 0 });
+	segment.NoteContainer.AddPoint({ 1, 1 });
+	segment.NoteContainer.AddPoint({ 2, 2 });
 
 	int **target = toccata::Memory::Allocate2d<int>(3, 4);
 

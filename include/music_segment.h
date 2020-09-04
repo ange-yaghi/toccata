@@ -8,7 +8,17 @@ namespace toccata {
 
     struct MusicSegment {
         MusicPointContainer NoteContainer;
-        double Length;
+        double PulseUnit;
+        double SecondUnit;
+        timestamp Length;
+
+        double GetNormalizedLength() const {
+            return Normalize(Length);
+        }
+
+        double Normalize(timestamp t) const {
+            return (double)t / PulseUnit;
+        }
     };
 
 } /* namespace toccata */

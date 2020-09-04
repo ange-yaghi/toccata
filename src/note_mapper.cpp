@@ -5,16 +5,20 @@
 #include "../include/memory.h"
 
 int toccata::NoteMapper::GetClosestNote(
-    const MusicPoint *points, int start, int end, double timestamp, int pitch)
+    const MusicSegment *segment, const Transform &coarse, int start, int end, double timestamp, int pitch)
 {
+    const MusicPoint *points = segment->NoteContainer.GetPoints();
+
     int prev = -1;
     for (int i = start; i <= end; ++i) {
         if (points[i].Pitch == pitch) {
             if (prev != -1) {
-                const double currTimestamp = points[i].Timestamp;
+                const double currTimestamp = 
+                    segment->Normalize(coarse.Local(points[i].Timestamp));
 
                 if (currTimestamp >= timestamp) {
-                    const double prevTimestamp = points[prev].Timestamp;
+                    const double prevTimestamp = 
+                        segment->Normalize(coarse.Local(points[prev].Timestamp));
 
                     const double diffPrev = Math::Abs(prevTimestamp - timestamp);
                     const double diffCurr = Math::Abs(currTimestamp - timestamp);
@@ -33,16 +37,20 @@ int toccata::NoteMapper::GetClosestNote(
 }
 
 int toccata::NoteMapper::GetClosestNote(
-    const MusicPoint *points, const int *indices, int n, double timestamp)
+    const MusicSegment *segment, const Transform &coarse, const int *indices, int n, double timestamp)
 {
+    const MusicPoint *points = segment->NoteContainer.GetPoints();
+    
     int prev = -1;
     for (int i = 0; i < n; ++i) {
         const int index = indices[i];
         if (prev != -1) {
-            const double currTimestamp = points[index].Timestamp;
+            const double currTimestamp = 
+                segment->Normalize(coarse.Local(points[index].Timestamp));
 
             if (currTimestamp >= timestamp) {
-                const double prevTimestamp = points[prev].Timestamp;
+                const double prevTimestamp = 
+                    segment->Normalize(coarse.Local(points[prev].Timestamp));
 
                 const double diffPrev = Math::Abs(prevTimestamp - timestamp);
                 const double diffCurr = Math::Abs(currTimestamp - timestamp);
@@ -63,27 +71,30 @@ int *toccata::NoteMapper::GetMapping(NNeighborMappingRequest *request) {
     assert(request->Start >= 0);
     assert(request->End >= request->Start);
 
+    const Transform coarse = { 1.0, 0.0, request->T.t_coarse };
     const int n = request->ReferenceSegment->NoteContainer.GetCount();
 
-    const double correlationThreshold = 
-        request->CorrelationThreshold * request->ReferenceSegment->Length / request->s;
+    const MusicSegment *reference = request->ReferenceSegment;
+    const MusicSegment *segment = request->Segment;
 
-    const MusicPoint *referencePoints = request->ReferenceSegment->NoteContainer.GetPoints();
-    const MusicPoint *points = request->Segment->NoteContainer.GetPoints();
+    const double correlationThreshold = request->CorrelationThreshold;
+
+    const MusicPoint *referencePoints = reference->NoteContainer.GetPoints();
+    const MusicPoint *points = segment->NoteContainer.GetPoints();
 
     for (int i = 0; i < n; ++i) {
         const MusicPoint &referencePoint = referencePoints[i];
-        const double refTimestampSegmentSpace = Transform::inv_f(
-            referencePoint.Timestamp,
-            request->s,
-            request->t
-        );
+        const double refTimestamp =
+            request->ReferenceSegment->Normalize(referencePoint.Timestamp);
+        const double refTimestampSegmentSpace =
+            request->T.inv_f(refTimestamp);
 
         int closest = -1;
         
         if (request->NotesByPitch == nullptr) {
             closest = GetClosestNote(
-                request->Segment->NoteContainer.GetPoints(),
+                request->Segment,
+                coarse,
                 request->Start,
                 request->End,
                 refTimestampSegmentSpace,
@@ -96,7 +107,8 @@ int *toccata::NoteMapper::GetMapping(NNeighborMappingRequest *request) {
             while (points[n_pitch] != -1) { ++n_pitch; }
 
             closest = GetClosestNote(
-                request->Segment->NoteContainer.GetPoints(),
+                request->Segment,
+                coarse,
                 points,
                 n_pitch,
                 refTimestampSegmentSpace
@@ -108,9 +120,10 @@ int *toccata::NoteMapper::GetMapping(NNeighborMappingRequest *request) {
         }
         else {
             const MusicPoint &closestPoint = points[closest];
-            const double diff = Math::Abs(closestPoint.Timestamp - refTimestampSegmentSpace);
+            const double timestamp = segment->Normalize(closestPoint.Timestamp);
+            const double diff = Math::Abs(timestamp - refTimestampSegmentSpace);
 
-            request->Target[i] = (diff < correlationThreshold)
+            request->Target[i] = (diff < correlationThreshold / request->T.s)
                 ? closest
                 : -1;
         }
@@ -145,6 +158,9 @@ int *toccata::NoteMapper::GetInjectiveMapping(InjectiveMappingRequest *request) 
     assert(request->Start >= 0);
     assert(request->End >= request->Start);
 
+    const MusicSegment *reference = request->ReferenceSegment;
+    const MusicSegment *segment = request->Segment;
+
     const int n = request->ReferenceSegment->NoteContainer.GetCount();
     const int m = request->End - request->Start + 1;
     const int k = m > n ? m : n;
@@ -155,12 +171,12 @@ int *toccata::NoteMapper::GetInjectiveMapping(InjectiveMappingRequest *request) 
     const MusicPoint *referencePoints = request->ReferenceSegment->NoteContainer.GetPoints();
     const MusicPoint *points = request->Segment->NoteContainer.GetPoints();
 
-    const double correlationThreshold =
-        request->CorrelationThreshold * request->ReferenceSegment->Length;
+    const double correlationThreshold = request->CorrelationThreshold;
 
     for (int i = 0; i < n; ++i) {
         const MusicPoint &referencePoint = referencePoints[i];
-        const double refTimestamp = referencePoint.Timestamp;
+        const double refTimestamp = 
+            request->ReferenceSegment->Normalize(referencePoint.Timestamp);
 
         for (int j = 0; j < k; ++j) {
             if (j >= m) {
@@ -174,10 +190,8 @@ int *toccata::NoteMapper::GetInjectiveMapping(InjectiveMappingRequest *request) 
                     D[i][j] = true;
                 }
                 else {
-                    const double timestamp = Transform::f(
-                        point.Timestamp,
-                        request->s,
-                        request->t
+                    const double timestamp = request->T.f(
+                        segment->Normalize(point.Timestamp)
                     );
 
                     const double diff = Math::Abs(refTimestamp - timestamp);

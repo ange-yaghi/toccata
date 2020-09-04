@@ -1,7 +1,6 @@
 #include "../include/decision_tree.h"
 
 #include "../include/memory.h"
-#include "../include/transform.h"
 
 toccata::DecisionTree::DecisionTree() {
     m_library = nullptr;
@@ -185,8 +184,7 @@ void toccata::DecisionTree::UpdateDecision(Decision *target, Decision *source) {
     target->AverageError = source->AverageError;
     target->MappedNotes = source->MappedNotes;
     target->Notes = source->Notes;
-    target->s = source->s;
-    target->t = source->t;
+    target->T = source->T;
     target->MatchedBar = source->MatchedBar;
     target->Singular = source->Singular;
 
@@ -345,11 +343,11 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
         if (!isLeaf[i]) continue;
 
         Decision *decision = m_decisions[i];
-        float s_avg = 0.0;
+        double s_avg = 0.0;
         int s_samples = 0;
         while (decision != nullptr) {
             if (!decision->Singular) {
-                s_avg += decision->s;
+                s_avg += decision->T.s;
                 ++s_samples;
             }
 
@@ -371,12 +369,12 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
             bar.End = decision->GetEnd();
 
             if (decision->Singular && s_samples > 0) {
-                bar.s = s_avg;
-                bar.t = decision->t * s_avg;
+                bar.T.s = s_avg;
+                bar.T.t = decision->T.t * s_avg;
+                bar.T.t_coarse = decision->T.t_coarse;
             }
             else {
-                bar.s = decision->s;
-                bar.t = decision->t;
+                bar.T = decision->T;
             }
 
             newPiece.Start = std::min(bar.Start, newPiece.Start);
@@ -416,7 +414,7 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
             const int end = std::min(piece0.End, piece1.End);
 
             const int overlap = std::max(0, end - start + 1);
-            const int overlapThreshold = std::ceil(0.25 * std::min(length0, length1));
+            const int overlapThreshold = (int)std::ceil(0.25 * std::min(length0, length1));
 
             if (overlap >= overlapThreshold) {
                 filtered[j] = true;
@@ -466,11 +464,13 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::FindBestParent(const Dec
                 continue;
             }
 
-            const double prevLength = prev->MatchedBar->GetSegment()->Length;
-            const double length = decision->MatchedBar->GetSegment()->Length;
-            const double decisionStart = Transform::inv_f(0.0, decision->s, decision->t);
-            const double prevEnd = Transform::inv_f(prevLength, prev->s, prev->t);
-            const double trueDistance = Transform::f(decisionStart - prevEnd, decision->s, 0.0);
+            const double prevLength = prev->MatchedBar->GetSegment()->GetNormalizedLength();
+            const double length = decision->MatchedBar->GetSegment()->GetNormalizedLength();
+            const double decisionStart = decision->T.inv_f(0.0); //Transform::inv_f(0.0, decision->s, decision->t);
+            const double prevEnd = prev->T.inv_f(prevLength); //Transform::inv_f(prevLength, prev->s, prev->t);
+            const double trueDistance = decisionStart > prevEnd
+                ? decision->T.Scale(decisionStart - prevEnd)
+                : 0.0; //Transform::f(decisionStart - prevEnd, decision->s, 0.0);
 
             if (trueDistance > next.Distance + length * 0.5) continue;
 
@@ -577,8 +577,7 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::Match(
 
     Decision *newDecision = AllocateDecision();
     newDecision->AverageError = result.Fit.AverageError;
-    newDecision->s = result.s;
-    newDecision->t = result.t;
+    newDecision->T = result.T;
     newDecision->Notes = mappedNotes;
     newDecision->MappedNotes = result.Fit.MappedNotes;
     newDecision->MatchedBar = reference;

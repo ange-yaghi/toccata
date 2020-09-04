@@ -3,6 +3,7 @@
 
 #include "music_segment.h"
 #include "note_mapper.h"
+#include "transform.h"
 
 #include <random>
 
@@ -40,8 +41,7 @@ namespace toccata {
         };
 
         struct Output {
-            double s;
-            double t;
+            Transform T;
             double AverageError;
 
             int MappedNotes;
