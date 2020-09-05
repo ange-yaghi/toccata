@@ -119,12 +119,13 @@ TEST(TestPatternEvaluatorTest, TwoCloseOptions) {
 	request.SegmentNotesByPitch = notesByPitch;
 
 	toccata::TestPatternEvaluator::AllocateMemorySpace(&request.Memory, 2, 3, 4);
-	bool found = toccata::TestPatternEvaluator::Solve(request, &output);
+	const bool found = toccata::TestPatternEvaluator::Solve(request, &output);
 	toccata::TestPatternEvaluator::FreeMemorySpace(&request.Memory);
 
 	EXPECT_TRUE(found);
 	EXPECT_NEAR(output.T.s, 0.5, 1E-4);
-	EXPECT_NEAR(output.T.t, 0.0, 1E-4);
+	EXPECT_NEAR(output.T.t, -0.05, 1E-4);
+	EXPECT_EQ(output.T.t_coarse, -1);
 }
 
 TEST(TestPatternEvaluatorTest, OneBadPatternPoint) {
@@ -174,8 +175,11 @@ TEST(TestPatternEvaluatorTest, LargeData) {
 	toccata::MusicSegment segment;
 
 	toccata::SegmentGenerator generator;
-	generator.CreateRandomSegmentQuantized(&reference, 16, 16, 1.0, 256);
+	generator.CreateRandomSegmentQuantized(&reference, 16, 16, 10, 256);
 	generator.Copy(&reference, &segment);
+
+	reference.PulseUnit = 160.0;
+	segment.PulseUnit = 160.0;
 
 	const int testPattern[] = { 3, 5, 10 };
 

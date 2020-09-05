@@ -104,6 +104,7 @@ bool toccata::FullSolver::Solve(const Request &request, Result *result) {
 	comparatorRequest.Segment = segment;
 	comparatorRequest.T.s = refinedSolution.s;
 	comparatorRequest.T.t = refinedSolution.t;
+	comparatorRequest.T.t_coarse = output.T.t_coarse;
 	Comparator::CalculateError(comparatorRequest, &result->Fit);
 
 	int missedNotes = n - result->Fit.MappedNotes;

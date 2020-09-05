@@ -464,15 +464,18 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::FindBestParent(const Dec
                 continue;
             }
 
-            const double prevLength = prev->MatchedBar->GetSegment()->GetNormalizedLength();
-            const double length = decision->MatchedBar->GetSegment()->GetNormalizedLength();
-            const double decisionStart = decision->T.inv_f(0.0); //Transform::inv_f(0.0, decision->s, decision->t);
-            const double prevEnd = prev->T.inv_f(prevLength); //Transform::inv_f(prevLength, prev->s, prev->t);
-            const double trueDistance = decisionStart > prevEnd
-                ? decision->T.Scale(decisionStart - prevEnd)
-                : 0.0; //Transform::f(decisionStart - prevEnd, decision->s, 0.0);
+            MusicSegment *prevSegment = prev->MatchedBar->GetSegment();
+            MusicSegment *segment = decision->MatchedBar->GetSegment();
 
-            if (trueDistance > next.Distance + length * 0.5) continue;
+            const double b0 = decision->T.inv_f(0.0);
+            const double b1 = prev->T.inv_f(prevSegment->GetNormalizedLength());
+            const double adjustment = m_segment->Normalize(decision->T.t_coarse - prev->T.t_coarse);
+
+            const double trueDistance = b0 - b1 + adjustment;
+            const double length = decision->T.inv_s(segment->GetNormalizedLength());
+            const double distance = decision->T.inv_s(next.Distance);
+
+            if (trueDistance > distance + length * 0.5) continue;
 
             GetDepth(prev);
             const int noteCount = GetBranchNoteCount(prev);

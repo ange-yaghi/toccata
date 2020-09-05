@@ -120,7 +120,7 @@ int *toccata::NoteMapper::GetMapping(NNeighborMappingRequest *request) {
         }
         else {
             const MusicPoint &closestPoint = points[closest];
-            const double timestamp = segment->Normalize(closestPoint.Timestamp);
+            const double timestamp = segment->Normalize(coarse.Local(closestPoint.Timestamp));
             const double diff = Math::Abs(timestamp - refTimestampSegmentSpace);
 
             request->Target[i] = (diff < correlationThreshold / request->T.s)
@@ -191,7 +191,7 @@ int *toccata::NoteMapper::GetInjectiveMapping(InjectiveMappingRequest *request) 
                 }
                 else {
                     const double timestamp = request->T.f(
-                        segment->Normalize(point.Timestamp)
+                        segment->Normalize(request->T.Local(point.Timestamp))
                     );
 
                     const double diff = Math::Abs(refTimestamp - timestamp);

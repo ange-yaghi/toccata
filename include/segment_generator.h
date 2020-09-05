@@ -22,7 +22,7 @@ namespace toccata {
         static void Append(MusicSegment *target, const MusicSegment *segment);
 
         void CreateRandomSegment(MusicSegment *segment, int noteCount, double length, int notes);
-        void CreateRandomSegmentQuantized(MusicSegment *segment, int noteCount, int gridSpaces, double length, int notes);
+        void CreateRandomSegmentQuantized(MusicSegment *segment, int noteCount, int gridSpaces, int unitLength, int notes);
 
         void AddRandomNotes(MusicSegment *segment, int count, int notes);
         void AddRandomNotes(MusicSegment *segment, int count, int notes, double start, double end);

@@ -17,6 +17,8 @@ namespace toccata {
         unsigned short Length = 0;
         unsigned short Velocity = 0;
         Hand Part = Hand::Unknown;
+
+        timestamp GetEnd() const { return Timestamp + Length; }
     };
 
 } /* namespace toccata */

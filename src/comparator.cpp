@@ -29,7 +29,7 @@ bool toccata::Comparator::CalculateError(const Request &request, Result *result)
         const MusicPoint &ref = referencePoints[i];
         const MusicPoint &p = points[request.Mapping[i]];
 
-        const double p_t = request.T.f(request.Segment->Normalize(p.Timestamp));
+        const double p_t = request.T.f(request.Segment->Normalize(request.T.Local(p.Timestamp)));
         const double diff = Math::Abs(request.Reference->Normalize(ref.Timestamp) - p_t);
 
         totalError += diff;

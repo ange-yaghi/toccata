@@ -14,6 +14,9 @@ int GenerateInput(
 	toccata::SegmentGenerator utilities;
 	utilities.Seed(0);
 
+	target->Length = 0.0;
+	target->PulseUnit = 10.0;
+
 	while (current != nullptr && n < barCount) {
 		toccata::MusicSegment segment;
 		toccata::SegmentGenerator::Copy(current->GetSegment(), &segment);

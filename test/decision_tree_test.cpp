@@ -90,7 +90,6 @@ TEST(DecisionTreeTest, FullSong) {
 	songGenerator.GenerateSong(&library, 4, 32);
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.PulseUnit = 1.0;
 
 	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.0, 1.0, 0, 0);
 
@@ -351,7 +350,7 @@ TEST(DecisionTreeTest, SimpleStructure) {
 	toccata::SegmentGenerator::Convert(&stream, &library, 0);
 
 	toccata::MusicSegment inputSegment;
-	inputSegment.PulseUnit = 0.0;
+	inputSegment.PulseUnit = 1.0;
 
 	GenerateInput(library.GetBar(0), &inputSegment, 3, 0.0, 1.0, 0, 0);
 

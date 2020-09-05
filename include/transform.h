@@ -8,16 +8,16 @@
 namespace toccata {
 
     struct Transform {
-        timestamp r(timestamp t) const {
-            return t - t_coarse;
-        }
-
         double f(double x) const {
             return x * s + this->t;
         }
 
         double Scale(double x) const {
             return x * s;
+        }
+
+        double inv_s(double x) const {
+            return x / s;
         }
 
         double inv_f(double y) const {

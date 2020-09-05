@@ -374,3 +374,41 @@ TEST(NoteMapperTest, InjectiveMappingCompetition) {
 
 	delete[] mapping;
 }
+
+TEST(NoteMapperTest, InjectiveMappingRange) {
+	toccata::MusicSegment reference;
+	reference.PulseUnit = 1.0;
+	reference.NoteContainer.AddPoint({ 0, 0 });
+	reference.NoteContainer.AddPoint({ 1, 0 });
+	reference.NoteContainer.AddPoint({ 2, 0 });
+
+	toccata::MusicSegment segment;
+	segment.PulseUnit = 1.0;
+	segment.NoteContainer.AddPoint({ 0, 0 });
+	segment.NoteContainer.AddPoint({ 1, 0 });
+	segment.NoteContainer.AddPoint({ 2, 0 });
+	segment.NoteContainer.AddPoint({ 3, 0 });
+	segment.NoteContainer.AddPoint({ 4, 0 });
+	segment.NoteContainer.AddPoint({ 5, 0 });
+
+	toccata::NoteMapper::InjectiveMappingRequest request;
+	request.CorrelationThreshold = 0.15;
+	request.ReferenceSegment = &reference;
+	request.Segment = &segment;
+	request.Start = 3;
+	request.End = 5;
+	request.T.s = 1.0;
+	request.T.t = 0.0;
+	request.T.t_coarse = 3;
+	request.Target = new int[3];
+
+	toccata::NoteMapper::AllocateMemorySpace(&request.Memory, 3, 3);
+	const int *mapping = toccata::NoteMapper::GetInjectiveMapping(&request);
+	toccata::NoteMapper::FreeMemorySpace(&request.Memory);
+
+	EXPECT_EQ(mapping[0], 3);
+	EXPECT_EQ(mapping[1], 4);
+	EXPECT_EQ(mapping[2], 5);
+
+	delete[] mapping;
+}
