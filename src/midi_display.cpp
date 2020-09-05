@@ -67,8 +67,8 @@ void toccata::MidiDisplay::Render() {
         if (point.Pitch > m_keyEnd || point.Pitch < m_keyStart) continue;
         if (!m_timeline->InRange(point.Timestamp, point.Timestamp + point.Length)) continue;
 
-        const float noteStart = m_timeline->GetWorldX(point.Timestamp);
-        const float noteEnd = m_timeline->GetWorldX(point.Timestamp + point.Length);
+        const float noteStart = m_timeline->TimestampToWorldX(point.Timestamp);
+        const float noteEnd = m_timeline->TimestampToWorldX(point.Timestamp + point.Length);
         const float noteWidth = noteEnd - noteStart;
 
         const float y = lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2;
@@ -92,8 +92,8 @@ void toccata::MidiDisplay::Render() {
         if (point.Pitch > m_keyEnd || point.Pitch < m_keyStart) continue;
         if (!m_timeline->InRange(point.Timestamp, point.Timestamp + point.Length)) continue;
 
-        const float noteStart = m_timeline->GetWorldX(point.Timestamp);
-        const float noteEnd = m_timeline->GetWorldX(point.Timestamp + point.Length);
+        const float noteStart = m_timeline->TimestampToWorldX(point.Timestamp);
+        const float noteEnd = m_timeline->TimestampToWorldX(point.Timestamp + point.Length);
         const float noteWidth = noteEnd - noteStart;
 
         const float y = lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2;
@@ -114,12 +114,14 @@ void toccata::MidiDisplay::Render() {
         const Timeline::MatchedBar &bar = m_timeline->GetBar(i);
 
         const float length = bar.Bar.MatchedBar->GetSegment()->Length;
-        const float start = Transform::inv_f(0.0, bar.Bar.s, bar.Bar.t);
-        const float end = Transform::inv_f(length, bar.Bar.s, bar.Bar.t);
+        //const float start = Transform::inv_f(0.0, bar.Bar.s, bar.Bar.t);
+        //const float end = Transform::inv_f(length, bar.Bar.s, bar.Bar.t);
+        const double start = m_timeline->ReferenceToWorldX(0.0, bar.Bar.T);
+        const double end = m_timeline->ReferenceToWorldX(length, bar.Bar.T);
 
         if (m_timeline->InRange(start)) {
-            const float x = m_timeline->GetWorldX(start);
-            const ysVector positionStart = ysMath::LoadVector(x, middle_y);
+            //const float x = m_timeline->GetWorldX(start);
+            const ysVector positionStart = ysMath::LoadVector(start, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
             m_engine->SetObjectTransform(ysMath::TranslationTransform(positionStart));
@@ -130,8 +132,8 @@ void toccata::MidiDisplay::Render() {
         }
 
         if (m_timeline->InRange(end)) {
-            const float x = m_timeline->GetWorldX(end);
-            const ysVector positionEnd = ysMath::LoadVector(x, middle_y);
+            //const float x = m_timeline->GetWorldX(end);
+            const ysVector positionEnd = ysMath::LoadVector(end, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
             m_engine->SetObjectTransform(ysMath::TranslationTransform(positionEnd));

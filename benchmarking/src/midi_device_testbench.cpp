@@ -76,6 +76,7 @@ void toccata::MidiDeviceTestbench::InitializeDecisionThread() {
 
 void toccata::MidiDeviceTestbench::InitializeMidiInput() {
     const std::string path = "../../test/midi/simple_passage.midi";
+    const double pulse = 1000.0; // 1 ms pulse
 
     toccata::MidiStream stream;
     toccata::MidiFile midiFile;
@@ -83,7 +84,7 @@ void toccata::MidiDeviceTestbench::InitializeMidiInput() {
 
     toccata::SegmentGenerator::Convert(&stream, &m_library, 0);
 
-    m_decisionThread.Initialize(&m_library, 12);
+    m_decisionThread.Initialize(&m_library, 12, pulse);
     m_decisionThread.StartThreads();
 }
 
@@ -102,9 +103,9 @@ void toccata::MidiDeviceTestbench::ProcessMidiInput() {
 
         MusicPoint point;
         point.Pitch = note.MidiKey;
-        point.Timestamp = (double)note.Timestamp;
+        point.Timestamp = note.Timestamp;
         point.Velocity = note.Velocity;
-        point.Length = 0.0;
+        point.Length = 0;
         m_decisionThread.AddNote(point);
     }
 }

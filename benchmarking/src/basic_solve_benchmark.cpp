@@ -51,7 +51,7 @@ void toccata::BasicSolveBenchmark::Run() {
 		reference.NoteContainer.Clear();
 		segment.NoteContainer.Clear();
 
-		generator.CreateRandomSegmentQuantized(&reference, 16, 16, 1.0, 10);
+		generator.CreateRandomSegmentQuantized(&reference, 16, 16, 10, 10);
 
 		generator.Copy(&reference, &segment);
 		generator.Jitter(&segment, 0.125);

@@ -90,7 +90,6 @@ TEST(DecisionTreeTest, FullSong) {
 	songGenerator.GenerateSong(&library, 4, 32);
 
 	toccata::MusicSegment inputSegment;
-
 	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.0, 1.0, 0, 0);
 
 	toccata::DecisionTree tree;
@@ -128,7 +127,7 @@ TEST(DecisionTreeTest, FullSongPrecisionLoss) {
 	GenerateInput(library.GetBar(0), &inputSegment, 64, 0.0, 1.0, 0, 0);
 
 	for (int i = 0; i < inputSegment.NoteContainer.GetCount(); ++i) {
-		inputSegment.NoteContainer.GetPoints()[i].Timestamp += 72 * 3600;
+		inputSegment.NoteContainer.GetPoints()[i].Timestamp += (unsigned long long)365 * 24 * 3600 * 1000;
 	}
 
 	toccata::DecisionTree tree;

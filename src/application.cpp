@@ -65,9 +65,8 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
 }
 
 void toccata::Application::Process() {
-    int windowWidth, windowHeight;
-    windowWidth = m_engine.GetScreenWidth();
-    windowHeight = m_engine.GetScreenHeight();
+    const int windowWidth = m_engine.GetScreenWidth();
+    const int windowHeight = m_engine.GetScreenHeight();
 
     const float dt = m_engine.GetFrameLength();
     m_currentOffset += dt;
@@ -75,18 +74,18 @@ void toccata::Application::Process() {
     const int n = m_testSegment.NoteContainer.GetCount();
     double windowStart = m_timeline.GetTimeOffset();
     if (n > 0) {
-        MusicPoint &lastPoint = m_testSegment.NoteContainer.GetPoints()[n - 1];
+        const MusicPoint &lastPoint = m_testSegment.NoteContainer.GetPoints()[n - 1];
 
-        if (lastPoint.Timestamp + 2.0 > m_timeline.GetTimeRange() + m_timeline.GetTimeOffset()) {
-            windowStart = lastPoint.Timestamp + 2.0 - 5.0;
+        if (lastPoint.Timestamp + 2000 > m_timeline.GetTimeRange() + m_timeline.GetTimeOffset()) {
+            windowStart = lastPoint.Timestamp + 2000 - 5000;
         }
     }
 
-    m_timeline.SetPositionX(-windowWidth / 2);
+    m_timeline.SetPositionX(-windowWidth / 2.0f);
     m_timeline.SetInputSegment(&m_testSegment);
     m_timeline.SetReferenceSegment(&m_referenceSegment);
     m_timeline.SetTimeOffset(windowStart);
-    m_timeline.SetTimeRange(5.0);
+    m_timeline.SetTimeRange(5000);
     m_timeline.SetWidth(windowWidth);
 
     m_midiDisplay.SetEngine(&m_engine);
@@ -149,9 +148,9 @@ void toccata::Application::ProcessMidiInput() {
         const MidiNote &note = targetStream.GetNote(i);
         MusicPoint point;
         point.Pitch = note.MidiKey;
-        point.Timestamp = (double)note.Timestamp / 1000.0;
+        point.Timestamp = note.Timestamp;
         point.Velocity = note.Velocity;
-        point.Length = note.NoteLength / 1000.0;
+        point.Length = note.NoteLength;
         m_decisionThread.AddNote(point);
         m_testSegment.NoteContainer.AddPoint(point);
     }
@@ -189,6 +188,7 @@ void toccata::Application::ConstructReferenceNotes() {
         for (const DecisionTree::MatchedBar &bar : piece.Bars) {
             m_timeline.AddBar(bar);
 
+            /*
             MusicSegment *segment = bar.MatchedBar->GetSegment();
             const int n = segment->NoteContainer.GetCount();
 
@@ -202,7 +202,7 @@ void toccata::Application::ConstructReferenceNotes() {
                 newPoint.Velocity = reference.Velocity;
 
                 m_referenceSegment.NoteContainer.AddPoint(newPoint);
-            }
+            }*/
         }
     }
 }
@@ -250,7 +250,7 @@ void toccata::Application::InitializeLibrary() {
 }
 
 void toccata::Application::InitializeDecisionThread() {
-    m_decisionThread.Initialize(&m_library, 12);
+    m_decisionThread.Initialize(&m_library, 12, 1000.0);
     m_decisionThread.StartThreads();
 }
 

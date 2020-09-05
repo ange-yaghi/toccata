@@ -26,7 +26,7 @@ bool toccata::MidiDeviceSystem::Refresh() {
     m_devices.clear();
 
     const unsigned int deviceCount = midiInGetNumDevs();
-    for (int i = 0; i < deviceCount; ++i) {
+    for (unsigned int i = 0; i < deviceCount; ++i) {
         MIDIINCAPS deviceInfo;
         MMRESULT result = midiInGetDevCaps(i, &deviceInfo, sizeof(MIDIINCAPS));
 

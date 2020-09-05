@@ -30,21 +30,27 @@ namespace toccata {
         void SetReferenceSegment(MusicSegment *segment) { m_referenceSegment = segment; }
         MusicSegment *GetReferenceSegment() const { return m_referenceSegment; }
 
-        void SetTimeRange(double range) { m_timeRange = range; }
-        double GetTimeRange() const { return m_timeRange; }
+        void SetTimeRange(timestamp range) { m_timeRange = range; }
+        timestamp GetTimeRange() const { return m_timeRange; }
 
-        void SetTimeOffset(double offset) { m_timeOffset = offset; }
-        double GetTimeOffset() const { return m_timeOffset; }
+        void SetTimeOffset(timestamp offset) { m_timeOffset = offset; }
+        timestamp GetTimeOffset() const { return m_timeOffset; }
 
         void ClearBars() { m_bars.clear(); }
         void AddBar(const DecisionTree::MatchedBar &bar) { m_bars.push_back({ bar }); }
 
-        bool InRange(double timestamp) const;
-        bool InRange(double start, double end) const;
-        void CropToFit(double &start, double &end) const;
+        bool InRange(timestamp t) const;
+        bool InRange(timestamp start, timestamp end) const;
+        void CropToFit(timestamp &start, timestamp &end) const;
 
-        double GetLocalX(double timestamp) const;
-        double GetWorldX(double timestamp) const;
+        double TimestampToLocalX(timestamp timestamp) const;
+        double TimestampToWorldX(timestamp timestamp) const;
+
+        double ReferenceToLocalX(double r, const Transform &T) const;
+        double ReferenceToWorldX(double r, const Transform &T) const;
+
+        double ReferenceToInputSpace(double r, const Transform &T) const;
+        double TimestampToInputSpace(timestamp timestamp) const;
 
         int GetBarCount() const { return (int)m_bars.size(); }
         MatchedBar &GetBar(int index) { return m_bars[index]; }
@@ -53,8 +59,8 @@ namespace toccata {
         float m_x;
         float m_width;
 
-        double m_timeRange;
-        double m_timeOffset;
+        timestamp m_timeRange;
+        timestamp m_timeOffset;
 
         MusicSegment *m_inputSegment;
         MusicSegment *m_referenceSegment;

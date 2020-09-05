@@ -38,16 +38,21 @@ void toccata::BarDisplay::Render() {
         const Timeline::MatchedBar &bar = m_timeline->GetBar(i);
 
         const int channel = bar.Channel;
-        const double s0 = 
-            Transform::inv_f(0.0, bar.Bar.s, bar.Bar.t);
-        const double e0 = 
-            Transform::inv_f(bar.Bar.MatchedBar->GetSegment()->Length, bar.Bar.s, bar.Bar.t);
+        //const double s0 =
+        //    Transform::inv_f(0.0, bar.Bar.s, bar.Bar.t);
+        //const double e0 =
+        //    Transform::inv_f(bar.Bar.MatchedBar->GetSegment()->Length, bar.Bar.s, bar.Bar.t);
 
-        if (e0 < m_timeline->GetTimeOffset()) continue;
-        if (s0 > m_timeline->GetTimeOffset() + m_timeline->GetTimeRange()) continue;
+        //if (e0 < m_timeline->GetTimeOffset()) continue;
+        //if (s0 > m_timeline->GetTimeOffset() + m_timeline->GetTimeRange()) continue;
 
-        const double world_s = m_timeline->GetWorldX(s0);
-        const double world_e = m_timeline->GetWorldX(e0);
+        //const double world_s = m_timeline->GetWorldX(s0);
+        //const double world_e = m_timeline->GetWorldX(e0);
+
+        MusicSegment *segment = bar.Bar.MatchedBar->GetSegment();
+
+        const float world_s = (float)m_timeline->ReferenceToLocalX(0.0, bar.Bar.T);
+        const float world_e = (float)m_timeline->ReferenceToWorldX(segment->GetNormalizedLength(), bar.Bar.T);
 
         const float y = cornerY - (m_channelCount - channel) * channelHeight;
         const float x = world_s;
@@ -65,15 +70,22 @@ void toccata::BarDisplay::AllocateChannels() {
     for (int i = 0; i < barCount; ++i) {
         Timeline::MatchedBar &b0 = m_timeline->GetBar(i);
 
-        const double s0 = Transform::inv_f(0.0, b0.Bar.s, b0.Bar.t);
-        const double e0 = Transform::inv_f(b0.Bar.MatchedBar->GetSegment()->Length, b0.Bar.s, b0.Bar.t);
+        //const double s0 = Transform::inv_f(0.0, b0.Bar.s, b0.Bar.t);
+        //const double e0 = Transform::inv_f(b0.Bar.MatchedBar->GetSegment()->Length, b0.Bar.s, b0.Bar.t);
+        const double s0 = m_timeline->ReferenceToInputSpace(0.0, b0.Bar.T);
+        const double e0 = m_timeline->ReferenceToInputSpace(
+            b0.Bar.MatchedBar->GetSegment()->GetNormalizedLength(), b0.Bar.T);
 
         std::set<int> conflicts;
         for (int j = 0; j < i; ++j) {
             const Timeline::MatchedBar &b1 = m_timeline->GetBar(j);
 
-            const double s1 = Transform::inv_f(0.0, b1.Bar.s, b1.Bar.t);
-            const double e1 = Transform::inv_f(b1.Bar.MatchedBar->GetSegment()->Length, b1.Bar.s, b1.Bar.t);
+            //const double s1 = Transform::inv_f(0.0, b1.Bar.s, b1.Bar.t);
+            //const double e1 = Transform::inv_f(b1.Bar.MatchedBar->GetSegment()->Length, b1.Bar.s, b1.Bar.t);
+
+            const double s1 = m_timeline->ReferenceToInputSpace(0.0, b1.Bar.T);
+            const double e1 = m_timeline->ReferenceToInputSpace(
+                b1.Bar.MatchedBar->GetSegment()->GetNormalizedLength(), b1.Bar.T);
 
             if (s0 > e1 || e0 < s1) continue;
             if (s1 > e0 || e1 < s0) continue;
@@ -99,7 +111,7 @@ void toccata::BarDisplay::DrawBox(float x, float y, float w, float h) {
 void toccata::BarDisplay::RenderBarInformation(
     const DecisionTree::MatchedBar *matchedBar, float x0, float y0, float x1, float y1) 
 {
-    const int tempo = std::round(Transform::f(120.0, matchedBar->s, 0.0));
+    const int tempo = std::round(matchedBar->T.Scale(120.0));
 
     std::stringstream ss;
     ss << tempo << " BPM";
