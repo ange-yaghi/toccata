@@ -132,9 +132,6 @@
     <ClCompile Include="..\..\src\song_generator.cpp">
       <Filter>Source Files\utilities</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\music_segment.cpp">
-      <Filter>Source Files\pmm</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\midi_callback.cpp">
       <Filter>Source Files\midi-input</Filter>
     </ClCompile>
@@ -153,9 +150,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\error_reporting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\exercise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\fsm.h">

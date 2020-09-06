@@ -192,22 +192,6 @@ void toccata::Application::ConstructReferenceNotes() {
     for (const DecisionTree::MatchedPiece &piece : pieces) {
         for (const DecisionTree::MatchedBar &bar : piece.Bars) {
             m_timeline.AddBar(bar);
-
-            /*
-            MusicSegment *segment = bar.MatchedBar->GetSegment();
-            const int n = segment->NoteContainer.GetCount();
-
-            for (int i = 0; i < n; ++i) {
-                const MusicPoint &reference = segment->NoteContainer.GetPoints()[i];
-
-                MusicPoint newPoint;
-                newPoint.Length = Transform::inv_f(reference.Length, bar.s, 0.0);
-                newPoint.Timestamp = Transform::inv_f(reference.Timestamp, bar.s, bar.t);
-                newPoint.Pitch = reference.Pitch;
-                newPoint.Velocity = reference.Velocity;
-
-                m_referenceSegment.NoteContainer.AddPoint(newPoint);
-            }*/
         }
     }
 

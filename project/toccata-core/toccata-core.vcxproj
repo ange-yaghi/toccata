@@ -153,7 +153,6 @@
     <ClInclude Include="..\..\include\decision_thread.h" />
     <ClInclude Include="..\..\include\decision_tree.h" />
     <ClInclude Include="..\..\include\error_reporting.h" />
-    <ClInclude Include="..\..\include\exercise.h" />
     <ClInclude Include="..\..\include\fsm.h" />
     <ClInclude Include="..\..\include\full_solver.h" />
     <ClInclude Include="..\..\include\library.h" />
@@ -200,7 +199,6 @@
     <ClCompile Include="..\..\src\midi_handler.cpp" />
     <ClCompile Include="..\..\src\midi_stream.cpp" />
     <ClCompile Include="..\..\src\munkres_solver.cpp" />
-    <ClCompile Include="..\..\src\music_segment.cpp" />
     <ClCompile Include="..\..\src\nls_optimizer.cpp" />
     <ClCompile Include="..\..\src\note_mapper.cpp" />
     <ClCompile Include="..\..\src\search_thread.cpp" />

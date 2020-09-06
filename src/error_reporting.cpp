@@ -4,11 +4,11 @@
 
 toccata::Logger::Logger() {
     m_level = LogLevel::Debug;
-
     m_currentIncrement = 0;
 }
 
 toccata::Logger::~Logger() {
+    /* void */
 }
 
 void toccata::Logger::_Log(LogLevel level, const char *format, va_list args) {

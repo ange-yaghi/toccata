@@ -8,16 +8,14 @@ int GenerateInput(
 	toccata::Bar *start, toccata::MusicSegment *target, int barCount,
 	toccata::timestamp jitter, double scale, int missingNotesPerBar, int addedNotesPerBar) 
 {
-	toccata::Bar *current = start;
-	int n = 0;
-
 	toccata::SegmentGenerator utilities;
 	utilities.Seed(0);
 
 	target->Length = 0;
 	target->PulseUnit = start->GetSegment()->PulseUnit;
 
-	while (current != nullptr && n < barCount) {
+	int n = 0;
+	for (toccata::Bar *current = start; current != nullptr && n < barCount; ++n) {
 		toccata::MusicSegment segment;
 		toccata::SegmentGenerator::Copy(current->GetSegment(), &segment);
 
@@ -27,7 +25,6 @@ int GenerateInput(
 		toccata::SegmentGenerator::Scale(&segment, scale);
 
 		toccata::SegmentGenerator::Append(target, &segment);
-		++n;
 
 		if (current->GetNextCount() > 1) {
 			current = current->GetNext(1);

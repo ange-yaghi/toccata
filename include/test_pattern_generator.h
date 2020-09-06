@@ -31,7 +31,6 @@ namespace toccata {
         void Seed(unsigned int seed);
         int FindRandomTestPattern(TestPatternRequest &request);
         int FindExtremeTestPattern(TestPatternRequest &request);
-        //int FindSafeTestPattern(SafeTestPatternRequest &request);
 
     protected:
         std::default_random_engine m_generator;

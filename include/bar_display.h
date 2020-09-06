@@ -1,5 +1,5 @@
-#ifndef TOCCATA_BAR_DISPLAY_H
-#define TOCCATA_BAR_DISPLAY_H
+#ifndef TOCCATA_UI_BAR_DISPLAY_H
+#define TOCCATA_UI_BAR_DISPLAY_H
 
 #include "timeline.h"
 
@@ -36,4 +36,4 @@ namespace toccata {
 
 } /* namespace toccata */
 
-#endif /* TOCCATA_BAR_DISPLAY_H */
+#endif /* TOCCATA_UI_BAR_DISPLAY_H */

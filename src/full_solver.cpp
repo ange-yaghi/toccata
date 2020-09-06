@@ -5,6 +5,8 @@
 #include "../include/memory.h"
 
 toccata::FullSolver::FullSolver() {
+	memset(&m_memorySpace, 0, sizeof(Memory));
+
     m_testPatternBuffer = nullptr;
     m_notesByPitchBuffer = nullptr;
 }
