@@ -21,16 +21,16 @@ namespace toccata {
         static void Copy(const MusicSegment *reference, MusicSegment *segment);
         static void Append(MusicSegment *target, const MusicSegment *segment);
 
-        void CreateRandomSegment(MusicSegment *segment, int noteCount, double length, int notes);
+        void CreateRandomSegment(MusicSegment *segment, int noteCount, timestamp length, int notes);
         void CreateRandomSegmentQuantized(MusicSegment *segment, int noteCount, int gridSpaces, int unitLength, int notes);
 
         void AddRandomNotes(MusicSegment *segment, int count, int notes);
-        void AddRandomNotes(MusicSegment *segment, int count, int notes, double start, double end);
+        void AddRandomNotes(MusicSegment *segment, int count, int notes, timestamp start, timestamp end);
         void RemoveRandomNotes(MusicSegment *segment, int count);
 
-        void Jitter(MusicSegment *segment, double amplitude);
+        void Jitter(MusicSegment *segment, timestamp amplitude);
         static void Scale(MusicSegment *segment, double s);
-        static void Shift(MusicSegment *segment, double t);
+        static void Shift(MusicSegment *segment, timestamp t);
 
     protected:
         std::default_random_engine m_generator;

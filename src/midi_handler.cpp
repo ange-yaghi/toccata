@@ -48,7 +48,7 @@ void toccata::MidiHandler::Extract(MidiStream *targetBuffer) {
     m_bufferLock.unlock();
 }
 
-void toccata::MidiHandler::ProcessEvent(int status, int midiByte1, int midiByte2, unsigned long timestamp) {
+void toccata::MidiHandler::ProcessEvent(int status, int midiByte1, int midiByte2, timestamp timestamp) {
     m_bufferLock.lock();
 
     m_lastTimestamp = timestamp;

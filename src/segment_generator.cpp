@@ -28,8 +28,8 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
     for (int i = 0; i < n; ++i) {
         const MidiNote &note = midi->GetNote(i);
 
-        const unsigned int timestamp = note.Timestamp + offset;
-        const unsigned int barBoundary = (barIndex + 1) * barLength;
+        const timestamp t = note.Timestamp + offset;
+        const timestamp barBoundary = (barIndex + 1) * barLength;
         if (note.Timestamp >= barBoundary) {
             Bar *previous = currentBar;
             currentSegment = target->NewSegment();
@@ -57,8 +57,8 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
             currentBar->SetSegment(currentSegment);
         }
 
-        const unsigned int barStart = barIndex * barLength;
-        const unsigned int noteStart = timestamp - barStart;
+        const timestamp barStart = barIndex * barLength;
+        const timestamp noteStart = t - barStart;
 
         MusicPoint point;
         point.Timestamp = noteStart;
@@ -99,7 +99,7 @@ void toccata::SegmentGenerator::Append(MusicSegment *target, const MusicSegment 
 }
 
 void toccata::SegmentGenerator::CreateRandomSegment(
-    MusicSegment *segment, int noteCount, double length, int notes) 
+    MusicSegment *segment, int noteCount, timestamp length, int notes) 
 {
     segment->Length = length;
     AddRandomNotes(segment, noteCount, notes);
@@ -114,7 +114,7 @@ void toccata::SegmentGenerator::CreateRandomSegmentQuantized(
     segment->Length = (timestamp)unitLength * gridSpaces;
     for (int i = 0; i < noteCount; ++i) {
         MusicPoint newPoint;
-        newPoint.Length = 0.0;
+        newPoint.Length = 0;
         newPoint.Velocity = 1;
         newPoint.Pitch = noteDist(m_generator);
         newPoint.Timestamp = (timestamp)gridOffset(m_generator) * unitLength;
@@ -126,12 +126,12 @@ void toccata::SegmentGenerator::CreateRandomSegmentQuantized(
 void toccata::SegmentGenerator::AddRandomNotes(
     MusicSegment *segment, int count, int notes) 
 {
-    std::uniform_real_distribution<double> offsetDist(0.0, segment->Length);
+    std::uniform_int_distribution<timestamp> offsetDist(0, segment->Length);
     std::uniform_int_distribution<int> noteDist(0, notes - 1);
 
     for (int i = 0; i < count; ++i) {
         MusicPoint newPoint;
-        newPoint.Length = 0.0;
+        newPoint.Length = 0;
         newPoint.Velocity = 1;
         newPoint.Pitch = noteDist(m_generator);
         newPoint.Timestamp = offsetDist(m_generator);
@@ -141,14 +141,14 @@ void toccata::SegmentGenerator::AddRandomNotes(
 }
 
 void toccata::SegmentGenerator::AddRandomNotes(
-    MusicSegment *segment, int count, int notes, double start, double end) 
+    MusicSegment *segment, int count, int notes, timestamp start, timestamp end) 
 {
-    std::uniform_real_distribution<double> offsetDist(start, end);
+    std::uniform_int_distribution<timestamp> offsetDist(start, end);
     std::uniform_int_distribution<int> noteDist(0, notes - 1);
 
     for (int i = 0; i < count; ++i) {
         MusicPoint newPoint;
-        newPoint.Length = 0.0;
+        newPoint.Length = 0;
         newPoint.Velocity = 1;
         newPoint.Pitch = noteDist(m_generator);
         newPoint.Timestamp = offsetDist(m_generator);
@@ -169,11 +169,11 @@ void toccata::SegmentGenerator::RemoveRandomNotes(MusicSegment *segment, int cou
     }
 }
 
-void toccata::SegmentGenerator::Jitter(MusicSegment *segment, double amplitude) {
+void toccata::SegmentGenerator::Jitter(MusicSegment *segment, timestamp amplitude) {
     MusicPoint *points = segment->NoteContainer.GetPoints();
     const int n = segment->NoteContainer.GetCount();
 
-    std::uniform_real_distribution<double> dist(-amplitude, amplitude);
+    std::uniform_int_distribution<timestamp> dist(-amplitude, amplitude);
 
     for (int i = 0; i < n; ++i) {
         points[i].Timestamp += dist(m_generator);
@@ -200,14 +200,14 @@ void toccata::SegmentGenerator::Scale(MusicSegment *segment, double s) {
     const int n = segment->NoteContainer.GetCount();
 
     for (int i = 0; i < n; ++i) {
-        points[i].Timestamp *= s;
+        points[i].Timestamp = (timestamp)std::round(s * points[i].Timestamp);
     }
 
-    segment->Length *= s;
+    segment->Length = (timestamp)std::round(s * segment->Length);
     segment->PulseUnit *= s;
 }
 
-void toccata::SegmentGenerator::Shift(MusicSegment *segment, double t) {
+void toccata::SegmentGenerator::Shift(MusicSegment *segment, timestamp t) {
     MusicPoint *points = segment->NoteContainer.GetPoints();
     const int n = segment->NoteContainer.GetCount();
 

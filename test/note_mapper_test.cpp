@@ -109,7 +109,7 @@ TEST(NoteMapperTest, TrivialMapping) {
 
 TEST(NoteMapperTest, MappingWithOffset) {
 	toccata::MusicSegment reference;
-	reference.Length = 10.0;
+	reference.Length = 10;
 
 	reference.NoteContainer.AddPoint({ 0, 0 });
 	reference.NoteContainer.AddPoint({ 10, 0 });

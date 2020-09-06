@@ -16,7 +16,7 @@ void GenerateRandomLibrary(toccata::Library *library, int n) {
 
 	for (int i = 0; i < n; ++i) {
 		toccata::MusicSegment *segment = library->NewSegment();
-		generator.CreateRandomSegmentQuantized(segment, noteCountDist(engine), 16, 1.0, 60);
+		generator.CreateRandomSegmentQuantized(segment, noteCountDist(engine), 16, 16, 60);
 	}
 }
 
@@ -44,10 +44,10 @@ TEST(SearchThreadTest, SanityCheck) {
 		const toccata::MusicSegment *reference = library.GetSegment(selectedIndex);
 		toccata::MusicSegment played;
 		distortion.Copy(reference, &played);
-		distortion.Jitter(&played, 0.0);
+		distortion.Jitter(&played, 0);
 		distortion.RemoveRandomNotes(&played, 2);
 		distortion.AddRandomNotes(&played, 1, 256);
-		distortion.Shift(&played, 1.0);
+		distortion.Shift(&played, 10);
 		distortion.Scale(&played, 2.0);
 
 		toccata::SearchThread::Result result;

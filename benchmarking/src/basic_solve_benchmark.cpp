@@ -54,9 +54,9 @@ void toccata::BasicSolveBenchmark::Run() {
 		generator.CreateRandomSegmentQuantized(&reference, 16, 16, 10, 10);
 
 		generator.Copy(&reference, &segment);
-		generator.Jitter(&segment, 0.125);
+		generator.Jitter(&segment, 5);
 		generator.Scale(&segment, 5.0);
-		generator.Shift(&segment, 2.0);
+		generator.Shift(&segment, 20);
 
 		SegmentUtilities::SortByPitch(&segment, 0, 15, 10, notesByPitch);
 

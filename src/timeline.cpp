@@ -4,8 +4,8 @@ toccata::Timeline::Timeline() {
     m_x = 0.0;
     m_width = 0.0;
 
-    m_timeRange = 0.0;
-    m_timeOffset = 0.0;
+    m_timeRange = 0;
+    m_timeOffset = 0;
 
     m_inputSegment = nullptr;
 
@@ -29,7 +29,7 @@ bool toccata::Timeline::InRange(timestamp start, timestamp end) const {
 }
 
 void toccata::Timeline::CropToFit(timestamp &start, timestamp &end) const {
-    const double timelineEnd = m_timeOffset + m_timeRange;
+    const timestamp timelineEnd = m_timeOffset + m_timeRange;
 
     if (start > timelineEnd) {
         start = timelineEnd;
@@ -57,7 +57,7 @@ bool toccata::Timeline::InRangeInputSpace(double start, double end) const {
 
 double toccata::Timeline::InputSpaceToLocalX(double t) const {
     const double t_space = t * m_inputSegment->PulseUnit;
-    const float local = (t_space / (float)m_timeRange) * m_width;
+    const double local = (t_space / m_timeRange) * m_width;
 
     if (local > m_width) return m_width;
     else if (local < 0.0) return 0.0;
@@ -76,8 +76,8 @@ double toccata::Timeline::TimestampToInputSpace(timestamp t) const {
 }
 
 double toccata::Timeline::TimestampToLocalX(timestamp t) const {
-    const float width = m_width;
-    const float local = ((t - m_timeOffset) / (float)m_timeRange) * width;
+    const double width = m_width;
+    const double local = ((t - m_timeOffset) / (float)m_timeRange) * width;
 
     if (local > width) return width;
     else if (local < 0.0) return 0.0;
@@ -91,7 +91,7 @@ double toccata::Timeline::TimestampToWorldX(timestamp timestamp) const {
 double toccata::Timeline::ReferenceToLocalX(double r, const Transform &T) const {
     const double inputSpace = ReferenceToInputSpace(r, T);
     const double t_space = inputSpace * m_inputSegment->PulseUnit;
-    const float local = (t_space / (float)m_timeRange) * m_width;
+    const double local = (t_space / m_timeRange) * m_width;
 
     if (local > m_width) return m_width;
     else if (local < 0.0) return 0.0;

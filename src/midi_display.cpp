@@ -48,7 +48,7 @@ void toccata::MidiDisplay::Render() {
     for (int i = m_keyStart; i <= m_keyEnd + 1; ++i) {
         const int j = (i - m_keyStart);
         const ysVector linePosition = 
-            ysMath::LoadVector(middle_x, (int)(lower_y + channelHeight * j));
+            ysMath::LoadVector(middle_x, lower_y + channelHeight * j);
 
         m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
         m_engine->SetObjectTransform(ysMath::TranslationTransform(linePosition));
@@ -96,12 +96,12 @@ void toccata::MidiDisplay::Render() {
         if (point.Pitch > m_keyEnd || point.Pitch < m_keyStart) continue;
         if (!m_timeline->InRange(point.Timestamp, point.Timestamp + point.Length)) continue;
 
-        const float noteStart = m_timeline->TimestampToWorldX(point.Timestamp);
-        const float noteEnd = m_timeline->TimestampToWorldX(point.Timestamp + point.Length);
-        const float noteWidth = noteEnd - noteStart;
+        const double noteStart = m_timeline->TimestampToWorldX(point.Timestamp);
+        const double noteEnd = m_timeline->TimestampToWorldX(point.Timestamp + point.Length);
+        const double noteWidth = noteEnd - noteStart;
 
-        const float y = lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2;
-        const float x = noteStart + noteWidth / 2;
+        const float y = (float)(lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2);
+        const float x = (float)(noteStart + noteWidth / 2);
 
         const ysVector position = ysMath::LoadVector(x, y);
 
@@ -110,19 +110,19 @@ void toccata::MidiDisplay::Render() {
         m_engine->SetLit(false);
         m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
 
-        m_engine->DrawBox(noteWidth, channelHeight * 0.333f);
+        m_engine->DrawBox((float)noteWidth, channelHeight * 0.333f);
     }
 
     const int barCount = m_timeline->GetBarCount();
     for (int i = 0; i < barCount; ++i) {
         const Timeline::MatchedBar &bar = m_timeline->GetBar(i);
 
-        const float length = bar.Bar.MatchedBar->GetSegment()->GetNormalizedLength();
+        const double length = bar.Bar.MatchedBar->GetSegment()->GetNormalizedLength();
         const double start = m_timeline->ReferenceToInputSpace(0.0, bar.Bar.T);
         const double end = m_timeline->ReferenceToInputSpace(length, bar.Bar.T);
 
         if (m_timeline->InRangeInputSpace(start)) {
-            const float x = m_timeline->InputSpaceToWorldX(start);
+            const float x = (float)m_timeline->InputSpaceToWorldX(start);
             const ysVector positionStart = ysMath::LoadVector(x, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
@@ -134,7 +134,7 @@ void toccata::MidiDisplay::Render() {
         }
 
         if (m_timeline->InRangeInputSpace(end)) {
-            const float x = m_timeline->InputSpaceToWorldX(end);
+            const float x = (float)m_timeline->InputSpaceToWorldX(end);
             const ysVector positionEnd = ysMath::LoadVector(x, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
@@ -201,12 +201,12 @@ void toccata::MidiDisplay::RenderReferenceNotes() {
 
             if (!m_timeline->InRangeInputSpace(start_inputSpace, end_inputSpace)) continue;
 
-            const float noteStart = m_timeline->InputSpaceToWorldX(start_inputSpace);
-            const float noteEnd = m_timeline->InputSpaceToWorldX(end_inputSpace);
-            const float noteWidth = noteEnd - noteStart;
+            const double noteStart = m_timeline->InputSpaceToWorldX(start_inputSpace);
+            const double noteEnd = m_timeline->InputSpaceToWorldX(end_inputSpace);
+            const double noteWidth = noteEnd - noteStart;
 
             const float y = lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2;
-            const float x = noteStart + noteWidth / 2;
+            const float x = (float)(noteStart + noteWidth / 2);
 
             const ysVector position = ysMath::LoadVector(x, y);
 
@@ -221,7 +221,7 @@ void toccata::MidiDisplay::RenderReferenceNotes() {
                 m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
             }
 
-            m_engine->DrawBox(noteWidth, channelHeight * 0.8f);
+            m_engine->DrawBox((float)noteWidth, channelHeight * 0.8f);
         }
     }
 }

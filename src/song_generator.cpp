@@ -22,8 +22,8 @@ void toccata::SongGenerator::GenerateSong(Library *library, int sections, int se
             const int n = randomNoteCount(m_engine);
 
             MusicSegment *newSegment = library->NewSegment();
-            newSegment->PulseUnit = 10.0;
-            m_generator.CreateRandomSegmentQuantized(newSegment, n, 16, 10, 100);
+            newSegment->PulseUnit = 100.0;
+            m_generator.CreateRandomSegmentQuantized(newSegment, n, 16, 100, 100);
 
             Bar *newBar = library->NewBar();
             newBar->SetSegment(newSegment);

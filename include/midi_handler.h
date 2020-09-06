@@ -19,7 +19,7 @@ namespace toccata {
 
         void Extract(MidiStream *targetBuffer);
 
-        void ProcessEvent(int status, int midiByte1, int midiByte2, unsigned long timestamp);
+        void ProcessEvent(int status, int midiByte1, int midiByte2, timestamp timestamp);
         void ProcessMidiTick(unsigned long timestamp);
         void AlignTimestampOffset();
 
@@ -27,8 +27,8 @@ namespace toccata {
         std::mutex m_bufferLock;
         MidiStream m_buffer;
 
-        unsigned int m_timestampOffset;
-        unsigned int m_lastTimestamp;
+        timestamp m_timestampOffset;
+        timestamp m_lastTimestamp;
     };
 
 } /* namespace toccata */

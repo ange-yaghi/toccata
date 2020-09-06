@@ -85,7 +85,7 @@ void toccata::Analyzer::ProcessBar(const Timeline::MatchedBar &bar, int index, i
         if (mappedTo != -1) {
             const double r = reference->Normalize(reference->NoteContainer.GetPoints()[i].Timestamp);
             const double p = bar.Bar.T.f(
-                bar.Bar.T.Local(input->NoteContainer.GetPoints()[mappedTo].Timestamp));
+                input->Normalize(bar.Bar.T.Local(input->NoteContainer.GetPoints()[mappedTo].Timestamp)));
 
             noteInfo.Error = std::abs(r - p);
 

@@ -5,6 +5,6 @@
 
 int GenerateInput(
 	toccata::Bar *start, toccata::MusicSegment *target, int barCount,
-	double jitter, double scale, int missingNotesPerBar, int addedNotesPerBar);
+	toccata::timestamp jitter, double scale, int missingNotesPerBar, int addedNotesPerBar);
 
 #endif /* TOCCATA_TEST_UTILITIES_H */

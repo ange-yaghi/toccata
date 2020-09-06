@@ -10,7 +10,7 @@ namespace toccata {
         int Velocity;
 
         int NoteLength;
-        unsigned int Timestamp;
+        timestamp Timestamp;
 
         MusicPoint::Hand AssignedHand;
 

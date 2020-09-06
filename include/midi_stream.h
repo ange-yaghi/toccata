@@ -18,8 +18,8 @@ namespace toccata {
         struct MidiEvent {
             KeyEvent Event;
             int Key;
-            unsigned int Timestamp0;
-            unsigned int Timestamp1;
+            timestamp Timestamp0;
+            timestamp Timestamp1;
         };
 
         enum class TimeFormat {
@@ -63,13 +63,13 @@ namespace toccata {
 
         void ProcessMidiEvent(
             int status, int byte1, int byte2, 
-            unsigned int timestamp, MusicPoint::Hand hand = MusicPoint::Hand::Unknown);
+            timestamp t, MusicPoint::Hand hand = MusicPoint::Hand::Unknown);
 
         void SetTarget(MusicSegment *target) { m_target = target; }
         MusicSegment *GetTarget() const { return m_target; }
 
     protected:
-        int GetPreviousNote(unsigned int midiNote, unsigned int timestamp);
+        int GetPreviousNote(unsigned int midiNote, timestamp timestamp);
 
         // Tempo information
         TimeFormat m_timeFormat;

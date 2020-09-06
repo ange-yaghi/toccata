@@ -77,7 +77,7 @@ void toccata::Application::Process() {
     m_currentOffset += dt;
 
     const int n = m_testSegment.NoteContainer.GetCount();
-    double windowStart = m_timeline.GetTimeOffset();
+    timestamp windowStart = m_timeline.GetTimeOffset();
     if (n > 0) {
         const MusicPoint &lastPoint = m_testSegment.NoteContainer.GetPoints()[n - 1];
 
@@ -90,20 +90,20 @@ void toccata::Application::Process() {
     m_timeline.SetInputSegment(&m_testSegment);
     m_timeline.SetTimeOffset(windowStart);
     m_timeline.SetTimeRange(5000);
-    m_timeline.SetWidth(windowWidth);
+    m_timeline.SetWidth((float)windowWidth);
 
     m_midiDisplay.SetEngine(&m_engine);
     m_midiDisplay.SetTextRenderer(&m_textRenderer);
     m_midiDisplay.SetHeight(windowHeight * 0.7f);
     m_midiDisplay.SetKeyRangeStart(0);
     m_midiDisplay.SetKeyRangeEnd(88);
-    m_midiDisplay.SetPositionY(windowHeight / 2.0 - windowHeight * 0.2);
+    m_midiDisplay.SetPositionY(windowHeight / 2.0f - windowHeight * 0.2f);
     m_midiDisplay.SetTimeline(&m_timeline);
 
     m_barDisplay.SetEngine(&m_engine);
-    m_barDisplay.SetHeight(windowHeight * 0.2);
+    m_barDisplay.SetHeight(windowHeight * 0.2f);
     m_barDisplay.SetMinimumChannelCount(3);
-    m_barDisplay.SetPositionY(windowHeight / 2.0);
+    m_barDisplay.SetPositionY(windowHeight / 2.0f);
     m_barDisplay.SetTextRenderer(&m_textRenderer);
     m_barDisplay.SetTimeline(&m_timeline);
 
@@ -129,17 +129,18 @@ void toccata::Application::MockMidiInput() {
     MockMidiKey(ysKeyboard::KEY_F, 53);
     MockMidiKey(ysKeyboard::KEY_G, 55);
     MockMidiKey(ysKeyboard::KEY_H, 57);
-
 }
 
 void toccata::Application::MockMidiKey(ysKeyboard::KEY_CODE key, int midiKey) {
-    const unsigned int timestamp = std::round((m_currentOffset + 300000) * 1000);
+    // Add 100 million years just for fun
+    const timestamp t = 
+        (timestamp)std::round(m_currentOffset * 1000) + 3153600000000000000;
 
     if (m_engine.ProcessKeyDown(key)) {
-        MidiHandler::Get()->ProcessEvent(0x9, midiKey, 100, timestamp);
+        MidiHandler::Get()->ProcessEvent(0x9, midiKey, 100, t);
     }
     else if (m_engine.ProcessKeyUp(key)) {
-        MidiHandler::Get()->ProcessEvent(0x8, midiKey, 0, timestamp);
+        MidiHandler::Get()->ProcessEvent(0x8, midiKey, 0, t);
     }
 }
 

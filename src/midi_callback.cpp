@@ -10,7 +10,7 @@ void toccata::MidiCallback(
     DWORD_PTR dwParam2) {
     if (wMsg == MIM_DATA) {
         DWORD_PTR dwMidiMessage = dwParam1;
-        DWORD_PTR dwTimestamp = dwParam2;
+        timestamp dwTimestamp = dwParam2;
 
         WORD hiWord = HIWORD(dwMidiMessage);
         WORD loWord = LOWORD(dwMidiMessage);

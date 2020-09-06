@@ -72,7 +72,7 @@ toccata::MidiStream::MidiEvent toccata::MidiStream::GetEvent(int index) const {
 }
 
 void toccata::MidiStream::ProcessMidiEvent(
-    int status, int byte1, int byte2, unsigned int timestamp, MusicPoint::Hand hand)
+    int status, int byte1, int byte2, timestamp t, MusicPoint::Hand hand)
 {
     if (status == 0x9 || status == 0x8) {
         const int key = byte1;
@@ -82,7 +82,7 @@ void toccata::MidiStream::ProcessMidiEvent(
             // Note is pressed
             MidiNote newNote;
 
-            newNote.Timestamp = timestamp;
+            newNote.Timestamp = t;
             newNote.MidiKey = key;
             newNote.Velocity = velocity;
             newNote.AssignedHand = hand;
@@ -92,24 +92,24 @@ void toccata::MidiStream::ProcessMidiEvent(
 
             MidiEvent newEvent;
             newEvent.Event = KeyEvent::On;
-            newEvent.Timestamp0 = timestamp;
-            newEvent.Timestamp1 = timestamp;
+            newEvent.Timestamp0 = t;
+            newEvent.Timestamp1 = t;
             newEvent.Key = key;
 
             m_events.push_back(newEvent);
         }
         else {
             // Note is released
-            const int lastNote = GetPreviousNote(key, timestamp);
+            const int lastNote = GetPreviousNote(key, t);
 
             if (lastNote != -1) {
-                m_notes[lastNote].NoteLength = timestamp - m_notes[lastNote].Timestamp;
+                m_notes[lastNote].NoteLength = (int)(t - m_notes[lastNote].Timestamp);
                 m_notes[lastNote].Valid = true;
 
                 MidiEvent newEvent;
                 newEvent.Event = KeyEvent::On;
                 newEvent.Timestamp0 = m_notes[lastNote].Timestamp;
-                newEvent.Timestamp1 = timestamp;
+                newEvent.Timestamp1 = t;
                 newEvent.Key = key;
 
                 m_events.push_back(newEvent);
@@ -118,14 +118,14 @@ void toccata::MidiStream::ProcessMidiEvent(
     }
 }
 
-int toccata::MidiStream::GetPreviousNote(unsigned int midiNote, unsigned int timestamp) {
-    unsigned int smallestDistance = UINT_MAX;
+int toccata::MidiStream::GetPreviousNote(unsigned int midiNote, timestamp t) {
+    timestamp smallestDistance = UINT_MAX;
     int closest = -1;
     const int n = (int)m_notes.size();
 
     for (int i = 0; i < n; ++i) {
-        if (m_notes[i].Timestamp < timestamp && m_notes[i].MidiKey == midiNote) {
-            const unsigned int diff = timestamp - m_notes[i].Timestamp;
+        if (m_notes[i].Timestamp < t && m_notes[i].MidiKey == midiNote) {
+            const timestamp diff = t - m_notes[i].Timestamp;
 
             if (diff < smallestDistance) {
                 smallestDistance = diff;
