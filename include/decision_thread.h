@@ -17,7 +17,7 @@ namespace toccata {
         DecisionThread();
         ~DecisionThread();
 
-        void Initialize(Library *library, int threadCount, double pulse);
+        void Initialize(Library *library, int threadCount, double pulseUnit, double pulseRate);
         void StartThreads();
         void KillThreads();
         void Destroy();

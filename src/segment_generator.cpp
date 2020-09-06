@@ -18,8 +18,6 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
     const unsigned int eigthNoteLength = midi->GetTicksPerQuarterNote() / 2;
     const unsigned int barLength = midi->GetBarLength();
 
-    const float barLengthSeconds = 60 * ((float)barLength / midi->GetTicksPerQuarterNote()) / 120.0;
-
     const int n = midi->GetNoteCount();
 
     const unsigned int offset = leading8thRests * eigthNoteLength;
@@ -42,6 +40,7 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
             }
 
             currentSegment->PulseUnit = (double)midi->GetTicksPerQuarterNote();
+            currentSegment->PulseRate = 120 / 60.0; // 120 bpm
             currentSegment->Length = barLength;
             currentBar->SetSegment(currentSegment);
 
@@ -54,6 +53,7 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
 
             currentSegment->PulseUnit = (double)midi->GetTicksPerQuarterNote();
             currentSegment->Length = barLength;
+            currentSegment->PulseRate = 120 / 60.0;
             currentBar->SetSegment(currentSegment);
         }
 
@@ -111,13 +111,13 @@ void toccata::SegmentGenerator::CreateRandomSegmentQuantized(
     std::uniform_int_distribution<int> gridOffset(0, gridSpaces - 1);
     std::uniform_int_distribution<int> noteDist(0, notes - 1);
 
-    segment->Length = unitLength * gridSpaces;
+    segment->Length = (timestamp)unitLength * gridSpaces;
     for (int i = 0; i < noteCount; ++i) {
         MusicPoint newPoint;
         newPoint.Length = 0.0;
         newPoint.Velocity = 1;
         newPoint.Pitch = noteDist(m_generator);
-        newPoint.Timestamp = gridOffset(m_generator) * unitLength;
+        newPoint.Timestamp = (timestamp)gridOffset(m_generator) * unitLength;
 
         segment->NoteContainer.AddPoint(newPoint);
     }

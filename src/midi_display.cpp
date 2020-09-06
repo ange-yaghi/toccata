@@ -59,6 +59,7 @@ void toccata::MidiDisplay::Render() {
         m_engine->DrawBox(width, 1);
     }
 
+    /*
     MusicSegment *referenceSegment = m_timeline->GetReferenceSegment();
     const int n_ref = referenceSegment->NoteContainer.GetCount();
     for (int i = 0; i < n_ref; ++i) {
@@ -83,6 +84,9 @@ void toccata::MidiDisplay::Render() {
 
         m_engine->DrawBox(noteWidth, channelHeight * 0.8f);
     }
+    */
+
+    RenderReferenceNotes();
 
     MusicSegment *inputSegment = m_timeline->GetInputSegment();
     const int n = inputSegment->NoteContainer.GetCount();
@@ -113,15 +117,13 @@ void toccata::MidiDisplay::Render() {
     for (int i = 0; i < barCount; ++i) {
         const Timeline::MatchedBar &bar = m_timeline->GetBar(i);
 
-        const float length = bar.Bar.MatchedBar->GetSegment()->Length;
-        //const float start = Transform::inv_f(0.0, bar.Bar.s, bar.Bar.t);
-        //const float end = Transform::inv_f(length, bar.Bar.s, bar.Bar.t);
-        const double start = m_timeline->ReferenceToWorldX(0.0, bar.Bar.T);
-        const double end = m_timeline->ReferenceToWorldX(length, bar.Bar.T);
+        const float length = bar.Bar.MatchedBar->GetSegment()->GetNormalizedLength();
+        const double start = m_timeline->ReferenceToInputSpace(0.0, bar.Bar.T);
+        const double end = m_timeline->ReferenceToInputSpace(length, bar.Bar.T);
 
-        if (m_timeline->InRange(start)) {
-            //const float x = m_timeline->GetWorldX(start);
-            const ysVector positionStart = ysMath::LoadVector(start, middle_y);
+        if (m_timeline->InRangeInputSpace(start)) {
+            const float x = m_timeline->InputSpaceToWorldX(start);
+            const ysVector positionStart = ysMath::LoadVector(x, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
             m_engine->SetObjectTransform(ysMath::TranslationTransform(positionStart));
@@ -131,9 +133,9 @@ void toccata::MidiDisplay::Render() {
             m_engine->DrawBox(2.0, height);
         }
 
-        if (m_timeline->InRange(end)) {
-            //const float x = m_timeline->GetWorldX(end);
-            const ysVector positionEnd = ysMath::LoadVector(end, middle_y);
+        if (m_timeline->InRangeInputSpace(end)) {
+            const float x = m_timeline->InputSpaceToWorldX(end);
+            const ysVector positionEnd = ysMath::LoadVector(x, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
             m_engine->SetObjectTransform(ysMath::TranslationTransform(positionEnd));
@@ -162,5 +164,64 @@ bool toccata::MidiDisplay::IsAccidental(int key) const {
     case 10: return true;
     case 11: return false;
     default: return false;
+    }
+}
+
+void toccata::MidiDisplay::RenderReferenceNotes() {
+    const float width = m_timeline->GetWidth();
+    const float height = m_height;
+
+    const float channelHeight = height / (m_keyEnd - m_keyStart + 1);
+    const float start_y = m_positionY;
+    const float start_x = m_timeline->GetPositionX();
+    const float middle_x = start_x + width / 2;
+    const float middle_y = start_y - height / 2;
+
+    const float lower_y = start_y - height;
+
+    const int n = m_analyzer->GetBarCount();
+
+    for (int i = 0; i < n; ++i) {
+        const Analyzer::BarInformation &info = m_analyzer->GetBar(i);
+        const Timeline::MatchedBar &bar = m_timeline->GetBar(info.Bar);
+
+        MusicSegment *segment = bar.Bar.MatchedBar->GetSegment();
+        const int n_ref = segment->NoteContainer.GetCount();
+        for (int i = 0; i < n_ref; ++i) {
+            const Analyzer::NoteInformation &noteInfo = info.NoteInformation[i];
+            const MusicPoint &point = segment->NoteContainer.GetPoints()[i];
+
+            if (point.Pitch > m_keyEnd || point.Pitch < m_keyStart) continue;
+
+            const double start_norm = segment->Normalize(point.Timestamp);
+            const double end_norm = segment->Normalize(point.GetEnd());
+
+            const double start_inputSpace = m_timeline->ReferenceToInputSpace(start_norm, bar.Bar.T);
+            const double end_inputSpace = m_timeline->ReferenceToInputSpace(end_norm, bar.Bar.T);
+
+            if (!m_timeline->InRangeInputSpace(start_inputSpace, end_inputSpace)) continue;
+
+            const float noteStart = m_timeline->InputSpaceToWorldX(start_inputSpace);
+            const float noteEnd = m_timeline->InputSpaceToWorldX(end_inputSpace);
+            const float noteWidth = noteEnd - noteStart;
+
+            const float y = lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2;
+            const float x = noteStart + noteWidth / 2;
+
+            const ysVector position = ysMath::LoadVector(x, y);
+
+            m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
+            m_engine->SetObjectTransform(ysMath::TranslationTransform(position));
+            m_engine->SetLit(false);
+
+            if (noteInfo.InputNote != -1) {
+                m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0xFF, 0x00));
+            }
+            else {
+                m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
+            }
+
+            m_engine->DrawBox(noteWidth, channelHeight * 0.8f);
+        }
     }
 }

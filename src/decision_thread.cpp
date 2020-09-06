@@ -10,7 +10,7 @@ toccata::DecisionThread::~DecisionThread() {
     /* void */
 }
 
-void toccata::DecisionThread::Initialize(Library *library, int threadCount, double pulse) {
+void toccata::DecisionThread::Initialize(Library *library, int threadCount, double pulseUnit, double pulseRate) {
     m_tree.SetLibrary(library);
     m_tree.SetInputSegment(&m_inputBuffer);
     m_tree.Initialize(threadCount);
@@ -18,7 +18,8 @@ void toccata::DecisionThread::Initialize(Library *library, int threadCount, doub
     m_complete = false;
     m_kill = false;
 
-    m_inputBuffer.PulseUnit = pulse;
+    m_inputBuffer.PulseUnit = pulseUnit;
+    m_inputBuffer.PulseRate = pulseRate;
 }
 
 void toccata::DecisionThread::StartThreads() {

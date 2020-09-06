@@ -46,6 +46,7 @@ namespace toccata {
         MusicSegment m_testSegment;
         MusicSegment m_referenceSegment;
         Timeline m_timeline;
+        Analyzer m_analyzer;
 
         MidiDeviceSystem m_midiSystem;
 

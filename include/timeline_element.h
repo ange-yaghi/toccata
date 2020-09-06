@@ -2,6 +2,7 @@
 #define TOCCATA_UI_TIMELINE_ELEMENT_H
 
 #include "timeline.h"
+#include "analyzer.h"
 
 namespace toccata {
 
@@ -12,6 +13,9 @@ namespace toccata {
 
         void SetTimeline(Timeline *timeline) { m_timeline = timeline; }
         Timeline *GetTimeline() const { return m_timeline; }
+
+        void SetAnalyzer(Analyzer *analyzer) { m_analyzer = analyzer; }
+        Analyzer *GetAnalyzer() const { return m_analyzer; }
 
         float GetPositionY() const { return m_positionY; }
         void SetPositionY(float y) { m_positionY = y; }
@@ -27,6 +31,7 @@ namespace toccata {
 
     protected:
         Timeline *m_timeline;
+        Analyzer *m_analyzer;
 
         float m_positionY;
         float m_height;

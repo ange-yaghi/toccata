@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\timeline_element.cpp" />
+    <ClCompile Include="..\..\src\analyzer.cpp" />
     <ClCompile Include="..\..\src\bar_display.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\application.cpp" />
@@ -27,6 +28,7 @@
     <ClCompile Include="..\..\src\timeline.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\analyzer.h" />
     <ClInclude Include="..\..\include\bar_display.h" />
     <ClInclude Include="..\..\include\delta.h" />
     <ClInclude Include="..\..\include\application.h" />

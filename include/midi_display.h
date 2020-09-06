@@ -27,6 +27,9 @@ namespace toccata {
         bool IsAccidental(int key) const;
 
     protected:
+        void RenderReferenceNotes();
+
+    protected:
         int m_keyStart;
         int m_keyEnd;
     };

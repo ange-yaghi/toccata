@@ -3,6 +3,8 @@
 toccata::TimelineElement::TimelineElement() {
     m_timeline = nullptr;
     m_textRenderer = nullptr;
+    m_analyzer = nullptr;
+    m_engine = nullptr;
     m_positionY = 0.0;
     m_height = 0.0;
 }

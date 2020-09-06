@@ -84,7 +84,7 @@ void toccata::MidiDeviceTestbench::InitializeMidiInput() {
 
     toccata::SegmentGenerator::Convert(&stream, &m_library, 0);
 
-    m_decisionThread.Initialize(&m_library, 12, pulse);
+    m_decisionThread.Initialize(&m_library, 12, pulse, 1.0);
     m_decisionThread.StartThreads();
 }
 

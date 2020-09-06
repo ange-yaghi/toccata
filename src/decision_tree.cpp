@@ -373,8 +373,14 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
                 bar.T.t = decision->T.t * s_avg;
                 bar.T.t_coarse = decision->T.t_coarse;
             }
-            else {
+            else if (!decision->Singular) {
                 bar.T = decision->T;
+            }
+            else {
+                const double s_default = decision->MatchedBar->GetSegment()->PulseRate / m_segment->PulseRate;
+                bar.T.t = decision->T.t * s_default;
+                bar.T.s = s_default;
+                bar.T.t_coarse = decision->T.t_coarse;
             }
 
             newPiece.Start = std::min(bar.Start, newPiece.Start);
@@ -527,7 +533,9 @@ void toccata::DecisionTree::WorkerThread(int threadId) {
 
         context.Trigger = false;
 
-        Work(threadId, context);
+        if (!context.Kill) {
+            Work(threadId, context);
+        }
 
         context.Done = true;
 

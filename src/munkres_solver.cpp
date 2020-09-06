@@ -78,6 +78,8 @@ void toccata::MunkresSolver::FreeMemorySpace(Request::MemorySpace *memory) {
     Memory::Free(memory->RowCover);
     Memory::Free2d(memory->Path);
     Memory::Free2d(memory->Starred);
+    Memory::Free2d(memory->C);
+    Memory::Free2d(memory->D);
 }
 
 toccata::MunkresSolver::Step toccata::MunkresSolver::DoStep_1(Request *request) {

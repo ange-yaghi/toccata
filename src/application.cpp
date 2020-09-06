@@ -48,20 +48,25 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
     settings.WindowTitle = "Toccata";
 
     m_engine.CreateGameWindow(settings);
-
+    m_engine.SetCameraMode(dbasic::DeltaEngine::CameraMode::Target);
     m_engine.SetClearColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
 
     m_assetManager.SetEngine(&m_engine);
 
-    m_engine.SetCameraMode(dbasic::DeltaEngine::CameraMode::Target);
+    m_analyzer.SetTimeline(&m_timeline);
 
-    m_barDisplay.Initialize(&m_engine); 
+    m_barDisplay.Initialize(&m_engine);
+    m_barDisplay.SetTextRenderer(&m_textRenderer);
+    m_barDisplay.SetAnalyzer(&m_analyzer);
+
+    m_midiDisplay.SetAnalyzer(&m_analyzer);
 
     m_textRenderer.SetEngine(&m_engine);
     m_textRenderer.SetRenderer(m_engine.GetUiRenderer());
     m_textRenderer.SetFont(m_engine.GetConsole()->GetFont());
 
-    m_barDisplay.SetTextRenderer(&m_textRenderer);
+    m_testSegment.PulseUnit = 1000.0;
+    m_testSegment.PulseRate = 1.0;
 }
 
 void toccata::Application::Process() {
@@ -83,7 +88,6 @@ void toccata::Application::Process() {
 
     m_timeline.SetPositionX(-windowWidth / 2.0f);
     m_timeline.SetInputSegment(&m_testSegment);
-    m_timeline.SetReferenceSegment(&m_referenceSegment);
     m_timeline.SetTimeOffset(windowStart);
     m_timeline.SetTimeRange(5000);
     m_timeline.SetWidth(windowWidth);
@@ -205,6 +209,8 @@ void toccata::Application::ConstructReferenceNotes() {
             }*/
         }
     }
+
+    m_analyzer.Analyze();
 }
 
 void toccata::Application::Run() {
@@ -250,7 +256,7 @@ void toccata::Application::InitializeLibrary() {
 }
 
 void toccata::Application::InitializeDecisionThread() {
-    m_decisionThread.Initialize(&m_library, 12, 1000.0);
+    m_decisionThread.Initialize(&m_library, 12, 1000.0, 1.0);
     m_decisionThread.StartThreads();
 }
 

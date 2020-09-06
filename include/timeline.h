@@ -27,9 +27,6 @@ namespace toccata {
         void SetInputSegment(MusicSegment *segment) { m_inputSegment = segment; }
         MusicSegment *GetInputSegment() const { return m_inputSegment; }
 
-        void SetReferenceSegment(MusicSegment *segment) { m_referenceSegment = segment; }
-        MusicSegment *GetReferenceSegment() const { return m_referenceSegment; }
-
         void SetTimeRange(timestamp range) { m_timeRange = range; }
         timestamp GetTimeRange() const { return m_timeRange; }
 
@@ -43,11 +40,21 @@ namespace toccata {
         bool InRange(timestamp start, timestamp end) const;
         void CropToFit(timestamp &start, timestamp &end) const;
 
+        bool InRangeInputSpace(double t) const;
+        bool InRangeInputSpace(double start, double end) const;
+
+        double InputSpaceToLocalX(double t) const;
+        double InputSpaceToWorldX(double t) const;
+
         double TimestampToLocalX(timestamp timestamp) const;
         double TimestampToWorldX(timestamp timestamp) const;
 
         double ReferenceToLocalX(double r, const Transform &T) const;
         double ReferenceToWorldX(double r, const Transform &T) const;
+
+        // Get the timeline start in input space
+        double GetBoundaryStart() const;
+        double GetBoundaryEnd() const;
 
         double ReferenceToInputSpace(double r, const Transform &T) const;
         double TimestampToInputSpace(timestamp timestamp) const;
@@ -63,7 +70,6 @@ namespace toccata {
         timestamp m_timeOffset;
 
         MusicSegment *m_inputSegment;
-        MusicSegment *m_referenceSegment;
 
         std::vector<MatchedBar> m_bars;
 
