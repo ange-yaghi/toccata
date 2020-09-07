@@ -61,6 +61,8 @@ void toccata::MidiDisplay::Render() {
 
     RenderReferenceNotes();
 
+    std::set<int> mappedNotes;
+    FindUnmappedNotes(mappedNotes);
     MusicSegment *inputSegment = m_timeline->GetInputSegment();
     const int n = inputSegment->NoteContainer.GetCount();
     for (int i = 0; i < n; ++i) {
@@ -81,7 +83,13 @@ void toccata::MidiDisplay::Render() {
         m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
         m_engine->SetObjectTransform(ysMath::TranslationTransform(position));
         m_engine->SetLit(false);
-        m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
+
+        if (mappedNotes.count(i) == 0) {
+            m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
+        }
+        else {
+            m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
+        }
 
         m_engine->DrawBox((float)noteWidth, channelHeight * 0.333f);
     }
@@ -140,6 +148,23 @@ bool toccata::MidiDisplay::IsAccidental(int key) const {
     }
 }
 
+void toccata::MidiDisplay::FindUnmappedNotes(std::set<int> &mapped) const {
+    const int n = m_analyzer->GetBarCount();
+    for (int i = 0; i < n; ++i) {
+        const Analyzer::BarInformation &info = m_analyzer->GetBar(i);
+        const Timeline::MatchedBar &bar = m_timeline->GetBar(info.Bar);
+
+        MusicSegment *segment = bar.Bar.MatchedBar->GetSegment();
+        const int n_ref = segment->NoteContainer.GetCount();
+        for (int j = 0; j < n_ref; ++j) {
+            const Analyzer::NoteInformation &noteInfo = info.NoteInformation[j];
+            if (noteInfo.InputNote != -1) {
+                mapped.emplace(noteInfo.InputNote);
+            }
+        }
+    }
+}
+
 void toccata::MidiDisplay::RenderReferenceNotes() {
     const float width = m_timeline->GetWidth();
     const float height = m_height;
@@ -153,16 +178,15 @@ void toccata::MidiDisplay::RenderReferenceNotes() {
     const float lower_y = start_y - height;
 
     const int n = m_analyzer->GetBarCount();
-
     for (int i = 0; i < n; ++i) {
         const Analyzer::BarInformation &info = m_analyzer->GetBar(i);
         const Timeline::MatchedBar &bar = m_timeline->GetBar(info.Bar);
 
         MusicSegment *segment = bar.Bar.MatchedBar->GetSegment();
         const int n_ref = segment->NoteContainer.GetCount();
-        for (int i = 0; i < n_ref; ++i) {
-            const Analyzer::NoteInformation &noteInfo = info.NoteInformation[i];
-            const MusicPoint &point = segment->NoteContainer.GetPoints()[i];
+        for (int j = 0; j < n_ref; ++j) {
+            const Analyzer::NoteInformation &noteInfo = info.NoteInformation[j];
+            const MusicPoint &point = segment->NoteContainer.GetPoints()[j];
 
             if (point.Pitch > m_keyEnd || point.Pitch < m_keyStart) continue;
 

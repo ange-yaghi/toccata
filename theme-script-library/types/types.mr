@@ -1,0 +1,84 @@
+module {
+    @name:      "Base"
+    @doc:       "Defines base data types and literals"
+    @version:   "0.0.1a"
+}
+
+// ========================================================
+//  Channels
+// ========================================================
+
+public node int_channel => int_channel {
+    /* void */ 
+}
+
+public node string_channel => string_channel {
+    /* void */
+}
+
+public node bool_channel => bool_channel {
+    /* void */
+}
+
+public node float_channel => float_channel {
+    /* void */
+}
+
+public node color_channel => color_channel {
+    output r [::float];
+    output g [::float];
+    output b [::float];
+    output a [::float];
+}
+
+// ========================================================
+//  Literals
+// ========================================================
+
+public node literal_int => literal_int {
+    alias output __out [::int];
+}
+
+public node literal_string => literal_string {
+    alias output __out [::string];
+}
+
+public node literal_bool => literal_bool {
+    alias output __out [::bool];
+}
+
+public node literal_float => literal_float {
+    alias output __out [::float];
+}
+
+// ========================================================
+//  Types
+// ========================================================
+
+public inline node int {
+    input __in [::int_channel]: 0;
+    alias output __out [::int_channel]: __in;
+}
+
+public inline node float {
+    input __in [::float_channel]: 0.0;
+    alias output __out [::float_channel]: __in;
+}
+
+public inline node bool {
+    input __in [::bool_channel]: false;
+    alias output __out [::bool_channel]: __in;
+}
+
+public inline node string {
+    input __in [::string_channel]: "";
+    alias output __out [::string_channel]: __in;
+}
+
+public inline node color => toccata_color_constructor {
+    input r [::int_channel]: 0;
+    input g [::int_channel]: 0;
+    input b [::int_channel]: 0;
+    input a [::int_channel]: 255;
+    alias output __out [::color_channel];
+}

@@ -1,0 +1,45 @@
+module {
+    @name:      "Setting"
+    @doc:       "Defines basic operations for settings"
+    @version:   "0.0.1a"
+}
+
+private import "profile.mr"
+private import "../types/types.mr" as types
+
+public node setting => setting_channel { /* void */ }
+
+public node bool_setting => toccata_bool_setting {
+    input name [types::string];
+    input value [types::bool];
+    input profile [profile];
+    alias output setting [setting];
+}
+
+public node int_setting => toccata_int_setting {
+    input name [types::string];
+    input value [types::int];
+    input profile [profile];
+    alias output setting [setting];
+}
+
+public node float_setting => toccata_float_setting {
+    input name [types::string];
+    input value [types::float];
+    input profile [profile];
+    alias output setting [setting];
+}
+
+public node color_setting => toccata_color_setting {
+    input name [types::string];
+    input value [types::color];
+    input profile [profile];
+    alias output setting [setting];
+}
+
+public node string_setting => toccata_string_setting {
+    input name [types::string];
+    input value [types::string];
+    input profile [profile];
+    alias output setting [setting];
+}

@@ -16,6 +16,24 @@
     <Filter Include="Header Files\delta-includes">
       <UniqueIdentifier>{da0515bf-2ba6-41b7-862b-d048a192b7f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\themes">
+      <UniqueIdentifier>{22a48291-037f-467f-8cd1-a15167bb6be5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\themes">
+      <UniqueIdentifier>{5e15345f-6e65-405a-8483-18cd74841bef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\themes\theme-script">
+      <UniqueIdentifier>{d0850eee-a3c4-4251-ae99-3c1201401cd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\themes\theme-script">
+      <UniqueIdentifier>{f52ae52a-689e-440c-8146-2bbcb2a90cf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\themes\theme-script\color">
+      <UniqueIdentifier>{5663ac58-a89d-40d8-a9c2-2100cb64f254}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\themes\theme-script\color">
+      <UniqueIdentifier>{84bc6482-4884-47e8-97f5-bd03d4914721}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\main.cpp">
@@ -39,6 +57,18 @@
     <ClCompile Include="..\..\src\analyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\profile.cpp">
+      <Filter>Source Files\themes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\theme_script_language_rules.cpp">
+      <Filter>Source Files\themes\theme-script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\color_node_output.cpp">
+      <Filter>Source Files\themes\theme-script\color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\color_split_node.cpp">
+      <Filter>Source Files\themes\theme-script\color</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\delta.h">
@@ -61,6 +91,24 @@
     </ClInclude>
     <ClInclude Include="..\..\include\analyzer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\profile.h">
+      <Filter>Header Files\themes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\setting.h">
+      <Filter>Header Files\themes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\theme_script_language_rules.h">
+      <Filter>Header Files\themes\theme-script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\color_node_output.h">
+      <Filter>Header Files\themes\theme-script\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\color_split_node.h">
+      <Filter>Header Files\themes\theme-script\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\color_split_node_output.h">
+      <Filter>Header Files\themes\theme-script\color</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

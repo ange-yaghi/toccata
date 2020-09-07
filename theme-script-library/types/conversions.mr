@@ -1,0 +1,22 @@
+module {
+    @name:      "Conversions"
+    @doc:       "Defines all conversions between atomic types"
+    @version:   "0.0.1a"
+}
+
+private import "types.mr" as types
+
+public inline node int_to_color => toccata_int_to_color {
+    input __in [types::int];
+    alias output __out [types::color];
+}
+
+public inline node float_to_int => toccata_float_to_int {
+    input __in [types::float];
+    alias output __out [types::int];
+}
+
+public inline node int_to_float => toccata_int_to_float {
+    input __in [types::int];
+    alias output __out [types::float];
+}

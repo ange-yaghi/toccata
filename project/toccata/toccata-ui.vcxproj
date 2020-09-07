@@ -22,19 +22,29 @@
     <ClCompile Include="..\..\include\timeline_element.cpp" />
     <ClCompile Include="..\..\src\analyzer.cpp" />
     <ClCompile Include="..\..\src\bar_display.cpp" />
+    <ClCompile Include="..\..\src\color_node_output.cpp" />
+    <ClCompile Include="..\..\src\color_split_node.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\application.cpp" />
     <ClCompile Include="..\..\src\midi_display.cpp" />
+    <ClCompile Include="..\..\src\profile.cpp" />
+    <ClCompile Include="..\..\src\theme_script_language_rules.cpp" />
     <ClCompile Include="..\..\src\timeline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\analyzer.h" />
     <ClInclude Include="..\..\include\bar_display.h" />
+    <ClInclude Include="..\..\include\color_node_output.h" />
     <ClInclude Include="..\..\include\delta.h" />
     <ClInclude Include="..\..\include\application.h" />
     <ClInclude Include="..\..\include\midi_display.h" />
+    <ClInclude Include="..\..\include\profile.h" />
+    <ClInclude Include="..\..\include\setting.h" />
+    <ClInclude Include="..\..\include\theme_script_language_rules.h" />
     <ClInclude Include="..\..\include\timeline.h" />
     <ClInclude Include="..\..\include\timeline_element.h" />
+    <ClInclude Include="..\..\include\color_split_node.h" />
+    <ClInclude Include="..\..\include\color_split_node_output.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dependencies\submodules\delta-studios\project\delta-basic-engine\delta-basic-engine.vcxproj">
@@ -101,35 +111,35 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)\..\..\dependencies;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\..\dependencies;$(ProjectDir)\..\..\dependencies\libraries\piranha\include;$(IncludePath)</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <LibraryPath>$(ProjectDir)/../../dependencies/delta/lib/$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)/../../dependencies/delta/lib/$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget)\$(Configuration);$(ProjectDir)/../../dependencies\libraries\piranha\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)\..\..\dependencies;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\..\dependencies;$(ProjectDir)\..\..\dependencies\libraries\piranha\include;$(IncludePath)</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <LibraryPath>$(ProjectDir)/../../dependencies/delta/lib/$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)/../../dependencies/delta/lib/$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget)\$(Configuration);$(ProjectDir)/../../dependencies\libraries\piranha\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)\..\..\dependencies;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\..\dependencies;$(ProjectDir)\..\..\dependencies\libraries\piranha\include;$(IncludePath)</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <LibraryPath>$(ProjectDir)/../../dependencies/delta/lib/$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)/../../dependencies/delta/lib/$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget)\$(Configuration);$(ProjectDir)/../../dependencies\libraries\piranha\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)\..\..\dependencies;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\..\dependencies;$(ProjectDir)\..\..\dependencies\libraries\piranha\include;$(IncludePath)</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
     <OutDir>$(ProjectDir)\..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <LibraryPath>$(ProjectDir)/../../dependencies/delta/lib/$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)/../../dependencies/delta/lib/$(PlatformTarget)/$(Configuration);$(ProjectDir)/../../dependencies/libraries/SDL/lib/$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\D3DX\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DirectSound\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\DXGI\lib\$(PlatformTarget);$(ProjectDir)/../../dependencies\libraries\boost-filesystem\lib\$(PlatformTarget)\$(Configuration);$(ProjectDir)/../../dependencies\libraries\piranha\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

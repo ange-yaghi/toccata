@@ -8,6 +8,8 @@
 
 #include "delta.h"
 
+#include <map>
+
 namespace toccata {
 
     class MidiDisplay : public TimelineElement {
@@ -25,6 +27,8 @@ namespace toccata {
         int GetKeyRangeEnd() const { return m_keyEnd; }
 
         bool IsAccidental(int key) const;
+
+        void FindUnmappedNotes(std::set<int> &mapped) const;
 
     protected:
         void RenderReferenceNotes();

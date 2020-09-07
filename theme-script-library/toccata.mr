@@ -1,0 +1,10 @@
+module {
+    @name:      "Toccata Script Standard Library"
+    @doc:       "Imports all Toccata standard library modules"
+    @version:   "0.0.1a"
+}
+
+public import "types/types.mr"
+
+public import "settings/profile.mr"
+public import "settings/setting.mr"
