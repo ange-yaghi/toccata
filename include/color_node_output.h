@@ -16,8 +16,15 @@ namespace toccata {
 		ColorNodeOutput(const piranha::ChannelType *channelType);
 		virtual ~ColorNodeOutput();
 
+		virtual void fullCompute(void *target) const;
+
+		void SetValue(const ysVector &value) { m_value = value; }
+		ysVector GetValue() const { return m_value; }
+
 	protected:
 		virtual piranha::Node *generateInterface();
+
+		ysVector m_value;
 	};
 
 } /* namespace toccata */

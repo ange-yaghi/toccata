@@ -1,5 +1,5 @@
-#ifndef TOCCATA_COLOR_CONSTRUCTOR_NODE_OUTPUT_H
-#define TOCCATA_COLOR_CONSTRUCTOR_NODE_OUTPUT_H
+#ifndef TOCCATA_UI_COLOR_CONSTRUCTOR_NODE_OUTPUT_H
+#define TOCCATA_UI_COLOR_CONSTRUCTOR_NODE_OUTPUT_H
 
 #include "color_node_output.h"
 
@@ -15,6 +15,7 @@ namespace toccata {
         piranha::pNodeInput *getBConnection() { return &m_b; }
         piranha::pNodeInput *getAConnection() { return &m_a; }
 
+        virtual void fullCompute(void *target) const;
         void registerInputs();
 
     protected:
@@ -26,4 +27,4 @@ namespace toccata {
 
 } /* namespace toccata */
 
-#endif /* TOCCATA_VECTOR_CONSTRUCTOR_NODE_OUTPUT_H */
+#endif /* TOCCATA_UI_COLOR_CONSTRUCTOR_NODE_OUTPUT_H */

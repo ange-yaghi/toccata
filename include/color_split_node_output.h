@@ -10,6 +10,8 @@ namespace toccata {
         ColorSplitNodeOutput();
         virtual ~ColorSplitNodeOutput();
 
+        virtual void fullCompute(void *target) const;
+
         void setValueIndex(int valueIndex) { m_valueIndex = valueIndex; }
         int getValueIndex() const { return m_valueIndex; }
 

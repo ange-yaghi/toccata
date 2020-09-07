@@ -1,5 +1,5 @@
-#ifndef TOCCATA_COLOR_CONSTRUCTOR_NODE_H
-#define TOCCATA_COLOR_CONSTRUCTOR_NODE_H
+#ifndef TOCCATA_UI_COLOR_CONSTRUCTOR_NODE_H
+#define TOCCATA_UI_COLOR_CONSTRUCTOR_NODE_H
 
 #include <piranha.h>
 
@@ -24,6 +24,6 @@ namespace toccata {
         ColorConstructorNodeOutput m_output;
     };
 
-} /* namespace manta */
+} /* namespace toccata */
 
-#endif /* TOCCATA_COLOR_CONSTRUCTOR_NODE_H */
+#endif /* TOCCATA_UI_COLOR_CONSTRUCTOR_NODE_H */

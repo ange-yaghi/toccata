@@ -57,3 +57,12 @@ bool toccata::Profile::GetSetting(const std::string &name, double *v) {
         return true;
     }
 }
+
+toccata::Setting *toccata::Profile::GetSetting(const std::string &name) const {
+    auto f = m_settings.find(name);
+    if (f == m_settings.end()) {
+        return nullptr;
+    }
+
+    return f->second;
+}

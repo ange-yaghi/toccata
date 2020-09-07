@@ -7,7 +7,7 @@ module {
 public node profile_channel => profile_channel { /* void */ }
 
 @doc: "Creates a profile if it doesn't exist, otherwise it returns it"
-public node profile => toccata_create_profile {
+public node profile => toccata_profile {
     input name [string];
     alias output profile [profile_channel];
 }

@@ -63,9 +63,6 @@
     <ClCompile Include="..\..\src\timeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\include\timeline_element.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\analyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -92,6 +89,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\create_profile_node.cpp">
       <Filter>Source Files\themes\theme-script\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\object_channel_types.cpp">
+      <Filter>Source Files\themes\theme-script\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\timeline_element.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\settings_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\theme_script_compiler.cpp">
+      <Filter>Source Files\themes\theme-script</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +160,15 @@
     </ClInclude>
     <ClInclude Include="..\..\include\create_profile_node.h">
       <Filter>Header Files\themes\theme-script\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\create_setting_node.h">
+      <Filter>Header Files\themes\theme-script\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\settings_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\theme_script_compiler.h">
+      <Filter>Header Files\themes\theme-script</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

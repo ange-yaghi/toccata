@@ -76,9 +76,9 @@ public inline node string {
 }
 
 public inline node color => toccata_color_constructor {
-    input r [::int_channel]: 0;
-    input g [::int_channel]: 0;
-    input b [::int_channel]: 0;
-    input a [::int_channel]: 255;
+    input r [::float]: 0;
+    input g [::float]: 0;
+    input b [::float]: 0;
+    input a [::float]: 255;
     alias output __out [::color_channel];
 }

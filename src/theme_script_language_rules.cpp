@@ -3,6 +3,8 @@
 #include "../include/color_node_output.h"
 #include "../include/color_constructor_node.h"
 #include "../include/object_channel_types.h"
+#include "../include/create_setting_node.h"
+#include "../include/create_profile_node.h"
 
 toccata::LanguageRules::LanguageRules() {
     /* void */
@@ -35,6 +37,14 @@ void toccata::LanguageRules::registerBuiltinNodeTypes() {
 
     // Constructors
     registerBuiltinType<ColorConstructorNode>("toccata_color_constructor");
+
+    registerBuiltinType<CreateProfileNode>("toccata_profile");
+
+    registerBuiltinType<CreateSettingNode<piranha::native_bool>>("toccata_bool_setting");
+    registerBuiltinType<CreateSettingNode<piranha::native_float>>("toccata_float_setting");
+    registerBuiltinType<CreateSettingNode<piranha::native_int>>("toccata_int_setting");
+    registerBuiltinType<CreateSettingNode<piranha::native_string>>("toccata_string_setting");
+    registerBuiltinType<CreateSettingNode<ysVector>>("toccata_color_setting");
 
     // Literal types
     registerBuiltinType<piranha::DefaultLiteralIntNode>("literal_int");

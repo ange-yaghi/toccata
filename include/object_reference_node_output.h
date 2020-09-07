@@ -26,7 +26,7 @@ namespace toccata {
     };
 
     template <typename Type>
-    Type *GetObject(piranha::pNodeInput input) {
+    Type *GetObjectReference(piranha::pNodeInput input) {
         return static_cast<ObjectReferenceNodeOutput<Type> *>(input)->GetReference();
     }
 
