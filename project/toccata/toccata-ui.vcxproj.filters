@@ -34,6 +34,18 @@
     <Filter Include="Source Files\themes\theme-script\color">
       <UniqueIdentifier>{84bc6482-4884-47e8-97f5-bd03d4914721}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\themes\theme-script\objects">
+      <UniqueIdentifier>{493159b1-cd6c-4dbf-ac07-17acda1100c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\themes\theme-script\objects">
+      <UniqueIdentifier>{74f7f531-6aa6-415a-9c79-d07368d96ff9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\themes\theme-script\settings">
+      <UniqueIdentifier>{93647c2d-25ef-470a-b32d-6c0a8448d15c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\themes\theme-script\settings">
+      <UniqueIdentifier>{0357b798-c8fb-4d32-b53e-f9b80c992122}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\main.cpp">
@@ -68,6 +80,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\color_split_node.cpp">
       <Filter>Source Files\themes\theme-script\color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\color_split_node_output.cpp">
+      <Filter>Source Files\themes\theme-script\color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\color_constructor_node_output.cpp">
+      <Filter>Source Files\themes\theme-script\color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\color_constructor_node.cpp">
+      <Filter>Source Files\themes\theme-script\color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\create_profile_node.cpp">
+      <Filter>Source Files\themes\theme-script\settings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +133,24 @@
     </ClInclude>
     <ClInclude Include="..\..\include\color_split_node_output.h">
       <Filter>Header Files\themes\theme-script\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\color_constructor_node_output.h">
+      <Filter>Header Files\themes\theme-script\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\color_constructor_node.h">
+      <Filter>Header Files\themes\theme-script\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\object_channel_types.h">
+      <Filter>Header Files\themes\theme-script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\object_reference_node.h">
+      <Filter>Header Files\themes\theme-script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\object_reference_node_output.h">
+      <Filter>Header Files\themes\theme-script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\create_profile_node.h">
+      <Filter>Header Files\themes\theme-script\settings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

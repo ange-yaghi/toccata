@@ -22,8 +22,12 @@
     <ClCompile Include="..\..\include\timeline_element.cpp" />
     <ClCompile Include="..\..\src\analyzer.cpp" />
     <ClCompile Include="..\..\src\bar_display.cpp" />
+    <ClCompile Include="..\..\src\color_constructor_node.cpp" />
+    <ClCompile Include="..\..\src\color_constructor_node_output.cpp" />
     <ClCompile Include="..\..\src\color_node_output.cpp" />
     <ClCompile Include="..\..\src\color_split_node.cpp" />
+    <ClCompile Include="..\..\src\color_split_node_output.cpp" />
+    <ClCompile Include="..\..\src\create_profile_node.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\application.cpp" />
     <ClCompile Include="..\..\src\midi_display.cpp" />
@@ -34,10 +38,15 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\analyzer.h" />
     <ClInclude Include="..\..\include\bar_display.h" />
+    <ClInclude Include="..\..\include\color_constructor_node.h" />
     <ClInclude Include="..\..\include\color_node_output.h" />
+    <ClInclude Include="..\..\include\create_profile_node.h" />
     <ClInclude Include="..\..\include\delta.h" />
     <ClInclude Include="..\..\include\application.h" />
     <ClInclude Include="..\..\include\midi_display.h" />
+    <ClInclude Include="..\..\include\object_channel_types.h" />
+    <ClInclude Include="..\..\include\object_reference_node.h" />
+    <ClInclude Include="..\..\include\object_reference_node_output.h" />
     <ClInclude Include="..\..\include\profile.h" />
     <ClInclude Include="..\..\include\setting.h" />
     <ClInclude Include="..\..\include\theme_script_language_rules.h" />
@@ -45,6 +54,7 @@
     <ClInclude Include="..\..\include\timeline_element.h" />
     <ClInclude Include="..\..\include\color_split_node.h" />
     <ClInclude Include="..\..\include\color_split_node_output.h" />
+    <ClInclude Include="..\..\include\color_constructor_node_output.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dependencies\submodules\delta-studios\project\delta-basic-engine\delta-basic-engine.vcxproj">
