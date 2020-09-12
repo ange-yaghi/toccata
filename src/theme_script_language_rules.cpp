@@ -5,6 +5,7 @@
 #include "../include/object_channel_types.h"
 #include "../include/create_setting_node.h"
 #include "../include/create_profile_node.h"
+#include "../include/color_split_node.h"
 
 toccata::LanguageRules::LanguageRules() {
     /* void */
@@ -24,7 +25,7 @@ void toccata::LanguageRules::registerBuiltinNodeTypes() {
         "int_channel", &piranha::FundamentalType::IntType);
     registerBuiltinType<piranha::ChannelNode>(
         "string_channel", &piranha::FundamentalType::StringType);
-    registerBuiltinType<piranha::ChannelNode>(
+    registerBuiltinType<ColorSplitNode>(
         "color_channel", &ColorNodeOutput::ColorType);
     registerBuiltinType<piranha::ChannelNode>(
         "float_channel", &piranha::FundamentalType::FloatType);

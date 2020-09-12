@@ -1,4 +1,4 @@
-// Auto-generated on: 2019-10-27 15:44:14.010787
+// Auto-generated on: 2020-09-11 04:16:21.549616
 
 #ifndef PIRANHA_PIRANHA_H
 #define PIRANHA_PIRANHA_H
@@ -8,6 +8,7 @@
 #include "include/add_operation_output.h"
 #include "include/assembly.h"
 #include "include/bool_negate_operation.h"
+#include "include/build_settings.h"
 #include "include/channel_node.h"
 #include "include/channel_type.h"
 #include "include/compilation_error.h"
@@ -34,6 +35,7 @@
 #include "include/ir_node.h"
 #include "include/ir_node_definition.h"
 #include "include/ir_parser_structure.h"
+#include "include/ir_reference.h"
 #include "include/ir_structure_list.h"
 #include "include/ir_token_info.h"
 #include "include/ir_unary_operator.h"
@@ -45,6 +47,7 @@
 #include "include/literal_node.h"
 #include "include/literal_node_output.h"
 #include "include/memory_management.h"
+#include "include/memory_tracker.h"
 #include "include/multiply_operation_output.h"
 #include "include/node.h"
 #include "include/node_container.h"

@@ -33,7 +33,7 @@ namespace toccata {
 
             m_nameInput->fullCompute(&name);
             m_valueInput->fullCompute(&value);
-            GetObjectReference<Profile>(m_profileInput);
+            profile = GetObjectReference<Profile>(m_profileInput);
 
             Setting *setting = profile->EmplaceSetting<T_Setting>(name, value);
             m_output.SetReference(setting);
@@ -44,6 +44,7 @@ namespace toccata {
         }
 
         virtual void registerOutputs() {
+            setPrimaryOutput("setting");
             registerOutput(&m_output, "setting");
         }
 

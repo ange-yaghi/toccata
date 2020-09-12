@@ -9,11 +9,16 @@
 namespace toccata {
 
     class SettingsManager {
+    protected:
+        static SettingsManager *s_manager;
+
     public:
         SettingsManager();
         ~SettingsManager();
 
         Profile *GetProfile(const std::string &name);
+
+        static SettingsManager *Get();
 
     protected:
         std::map<std::string, Profile *> m_profiles;

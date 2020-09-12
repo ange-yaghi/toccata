@@ -28,6 +28,7 @@ namespace toccata {
         void Compile(const piranha::IrPath &path);
         void PrintTrace();
         void Execute();
+        void Destroy();
 
         State GetState() const { return m_state; }
 

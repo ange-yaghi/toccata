@@ -4,6 +4,8 @@ module {
     @version:   "0.0.1a"
 }
 
+import "../types/types.mr"
+
 public node profile_channel => profile_channel { /* void */ }
 
 @doc: "Creates a profile if it doesn't exist, otherwise it returns it"

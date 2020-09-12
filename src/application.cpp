@@ -6,6 +6,7 @@
 #include "../include/segment_generator.h"
 #include "../include/transform.h"
 #include "../include/midi_callback.h"
+#include "../include/theme_script_compiler.h"
 
 #include <sstream>
 
@@ -67,6 +68,16 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
 
     m_testSegment.PulseUnit = 1000.0;
     m_testSegment.PulseRate = 1.0;
+
+    // TEMP
+    ThemeScriptCompiler compiler;
+    compiler.Initialize();
+    compiler.Compile(piranha::IrPath("../../workspace/test.mr"));
+
+    compiler.Execute();
+    
+
+    int a = 0;
 }
 
 void toccata::Application::Process() {

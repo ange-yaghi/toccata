@@ -15,7 +15,7 @@ toccata::ThemeScriptCompiler::~ThemeScriptCompiler() {
 
 void toccata::ThemeScriptCompiler::Initialize() {
     m_compiler->setFileExtension(".mr");
-    m_compiler->addSearchPath("../theme-script-library/");
+    m_compiler->addSearchPath("../../theme-script-library/");
     m_rules.initialize();
 }
 
@@ -54,13 +54,17 @@ void toccata::ThemeScriptCompiler::PrintTrace() {
 
 void toccata::ThemeScriptCompiler::Execute() {
     if (GetState() == State::CompilationSuccess) {
-        bool result = m_program.execute();
+        const bool result = m_program.execute();
         SetState(State::Complete);
 
         if (!result) {
             std::cout << "Runtime error: " << m_program.getRuntimeError() << std::endl;
         }
     }
+}
+
+void toccata::ThemeScriptCompiler::Destroy() {
+    
 }
 
 void toccata::ThemeScriptCompiler::PrintError(const piranha::CompilationError *err) {

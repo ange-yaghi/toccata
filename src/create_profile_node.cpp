@@ -1,7 +1,9 @@
 #include "../include/create_profile_node.h"
 
+#include "../include/settings_manager.h"
+
 toccata::CreateProfileNode::CreateProfileNode() {
-    /* void */
+    m_nameInput = nullptr;
 }
 
 toccata::CreateProfileNode::~CreateProfileNode() {
@@ -13,7 +15,11 @@ void toccata::CreateProfileNode::_initialize() {
 }
 
 void toccata::CreateProfileNode::_evaluate() {
-    m_output.SetReference(nullptr);
+    std::string name;
+    m_nameInput->fullCompute(&name);
+
+    Profile *profile = SettingsManager::Get()->GetProfile(name);
+    m_output.SetReference(profile);
 }
 
 void toccata::CreateProfileNode::_destroy() {
@@ -21,6 +27,7 @@ void toccata::CreateProfileNode::_destroy() {
 }
 
 void toccata::CreateProfileNode::registerOutputs() {
+    setPrimaryOutput("profile");
     registerOutput(&m_output, "profile");
 }
 
