@@ -79,6 +79,14 @@ public inline node color => toccata_color_constructor {
     input r [::float]: 0.0;
     input g [::float]: 0.0;
     input b [::float]: 0.0;
-    input a [::float]: 255.0;
+    input a [::float]: 1.0;
     alias output __out [::color_channel];
+}
+
+public inline node srgb => toccata_srgb {
+    input r [::float]: 0.0;
+    input g [::float]: 0.0;
+    input b [::float]: 0.0;
+    input a [::float]: 255.0;
+    alias output __out [::color];
 }

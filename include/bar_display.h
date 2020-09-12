@@ -20,9 +20,6 @@ namespace toccata {
         void Process();
         void Render();
 
-        void SetMinimumChannelCount(int channels) { m_minimumChannelCount = channels; }
-        int GetMinimumChannelCount() const { return m_minimumChannelCount; }
-
         void AllocateChannels();
 
         void DrawBox(float x, float y, float w, float h);
@@ -30,7 +27,6 @@ namespace toccata {
         void RenderBarInformation(const Analyzer::BarInformation &info, float x0, float y0, float x1, float y1);
 
     protected:
-        int m_minimumChannelCount;
         int m_channelCount;
     };
 

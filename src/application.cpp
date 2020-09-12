@@ -7,6 +7,7 @@
 #include "../include/transform.h"
 #include "../include/midi_callback.h"
 #include "../include/theme_script_compiler.h"
+#include "../include/settings_manager.h"
 
 #include <sstream>
 
@@ -69,15 +70,7 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
     m_testSegment.PulseUnit = 1000.0;
     m_testSegment.PulseRate = 1.0;
 
-    // TEMP
-    ThemeScriptCompiler compiler;
-    compiler.Initialize();
-    compiler.Compile(piranha::IrPath("../../workspace/test.mr"));
-
-    compiler.Execute();
-    
-
-    int a = 0;
+    ReloadThemes();
 }
 
 void toccata::Application::Process() {
@@ -113,12 +106,16 @@ void toccata::Application::Process() {
 
     m_barDisplay.SetEngine(&m_engine);
     m_barDisplay.SetHeight(windowHeight * 0.2f);
-    m_barDisplay.SetMinimumChannelCount(3);
     m_barDisplay.SetPositionY(windowHeight / 2.0f);
     m_barDisplay.SetTextRenderer(&m_textRenderer);
     m_barDisplay.SetTimeline(&m_timeline);
+    m_barDisplay.SetSettings(&m_settings);
 
     MockMidiInput();
+
+    if (m_engine.IsKeyDown(ysKeyboard::KEY_F5)) {
+        ReloadThemes();
+    }
 }
 
 void toccata::Application::Render() {
@@ -207,6 +204,16 @@ void toccata::Application::ConstructReferenceNotes() {
     }
 
     m_analyzer.Analyze();
+}
+
+void toccata::Application::ReloadThemes() {
+    ThemeScriptCompiler compiler;
+    compiler.Initialize();
+    compiler.Compile(piranha::IrPath("../../themes/default.mr"));
+    compiler.Execute();
+    compiler.Destroy();
+
+    m_settings.Fill(nullptr, SettingsManager::Get()->GetProfile("default"));
 }
 
 void toccata::Application::Run() {

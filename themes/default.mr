@@ -1,0 +1,11 @@
+import "toccata.mr"
+
+profile default(
+    name: "default"
+)
+
+int_setting(
+    name: "BarDisplay_MinimumChannelCount",
+    value: 0,
+    profile: default
+)

@@ -86,7 +86,7 @@ namespace toccata {
     template <>
     class TypedSetting<piranha::native_int> : public _TypedSetting<piranha::native_int> {
     public:
-        virtual double GetInt() const { return (double)this->m_value; }
+        virtual int GetInteger() const { return this->m_value; }
     };
 
     template <>

@@ -36,18 +36,18 @@ void toccata::ThemeScriptCompiler::Compile(const piranha::IrPath &path) {
     }
 }
 
-void toccata::ThemeScriptCompiler::PrintTrace() {
+void toccata::ThemeScriptCompiler::PrintTrace(std::stringstream &ss) {
     if (GetState() == State::CouldNotFindFile) {
-        std::cout << "Compilation failed: File not found.\n";
+        ss << "Compilation failed: File not found.\n";
     }
     else if (GetState() == State::CompilationFail) {
         const piranha::ErrorList *errors = m_compiler->getErrorList();
-        int errorCount = errors->getErrorCount();
+        const int errorCount = errors->getErrorCount();
 
-        std::cout << "Compilation failed: " << errorCount << " error(s) found\n";
+        ss << "Compilation failed: " << errorCount << " error(s) found\n";
 
         for (int i = 0; i < errorCount; i++) {
-            PrintError(errors->getCompilationError(i));
+            PrintError(errors->getCompilationError(i), ss);
         }
     }
 }
@@ -55,10 +55,12 @@ void toccata::ThemeScriptCompiler::PrintTrace() {
 void toccata::ThemeScriptCompiler::Execute() {
     if (GetState() == State::CompilationSuccess) {
         const bool result = m_program.execute();
-        SetState(State::Complete);
 
         if (!result) {
-            std::cout << "Runtime error: " << m_program.getRuntimeError() << std::endl;
+            SetState(State::RuntimeError);
+        }
+        else {
+            SetState(State::Complete);
         }
     }
 }
@@ -68,9 +70,11 @@ void toccata::ThemeScriptCompiler::Destroy() {
     m_program.free();
 }
 
-void toccata::ThemeScriptCompiler::PrintError(const piranha::CompilationError *err) {
+void toccata::ThemeScriptCompiler::PrintError(
+    const piranha::CompilationError *err, std::stringstream &target) 
+{
     const piranha::ErrorCode_struct &errorCode = err->getErrorCode();
-    std::cout << err->getCompilationUnit()->getPath().getStem()
+    target << err->getCompilationUnit()->getPath().getStem()
         << "(" << err->getErrorLocation()->lineStart << "): error "
         << errorCode.stage << errorCode.code << ": " << errorCode.info << std::endl;
 
@@ -86,7 +90,7 @@ void toccata::ThemeScriptCompiler::PrintError(const piranha::CompilationError *e
             if (instanceName.empty()) formattedName = "<unnamed> " + definitionName;
             else formattedName = instanceName + " " + definitionName;
 
-            std::cout
+            target
                 << "       While instantiating: "
                 << instance->getParentUnit()->getPath().getStem()
                 << "(" << instance->getSummaryToken()->lineStart << "): "

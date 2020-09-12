@@ -105,6 +105,12 @@
     <ClCompile Include="..\..\src\int_to_color_node.cpp">
       <Filter>Source Files\themes\theme-script\color</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\srgbi_node_output.cpp">
+      <Filter>Source Files\themes\theme-script\color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\srgbi_node.cpp">
+      <Filter>Source Files\themes\theme-script\color</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\delta.h">
@@ -146,9 +152,6 @@
     <ClInclude Include="..\..\include\color_split_node_output.h">
       <Filter>Header Files\themes\theme-script\color</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\color_constructor_node_output.h">
-      <Filter>Header Files\themes\theme-script\color</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\color_constructor_node.h">
       <Filter>Header Files\themes\theme-script\color</Filter>
     </ClInclude>
@@ -175,6 +178,18 @@
     </ClInclude>
     <ClInclude Include="..\..\include\int_to_color_node.h">
       <Filter>Header Files\themes\theme-script\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\color_constructor_node_output.h">
+      <Filter>Header Files\themes\theme-script\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\srgbi_node_output.h">
+      <Filter>Header Files\themes\theme-script\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\srgbi_node.h">
+      <Filter>Header Files\themes\theme-script\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\settings.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,11 +15,11 @@ namespace toccata {
         Profile();
         ~Profile();
 
-        virtual bool GetSetting(const std::string &name, ysVector *v);
-        virtual bool GetSetting(const std::string &name, std::string *v);
-        virtual bool GetSetting(const std::string &name, bool *v);
-        virtual bool GetSetting(const std::string &name, int *v) ;
-        virtual bool GetSetting(const std::string &name, double *v);
+        virtual bool GetSetting(const std::string &name, ysVector *v) const;
+        virtual bool GetSetting(const std::string &name, std::string *v) const;
+        virtual bool GetSetting(const std::string &name, bool *v) const;
+        virtual bool GetSetting(const std::string &name, int *v) const;
+        virtual bool GetSetting(const std::string &name, double *v) const;
 
         template <typename T_SettingType>
         Setting *EmplaceSetting(const std::string &name, T_SettingType value) {

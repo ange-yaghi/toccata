@@ -7,6 +7,7 @@
 #include "../include/create_profile_node.h"
 #include "../include/color_split_node.h"
 #include "../include/int_to_color_node.h"
+#include "../include/srgbi_node.h"
 
 toccata::LanguageRules::LanguageRules() {
     /* void */
@@ -38,6 +39,7 @@ void toccata::LanguageRules::registerBuiltinNodeTypes() {
         "profile_channel", &ObjectChannel::ProfileChannel);
 
     // Constructors
+    registerBuiltinType<SrgbiNode>("toccata_srgb");
     registerBuiltinType<ColorConstructorNode>("toccata_color_constructor");
 
     registerBuiltinType<CreateProfileNode>("toccata_profile");

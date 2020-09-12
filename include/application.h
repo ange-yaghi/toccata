@@ -36,6 +36,8 @@ namespace toccata {
         void CheckMidiStatus();
         void ConstructReferenceNotes();
 
+        void ReloadThemes();
+
         dbasic::DeltaEngine m_engine;
         dbasic::AssetManager m_assetManager;
 
@@ -52,6 +54,8 @@ namespace toccata {
 
         Library m_library;
         DecisionThread m_decisionThread;
+
+        Settings m_settings;
 
         float m_currentOffset;
     };

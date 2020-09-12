@@ -1,14 +1,14 @@
-#include "../include/color_constructor_node_output.h"
+#include "../include/srgbi_node_output.h"
 
-toccata::ColorConstructorNodeOutput::ColorConstructorNodeOutput() {
+toccata::SrgbiNodeOutput::SrgbiNodeOutput() {
     m_r = m_g = m_b = m_a = nullptr;
 }
 
-toccata::ColorConstructorNodeOutput::~ColorConstructorNodeOutput() {
+toccata::SrgbiNodeOutput::~SrgbiNodeOutput() {
     /* void */
 }
 
-void toccata::ColorConstructorNodeOutput::fullCompute(void *target) const {
+void toccata::SrgbiNodeOutput::fullCompute(void *target) const {
     piranha::FloatValueOutput *r = static_cast<piranha::FloatValueOutput *>(m_r);
     piranha::FloatValueOutput *g = static_cast<piranha::FloatValueOutput *>(m_g);
     piranha::FloatValueOutput *b = static_cast<piranha::FloatValueOutput *>(m_b);
@@ -21,12 +21,17 @@ void toccata::ColorConstructorNodeOutput::fullCompute(void *target) const {
     a->fullCompute(&a_v);
 
     ysVector *output = reinterpret_cast<ysVector *>(target);
-    *output = ysMath::LoadVector(r_v, g_v, b_v, a_v);
+    *output = ysColor::srgbToLinear(
+    (float)(r_v / (piranha::native_float)255.0),
+        (float)(g_v / (piranha::native_float)255.0),
+        (float)(b_v / (piranha::native_float)255.0),
+        (float)(a_v / (piranha::native_float)255.0));
 }
 
-void toccata::ColorConstructorNodeOutput::registerInputs() {
+void toccata::SrgbiNodeOutput::registerInputs() {
     registerInput(&m_r);
     registerInput(&m_g);
     registerInput(&m_b);
     registerInput(&m_a);
 }
+

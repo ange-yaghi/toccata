@@ -2,10 +2,11 @@
 #define TOCCATA_UI_THEME_SCRIPT_COMPILER_H
 
 #include "theme_script_language_rules.h"
-
 #include "delta.h"
 
 #include <piranha.h>
+
+#include <sstream>
 
 namespace toccata {
 
@@ -16,6 +17,7 @@ namespace toccata {
             CompilationSuccess,
             CompilationFail,
             CouldNotFindFile,
+            RuntimeError,
             Complete
         };
 
@@ -26,7 +28,7 @@ namespace toccata {
         void Initialize();
 
         void Compile(const piranha::IrPath &path);
-        void PrintTrace();
+        void PrintTrace(std::stringstream &ss);
         void Execute();
         void Destroy();
 
@@ -43,9 +45,9 @@ namespace toccata {
         State m_state;
 
     protected:
-        void PrintError(const piranha::CompilationError *err);
+        void PrintError(const piranha::CompilationError *err, std::stringstream &target);
     };
 
-} /* namespace mantaray_cli */
+} /* namespace toccata */
 
 #endif /* TOCCATA_UI_THEME_SCRIPT_COMPILER_H */

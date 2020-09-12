@@ -6,7 +6,6 @@
 
 toccata::BarDisplay::BarDisplay() {
     m_channelCount = 3;
-    m_minimumChannelCount = 3;
 }
 
 toccata::BarDisplay::~BarDisplay() {
@@ -23,6 +22,8 @@ void toccata::BarDisplay::Process() {
 
 void toccata::BarDisplay::Render() {
     AllocateChannels();
+
+    if (m_channelCount == 0) return;
 
     const float totalHeight = m_height;
     const float totalWidth = m_timeline->GetWidth();
@@ -58,6 +59,8 @@ void toccata::BarDisplay::Render() {
 }
 
 void toccata::BarDisplay::AllocateChannels() {
+    m_channelCount = m_settings->BarDisplay_MinimumChannelCount;
+
     const int barCount = m_timeline->GetBarCount();
     for (int i = 0; i < barCount; ++i) {
         Timeline::MatchedBar &b0 = m_timeline->GetBar(i);
@@ -65,6 +68,8 @@ void toccata::BarDisplay::AllocateChannels() {
         const double s0 = m_timeline->ReferenceToInputSpace(0.0, b0.Bar.T);
         const double e0 = m_timeline->ReferenceToInputSpace(
             b0.Bar.MatchedBar->GetSegment()->GetNormalizedLength(), b0.Bar.T);
+
+        if (!m_timeline->InRangeInputSpace(s0, e0)) continue;
 
         std::set<int> conflicts;
         for (int j = 0; j < i; ++j) {
@@ -74,6 +79,8 @@ void toccata::BarDisplay::AllocateChannels() {
             const double e1 = m_timeline->ReferenceToInputSpace(
                 b1.Bar.MatchedBar->GetSegment()->GetNormalizedLength(), b1.Bar.T);
 
+            if (!m_timeline->InRangeInputSpace(s1, e1)) continue;
+
             if (s0 > e1 || e0 < s1) continue;
             if (s1 > e0 || e1 < s0) continue;
 
@@ -81,7 +88,9 @@ void toccata::BarDisplay::AllocateChannels() {
             conflicts.insert(channel);
         }
 
-        for (int c = 0; c < m_channelCount; ++c) {
+        for (int c = 0; c <= m_channelCount; ++c) {
+            if (c == m_channelCount) ++m_channelCount;
+
             if (conflicts.count(c) == 0) {
                 b0.Channel = c;
                 break;

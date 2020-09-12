@@ -3,6 +3,7 @@
 
 #include "timeline.h"
 #include "analyzer.h"
+#include "settings.h"
 
 namespace toccata {
 
@@ -29,6 +30,9 @@ namespace toccata {
         void SetEngine(dbasic::DeltaEngine *engine) { m_engine = engine; }
         dbasic::DeltaEngine *GetEngine() const { return m_engine; }
 
+        void SetSettings(Settings *settings) { m_settings = settings; }
+        Settings *GetSettings() { return m_settings; }
+
     protected:
         Timeline *m_timeline;
         Analyzer *m_analyzer;
@@ -38,6 +42,8 @@ namespace toccata {
 
         dbasic::DeltaEngine *m_engine;
         dbasic::TextRenderer *m_textRenderer;
+
+        Settings *m_settings;
     };
 
 } /* namespace toccata */

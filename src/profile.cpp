@@ -8,7 +8,7 @@ toccata::Profile::~Profile() {
     /* void */
 }
 
-bool toccata::Profile::GetSetting(const std::string &name, ysVector *v) {
+bool toccata::Profile::GetSetting(const std::string &name, ysVector *v) const {
     const Setting *setting = GetSetting(name);
     if (setting == nullptr) return false;
     else if (setting->GetType() != Setting::Type::Color) return false;
@@ -18,7 +18,7 @@ bool toccata::Profile::GetSetting(const std::string &name, ysVector *v) {
     }
 }
 
-bool toccata::Profile::GetSetting(const std::string &name, std::string *v) {
+bool toccata::Profile::GetSetting(const std::string &name, std::string *v) const {
     const Setting *setting = GetSetting(name);
     if (setting == nullptr) return false;
     else if (setting->GetType() != Setting::Type::String) return false;
@@ -28,7 +28,7 @@ bool toccata::Profile::GetSetting(const std::string &name, std::string *v) {
     }
 }
 
-bool toccata::Profile::GetSetting(const std::string &name, bool *v) {
+bool toccata::Profile::GetSetting(const std::string &name, bool *v) const {
     const Setting *setting = GetSetting(name);
     if (setting == nullptr) return false;
     else if (setting->GetType() != Setting::Type::Boolean) return false;
@@ -38,7 +38,7 @@ bool toccata::Profile::GetSetting(const std::string &name, bool *v) {
     }
 }
 
-bool toccata::Profile::GetSetting(const std::string &name, int *v) {
+bool toccata::Profile::GetSetting(const std::string &name, int *v) const {
     const Setting *setting = GetSetting(name);
     if (setting == nullptr) return false;
     else if (setting->GetType() != Setting::Type::Integer) return false;
@@ -48,7 +48,7 @@ bool toccata::Profile::GetSetting(const std::string &name, int *v) {
     }
 }
 
-bool toccata::Profile::GetSetting(const std::string &name, double *v) {
+bool toccata::Profile::GetSetting(const std::string &name, double *v) const {
     const Setting *setting = GetSetting(name);
     if (setting == nullptr) return false;
     else if (setting->GetType() != Setting::Type::Double) return false;

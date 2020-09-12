@@ -34,6 +34,8 @@
     <ClCompile Include="..\..\src\object_channel_types.cpp" />
     <ClCompile Include="..\..\src\profile.cpp" />
     <ClCompile Include="..\..\src\settings_manager.cpp" />
+    <ClCompile Include="..\..\src\srgbi_node.cpp" />
+    <ClCompile Include="..\..\src\srgbi_node_output.cpp" />
     <ClCompile Include="..\..\src\theme_script_compiler.cpp" />
     <ClCompile Include="..\..\src\theme_script_language_rules.cpp" />
     <ClCompile Include="..\..\src\timeline.cpp" />
@@ -55,7 +57,10 @@
     <ClInclude Include="..\..\include\object_reference_node_output.h" />
     <ClInclude Include="..\..\include\profile.h" />
     <ClInclude Include="..\..\include\setting.h" />
+    <ClInclude Include="..\..\include\settings.h" />
     <ClInclude Include="..\..\include\settings_manager.h" />
+    <ClInclude Include="..\..\include\srgbi_node.h" />
+    <ClInclude Include="..\..\include\srgbi_node_output.h" />
     <ClInclude Include="..\..\include\theme_script_compiler.h" />
     <ClInclude Include="..\..\include\theme_script_language_rules.h" />
     <ClInclude Include="..\..\include\timeline.h" />
