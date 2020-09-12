@@ -102,6 +102,9 @@
     <ClCompile Include="..\..\src\theme_script_compiler.cpp">
       <Filter>Source Files\themes\theme-script</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\int_to_color_node.cpp">
+      <Filter>Source Files\themes\theme-script\color</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\delta.h">
@@ -169,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\theme_script_compiler.h">
       <Filter>Header Files\themes\theme-script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\int_to_color_node.h">
+      <Filter>Header Files\themes\theme-script\color</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include "../include/create_setting_node.h"
 #include "../include/create_profile_node.h"
 #include "../include/color_split_node.h"
+#include "../include/int_to_color_node.h"
 
 toccata::LanguageRules::LanguageRules() {
     /* void */
@@ -57,7 +58,8 @@ void toccata::LanguageRules::registerBuiltinNodeTypes() {
     /* void */
 
     // Conversion types
-    registerBuiltinType<piranha::StringToIntConversionNode>("string_to_int");
+    registerBuiltinType<piranha::IntToFloatConversionNode>("toccata_int_to_float");
+    registerBuiltinType<IntToColorNode>("toccata_int_to_color");
 
     // Literals ===========================================
     registerLiteralType(piranha::LITERAL_INT, "literal_int");
@@ -69,11 +71,6 @@ void toccata::LanguageRules::registerBuiltinNodeTypes() {
     /* void */
 
     // Conversions ========================================
-    registerConversion(
-        { &piranha::FundamentalType::FloatType, &piranha::FundamentalType::IntType },
-        "toccata_float_to_int"
-    );
-
     registerConversion(
         { &piranha::FundamentalType::IntType, &piranha::FundamentalType::FloatType },
         "toccata_int_to_float"

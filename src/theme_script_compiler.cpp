@@ -64,7 +64,8 @@ void toccata::ThemeScriptCompiler::Execute() {
 }
 
 void toccata::ThemeScriptCompiler::Destroy() {
-    
+    m_compiler->free();
+    m_program.free();
 }
 
 void toccata::ThemeScriptCompiler::PrintError(const piranha::CompilationError *err) {

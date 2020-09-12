@@ -27,6 +27,7 @@
     <ClCompile Include="..\..\src\color_split_node.cpp" />
     <ClCompile Include="..\..\src\color_split_node_output.cpp" />
     <ClCompile Include="..\..\src\create_profile_node.cpp" />
+    <ClCompile Include="..\..\src\int_to_color_node.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\application.cpp" />
     <ClCompile Include="..\..\src\midi_display.cpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="..\..\include\create_setting_node.h" />
     <ClInclude Include="..\..\include\delta.h" />
     <ClInclude Include="..\..\include\application.h" />
+    <ClInclude Include="..\..\include\int_to_color_node.h" />
     <ClInclude Include="..\..\include\midi_display.h" />
     <ClInclude Include="..\..\include\object_channel_types.h" />
     <ClInclude Include="..\..\include\object_reference_node.h" />

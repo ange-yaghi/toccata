@@ -5,6 +5,7 @@ module {
 }
 
 public import "types/types.mr"
+public import "types/conversions.mr"
 
 public import "settings/profile.mr"
 public import "settings/setting.mr"

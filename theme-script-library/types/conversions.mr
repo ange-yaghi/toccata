@@ -11,11 +11,6 @@ public inline node int_to_color => toccata_int_to_color {
     alias output __out [types::color];
 }
 
-public inline node float_to_int => toccata_float_to_int {
-    input __in [types::float];
-    alias output __out [types::int];
-}
-
 public inline node int_to_float => toccata_int_to_float {
     input __in [types::int];
     alias output __out [types::float];
