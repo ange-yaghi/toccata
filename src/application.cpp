@@ -255,7 +255,7 @@ void toccata::Application::ReloadThemes() {
     compiler.Initialize();
     compiler.Compile(piranha::IrPath("../../themes/default.mr"));
     compiler.Execute();
-    //compiler.Destroy();
+    compiler.Destroy();
 
     m_settings.Fill(nullptr, SettingsManager::Get()->GetProfile("default"));
 }
