@@ -1,0 +1,12 @@
+module {
+    @name:      "Operators"
+    @doc:       "Defines all basic operators"
+    @version:   "0.0.1a"
+}
+
+private import "types.mr" as types
+
+public inline node negate_float => toccata_negate_float {
+    input __in [types::float];
+    alias output __out [types::float];
+}

@@ -6,6 +6,8 @@ module {
 
 public import "types/types.mr"
 public import "types/conversions.mr"
+public import "types/operators.mr"
 
 public import "settings/profile.mr"
 public import "settings/setting.mr"
+public import "settings/heat_map.mr"

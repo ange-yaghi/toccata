@@ -16,7 +16,7 @@ namespace toccata {
 
         void Seed(unsigned int seed);
 
-        static void Convert(const MidiStream *stream, Library *target, int leading8thRests = 0);
+        static void Convert(const MidiStream *stream, Library *target, const std::string &pieceName = "", int leading8thRests = 0);
 
         static void Copy(const MusicSegment *reference, MusicSegment *segment);
         static void Append(MusicSegment *target, const MusicSegment *segment);

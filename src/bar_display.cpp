@@ -110,5 +110,28 @@ void toccata::BarDisplay::RenderBarInformation(
     std::stringstream ss;
     ss << (int)std::round(info.Tempo) << " BPM";
 
-    m_textRenderer->RenderText(ss.str(), x0, y0, 20.0f);
+    m_textRenderer->RenderText(ss.str(), x0, y0, 30.0f);
+
+    ss = std::stringstream();
+    ss << "B: " << info.Bar;
+
+    m_textRenderer->RenderText(ss.str(), x0 + 175.0f, y0, 20.0f);
+
+    const Timeline::MatchedBar &bar = m_timeline->GetBar(info.Bar);
+    int missedNotes = 0;
+    for (const Analyzer::NoteInformation &noteInfo : info.NoteInformation) {
+        if (noteInfo.InputNote == -1) ++missedNotes;
+    }
+
+    ss = std::stringstream();
+    ss << "ERR: " << info.AverageError;
+
+    if (missedNotes > 0) {
+        ss << "/" << missedNotes;
+    }
+    else {
+        ss << "/-";
+    }
+
+    m_textRenderer->RenderText(ss.str(), x0 + 175.0f, y0 + 20.0f, 20.0f);
 }

@@ -2,6 +2,7 @@
 
 toccata::Bar::Bar() {
     m_segment = nullptr;
+    m_piece = nullptr;
     m_id = -1;
 }
 

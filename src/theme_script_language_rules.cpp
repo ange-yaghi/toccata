@@ -8,6 +8,8 @@
 #include "../include/color_split_node.h"
 #include "../include/int_to_color_node.h"
 #include "../include/srgbi_node.h"
+#include "../include/create_heat_map_node.h"
+#include "../include/control_point_node.h"
 
 toccata::LanguageRules::LanguageRules() {
     /* void */
@@ -37,10 +39,15 @@ void toccata::LanguageRules::registerBuiltinNodeTypes() {
         "setting_channel", &ObjectChannel::SettingChannel);
     registerBuiltinType<piranha::ChannelNode>(
         "profile_channel", &ObjectChannel::ProfileChannel);
+    registerBuiltinType<piranha::ChannelNode>(
+        "heat_map_channel", &ObjectChannel::HeatMapChannel);
 
     // Constructors
     registerBuiltinType<SrgbiNode>("toccata_srgb");
     registerBuiltinType<ColorConstructorNode>("toccata_color_constructor");
+
+    registerBuiltinType<CreateHeatMapNode>("toccata_blank_heat_map");
+    registerBuiltinType<ControlPointNode>("toccata_control_point");
 
     registerBuiltinType<CreateProfileNode>("toccata_profile");
 
@@ -57,7 +64,8 @@ void toccata::LanguageRules::registerBuiltinNodeTypes() {
     registerBuiltinType<piranha::DefaultLiteralFloatNode>("literal_float");
 
     // Operator types
-    /* void */
+    registerBuiltinType<
+        piranha::NumNegateOperationNode<piranha::native_float>>("toccata_negate_float");
 
     // Conversion types
     registerBuiltinType<piranha::IntToFloatConversionNode>("toccata_int_to_float");
@@ -70,7 +78,10 @@ void toccata::LanguageRules::registerBuiltinNodeTypes() {
     registerLiteralType(piranha::LITERAL_FLOAT, "literal_float");
 
     // Operations =========================================
-    /* void */
+    registerUnaryOperator(
+        { piranha::IrUnaryOperator::Operator::NumericNegate, &piranha::FundamentalType::FloatType },
+        "toccata_negate_float"
+    );
 
     // Conversions ========================================
     registerConversion(

@@ -32,6 +32,8 @@ namespace toccata {
         };
 
         struct MatchedPiece {
+            Piece *Piece;
+
             int MatchedNotes;
             int Start;
             int End;

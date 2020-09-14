@@ -5,6 +5,16 @@
 toccata::MidiDisplay::MidiDisplay() {
     m_keyStart = 0;
     m_keyEnd = 0;
+
+    m_showPlayedNotes = true;
+    m_showReferenceNotes = true;
+
+    m_targetVelocity = 50.0;
+    m_velocityErrorThreshold = 10.0;
+
+    m_timingErrorThreshold = 0.1;
+
+    m_mode = PracticeMode::Velocity;
 }
 
 toccata::MidiDisplay::~MidiDisplay() {
@@ -59,40 +69,8 @@ void toccata::MidiDisplay::Render() {
         m_engine->DrawBox(width, 1);
     }
 
-    RenderReferenceNotes();
-
-    std::set<int> mappedNotes;
-    FindUnmappedNotes(mappedNotes);
-    MusicSegment *inputSegment = m_timeline->GetInputSegment();
-    const int n = inputSegment->NoteContainer.GetCount();
-    for (int i = 0; i < n; ++i) {
-        const MusicPoint &point = inputSegment->NoteContainer.GetPoints()[i];
-
-        if (point.Pitch > m_keyEnd || point.Pitch < m_keyStart) continue;
-        if (!m_timeline->InRange(point.Timestamp, point.Timestamp + point.Length)) continue;
-
-        const double noteStart = m_timeline->TimestampToWorldX(point.Timestamp);
-        const double noteEnd = m_timeline->TimestampToWorldX(point.Timestamp + point.Length);
-        const double noteWidth = noteEnd - noteStart;
-
-        const float y = (float)(lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2);
-        const float x = (float)(noteStart + noteWidth / 2);
-
-        const ysVector position = ysMath::LoadVector(x, y);
-
-        m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
-        m_engine->SetObjectTransform(ysMath::TranslationTransform(position));
-        m_engine->SetLit(false);
-
-        if (mappedNotes.count(i) == 0) {
-            m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
-        }
-        else {
-            m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
-        }
-
-        m_engine->DrawBox((float)noteWidth, channelHeight * 0.333f);
-    }
+    if (m_showReferenceNotes) RenderReferenceNotes();
+    if (m_showPlayedNotes) RenderPlayedNotes();
 
     const int barCount = m_timeline->GetBarCount();
     for (int i = 0; i < barCount; ++i) {
@@ -104,7 +82,7 @@ void toccata::MidiDisplay::Render() {
 
         if (m_timeline->InRangeInputSpace(start)) {
             const float x = (float)m_timeline->InputSpaceToWorldX(start);
-            const ysVector positionStart = ysMath::LoadVector(x, middle_y);
+            const ysVector positionStart = ysMath::LoadVector(x + 1.0, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
             m_engine->SetObjectTransform(ysMath::TranslationTransform(positionStart));
@@ -116,7 +94,7 @@ void toccata::MidiDisplay::Render() {
 
         if (m_timeline->InRangeInputSpace(end)) {
             const float x = (float)m_timeline->InputSpaceToWorldX(end);
-            const ysVector positionEnd = ysMath::LoadVector(x, middle_y);
+            const ysVector positionEnd = ysMath::LoadVector(x - 1.0, middle_y);
 
             m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
             m_engine->SetObjectTransform(ysMath::TranslationTransform(positionEnd));
@@ -165,6 +143,55 @@ void toccata::MidiDisplay::FindUnmappedNotes(std::set<int> &mapped) const {
     }
 }
 
+ysVector toccata::MidiDisplay::GetColor(const Analyzer::NoteInformation &noteInfo) const {
+    if (m_mode == PracticeMode::Default) {
+        if (noteInfo.InputNote == -1) {
+            return ysColor::srgbiToLinear(0xFF, 0x00, 0x00);
+        }
+        else {
+            return ysColor::srgbiToLinear(0xFF, 0xFF, 0x00);
+        }
+    }
+    else if (m_mode == PracticeMode::Timing) {
+        if (noteInfo.InputNote == -1) {
+            return ysColor::srgbiToLinear(0x44, 0x44, 0x44);
+        }
+        else {
+            return GetTimingColor(noteInfo.Error);
+        }
+    }
+    else if (m_mode == PracticeMode::Velocity) {
+        if (noteInfo.InputNote == -1) {
+            return ysColor::srgbiToLinear(0x44, 0x44, 0x44);
+        }
+        else {
+            const unsigned short velocity =
+                m_timeline
+                ->GetInputSegment()
+                ->NoteContainer.GetPoints()[noteInfo.InputNote]
+                .Velocity;
+            return GetVelocityColor(velocity);
+        }
+    }
+
+    return ysMath::Constants::Zero3;
+}
+
+ysVector toccata::MidiDisplay::GetVelocityColor(unsigned short velocity) const {
+    const int error = (int)velocity - m_targetVelocity;
+    const double s = error / m_velocityErrorThreshold;
+
+    const ysVector color = m_settings->BarDisplay_VelocityHeatMap->Sample(s);
+    return color;
+}
+
+ysVector toccata::MidiDisplay::GetTimingColor(double error) const {
+    const double s = error / m_timingErrorThreshold;
+
+    const ysVector color = m_settings->BarDisplay_TimingHeatMap->Sample(s);
+    return color;
+}
+
 void toccata::MidiDisplay::RenderReferenceNotes() {
     const float width = m_timeline->GetWidth();
     const float height = m_height;
@@ -211,14 +238,71 @@ void toccata::MidiDisplay::RenderReferenceNotes() {
             m_engine->SetObjectTransform(ysMath::TranslationTransform(position));
             m_engine->SetLit(false);
 
-            if (noteInfo.InputNote != -1) {
-                m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0xFF, 0x00));
-            }
-            else {
-                m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
-            }
+            m_engine->SetBaseColor(GetColor(noteInfo));
 
             m_engine->DrawBox((float)noteWidth, channelHeight * 0.8f);
+        }
+    }
+}
+
+void toccata::MidiDisplay::RenderPlayedNotes() {
+    const float height = m_height;
+
+    const float channelHeight = height / (m_keyEnd - m_keyStart + 1);
+    const float start_y = m_positionY;
+    const float middle_y = start_y - height / 2;
+
+    const float lower_y = start_y - height;
+
+    std::set<int> mappedNotes;
+    FindUnmappedNotes(mappedNotes);
+    MusicSegment *inputSegment = m_timeline->GetInputSegment();
+    const int n = inputSegment->NoteContainer.GetCount();
+    for (int i = 0; i < n; ++i) {
+        const MusicPoint &point = inputSegment->NoteContainer.GetPoints()[i];
+
+        if (point.Pitch > m_keyEnd || point.Pitch < m_keyStart) continue;
+        if (!m_timeline->InRange(point.Timestamp, point.Timestamp + point.Length)) continue;
+
+        const double noteStart = m_timeline->TimestampToWorldX(point.Timestamp);
+        const double noteEnd = m_timeline->TimestampToWorldX(point.Timestamp + point.Length);
+        const double noteWidth = noteEnd - noteStart;
+
+        const float y = (float)(lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2);
+        const float x = (float)(noteStart + noteWidth / 2);
+
+        const ysVector position = ysMath::LoadVector(x, y);
+
+        m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
+        m_engine->SetObjectTransform(ysMath::TranslationTransform(position));
+        m_engine->SetLit(false);
+
+        if (m_showReferenceNotes) {
+            ysVector color;
+            if (mappedNotes.count(i) == 0) {
+                color = ysColor::srgbiToLinear(0xFF, 0x00, 0x00);
+            }
+            else {
+                color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
+            }
+
+            m_engine->SetBaseColor(color);
+            m_engine->DrawBox((float)noteWidth, channelHeight * 0.333f);
+        }
+        else {
+            ysVector color;
+            if (m_mode == PracticeMode::Timing) {
+                color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
+            }
+            else if (m_mode == PracticeMode::Velocity) {
+                color = GetVelocityColor(point.Velocity);
+            }
+            else if (m_mode == PracticeMode::Default) {
+                color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
+            }
+
+            m_engine->SetBaseColor(color);
+            m_engine->DrawBox((float)noteWidth, channelHeight);
         }
     }
 }

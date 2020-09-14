@@ -2,6 +2,7 @@
 #define TOCCATA_CORE_BAR_H
 
 #include "music_segment.h"
+#include "piece.h"
 
 #include <vector>
 
@@ -22,6 +23,9 @@ namespace toccata {
         Bar *GetNext(int index) const;
         int GetNextCount() const { return (int)m_next.size(); }
 
+        void SetPiece(Piece *piece) { m_piece = piece; }
+        Piece *GetPiece() const { return m_piece; }
+
         void SetSegment(MusicSegment *segment) { m_segment = segment; }
         MusicSegment *GetSegment() const { return m_segment; }
 
@@ -33,6 +37,7 @@ namespace toccata {
     protected:
         std::vector<Bar *> m_next;
         MusicSegment *m_segment;
+        Piece *m_piece;
 
         int m_id;
     };

@@ -3,6 +3,7 @@
 
 #include "music_segment.h"
 #include "bar.h"
+#include "piece.h"
 
 #include <vector>
 
@@ -21,9 +22,14 @@ namespace toccata {
         Bar *GetBar(int index) const;
         int GetBarCount() const;
 
+        Piece *NewPiece();
+        Piece *GetPiece(int index) const;
+        int GetPieceCount() const;
+
     protected:
         std::vector<MusicSegment *> m_segments;
         std::vector<Bar *> m_bars;
+        std::vector<Piece *> m_pieces;
 
         int m_currentBarId;
     };

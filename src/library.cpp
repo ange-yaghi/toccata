@@ -38,3 +38,18 @@ toccata::Bar *toccata::Library::GetBar(int index) const {
 int toccata::Library::GetBarCount() const {
     return (int)m_bars.size();
 }
+
+toccata::Piece *toccata::Library::NewPiece() {
+    Piece *newPiece = new Piece;
+    m_pieces.push_back(newPiece);
+
+    return newPiece;
+}
+
+toccata::Piece *toccata::Library::GetPiece(int index) const {
+    return m_pieces[index];
+}
+
+int toccata::Library::GetPieceCount() const {
+    return (int)m_pieces.size();
+}

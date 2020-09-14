@@ -46,18 +46,18 @@
     <Filter Include="Source Files\themes\theme-script\settings">
       <UniqueIdentifier>{0357b798-c8fb-4d32-b53e-f9b80c992122}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\components">
+      <UniqueIdentifier>{306eccc8-b82a-410a-97b2-c3f5a98a621f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\components">
+      <UniqueIdentifier>{5e3ec281-6ce9-4145-9d2b-012c270ed756}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\midi_display.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\bar_display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\timeline.cpp">
@@ -111,6 +111,27 @@
     <ClCompile Include="..\..\src\srgbi_node.cpp">
       <Filter>Source Files\themes\theme-script\color</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\bar_display.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\midi_display.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\piece_display.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\heat_map.cpp">
+      <Filter>Source Files\themes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\button.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\component.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\numeric_input.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\delta.h">
@@ -119,16 +140,7 @@
     <ClInclude Include="..\..\include\application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\midi_display.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\bar_display.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\timeline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\timeline_element.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\analyzer.h">
@@ -190,6 +202,36 @@
     </ClInclude>
     <ClInclude Include="..\..\include\settings.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\bar_display.h">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\midi_display.h">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\piece_display.h">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\create_heat_map_node.h">
+      <Filter>Header Files\themes\theme-script\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\heat_map.h">
+      <Filter>Header Files\themes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\control_point_node.h">
+      <Filter>Header Files\themes\theme-script\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\button.h">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\component.h">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\timeline_element.h">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\numeric_input.h">
+      <Filter>Header Files\components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

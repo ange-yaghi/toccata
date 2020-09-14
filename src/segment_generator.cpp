@@ -14,7 +14,10 @@ void toccata::SegmentGenerator::Seed(unsigned int seed) {
     m_generator.seed(seed);
 }
 
-void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target, int leading8thRests) {
+void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target, const std::string &pieceName, int leading8thRests) {
+    Piece *newPiece = target->NewPiece();
+    newPiece->SetName(pieceName);
+    
     const unsigned int eigthNoteLength = midi->GetTicksPerQuarterNote() / 2;
     const unsigned int barLength = midi->GetBarLength();
 
@@ -43,6 +46,7 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
             currentSegment->PulseRate = 120 / 60.0; // 120 bpm
             currentSegment->Length = barLength;
             currentBar->SetSegment(currentSegment);
+            currentBar->SetPiece(newPiece);
 
             ++barIndex;
         }
@@ -55,6 +59,7 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
             currentSegment->Length = barLength;
             currentSegment->PulseRate = 120 / 60.0;
             currentBar->SetSegment(currentSegment);
+            currentBar->SetPiece(newPiece);
         }
 
         const timestamp barStart = barIndex * (timestamp)barLength;

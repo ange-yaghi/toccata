@@ -3,6 +3,7 @@
 
 #include "timeline_element.h"
 
+#include "heat_map.h"
 #include "music_segment.h"
 #include "decision_tree.h"
 
@@ -13,6 +14,13 @@
 namespace toccata {
 
     class MidiDisplay : public TimelineElement {
+    public:
+        enum class PracticeMode {
+            Default,
+            Velocity,
+            Timing
+        };
+
     public:
         MidiDisplay();
         ~MidiDisplay();
@@ -30,12 +38,38 @@ namespace toccata {
 
         void FindUnmappedNotes(std::set<int> &mapped) const;
 
+        void SetShowReferenceNotes(bool show) { m_showReferenceNotes = show; }
+        bool GetShowReferenceNotes() const { return m_showReferenceNotes; }
+
+        void SetShowPlayedNotes(bool show) { m_showPlayedNotes = show; }
+        bool GetShowPlayedNotes() const { return m_showPlayedNotes; }
+
+        void SetPracticeMode(PracticeMode mode) { m_mode = mode; }
+        PracticeMode GetPracticeMode() const { return m_mode; }
+
+        ysVector GetColor(const Analyzer::NoteInformation &noteInfo) const;
+        ysVector GetVelocityColor(unsigned short velocity) const;
+        ysVector GetTimingColor(double error) const;
+
     protected:
         void RenderReferenceNotes();
+        void RenderPlayedNotes();
 
     protected:
         int m_keyStart;
         int m_keyEnd;
+
+        bool m_showReferenceNotes;
+        bool m_showPlayedNotes;
+
+        PracticeMode m_mode;
+
+        // Velocity practice parameters
+        double m_targetVelocity;
+        double m_velocityErrorThreshold;
+
+        // Timing practice parameters
+        double m_timingErrorThreshold;
     };
 
 } /* namespace toccata */

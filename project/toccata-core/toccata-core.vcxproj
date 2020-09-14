@@ -170,6 +170,7 @@
     <ClInclude Include="..\..\include\nls_optimizer.h" />
     <ClInclude Include="..\..\include\note_mapper.h" />
     <ClInclude Include="..\..\include\music_point_container.h" />
+    <ClInclude Include="..\..\include\piece.h" />
     <ClInclude Include="..\..\include\search_thread.h" />
     <ClInclude Include="..\..\include\segment_generator.h" />
     <ClInclude Include="..\..\include\segment_utilities.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="..\..\src\munkres_solver.cpp" />
     <ClCompile Include="..\..\src\nls_optimizer.cpp" />
     <ClCompile Include="..\..\src\note_mapper.cpp" />
+    <ClCompile Include="..\..\src\piece.cpp" />
     <ClCompile Include="..\..\src\search_thread.cpp" />
     <ClCompile Include="..\..\src\segment_generator.cpp" />
     <ClCompile Include="..\..\src\segment_utilities.cpp" />

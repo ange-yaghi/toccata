@@ -3,11 +3,14 @@
 
 #include "midi_display.h"
 #include "bar_display.h"
+#include "piece_display.h"
 
 #include "music_segment.h"
 #include "midi_device_system.h"
 #include "decision_thread.h"
 #include "timeline.h"
+#include "button.h"
+#include "numeric_input.h"
 
 #include "delta.h"
 
@@ -45,10 +48,14 @@ namespace toccata {
 
         BarDisplay m_barDisplay;
         MidiDisplay m_midiDisplay;
+        PieceDisplay m_pieceDisplay;
         MusicSegment m_testSegment;
         MusicSegment m_referenceSegment;
         Timeline m_timeline;
         Analyzer m_analyzer;
+
+        Button m_testButton;
+        NumericInput m_numericInput;
 
         MidiDeviceSystem m_midiSystem;
 

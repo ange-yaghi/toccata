@@ -4,8 +4,13 @@ profile default(
     name: "default"
 )
 
-int_setting(
-    name: "BarDisplay_MinimumChannelCount",
-    value: 0,
-    profile: default
-)
+int_setting("BarDisplay_MinimumChannelCount", 0, default)
+
+blank_heat_map velocity_heat_map("BarDisplay_VelocityHeatMap", default)
+    control_point(velocity_heat_map, -1.0, srgb(255, 0, 255))
+    control_point(velocity_heat_map, 0.0, srgb(0, 255, 0))
+    control_point(velocity_heat_map, 1.0, srgb(255, 0, 0))
+
+blank_heat_map timing_heat_map("BarDisplay_TimingHeatMap", default)
+    control_point(timing_heat_map, 0.0, srgb(0, 255, 0))
+    control_point(timing_heat_map, 1.0, srgb(255, 0, 0))

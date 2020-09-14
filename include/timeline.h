@@ -14,6 +14,14 @@ namespace toccata {
             int Channel;
         };
 
+        struct MatchedPiece {
+            Piece *Piece;
+            int Channel;
+
+            double InputSpaceStart;
+            double InputSpaceEnd;
+        };
+
     public:
         Timeline();
         ~Timeline();
@@ -35,6 +43,9 @@ namespace toccata {
 
         void ClearBars() { m_bars.clear(); }
         void AddBar(const DecisionTree::MatchedBar &bar) { m_bars.push_back({ bar }); }
+
+        void ClearPieces() { m_pieces.clear(); }
+        void AddPiece(const DecisionTree::MatchedBar &start, const DecisionTree::MatchedBar &end);
 
         bool InRange(timestamp t) const;
         bool InRange(timestamp start, timestamp end) const;
@@ -62,6 +73,9 @@ namespace toccata {
         int GetBarCount() const { return (int)m_bars.size(); }
         MatchedBar &GetBar(int index) { return m_bars[index]; }
 
+        int GetPieceCount() const { return (int)m_pieces.size(); }
+        MatchedPiece &GetPiece(int index) { return m_pieces[index]; }
+
     protected:
         float m_x;
         float m_width;
@@ -72,6 +86,7 @@ namespace toccata {
         MusicSegment *m_inputSegment;
 
         std::vector<MatchedBar> m_bars;
+        std::vector<MatchedPiece> m_pieces;
 
         dbasic::TextRenderer *m_textRenderer;
     };

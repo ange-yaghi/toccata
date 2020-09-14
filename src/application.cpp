@@ -20,8 +20,8 @@ toccata::Application::~Application() {
 }
 
 void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI api) {
-    dbasic::Path modulePath = dbasic::GetModulePath();
-    dbasic::Path confPath = modulePath.Append("delta.conf");
+    const dbasic::Path modulePath = dbasic::GetModulePath();
+    const dbasic::Path confPath = modulePath.Append("delta.conf");
 
     std::string enginePath = "../../dependencies/delta/engines/basic";
     std::string assetPath = "../../assets";
@@ -38,7 +38,7 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
 
     m_engine.GetConsole()->SetDefaultFontDirectory(enginePath + "/fonts/");
 
-    std::string shaderDirectory = enginePath + "/shaders/";
+    const std::string shaderDirectory = enginePath + "/shaders/";
 
     dbasic::DeltaEngine::GameEngineSettings settings;
     settings.API = api;
@@ -69,6 +69,12 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
 
     m_testSegment.PulseUnit = 1000.0;
     m_testSegment.PulseRate = 1.0;
+
+    m_testButton.Initialize(&m_engine, &m_textRenderer, &m_settings);
+    m_testButton.SetPosition({ 0, 30 });
+    m_testButton.SetSize({ 30, 30 });
+
+    m_numericInput.Initialize(&m_engine, &m_textRenderer, &m_settings);
 
     ReloadThemes();
 }
@@ -103,24 +109,38 @@ void toccata::Application::Process() {
     m_midiDisplay.SetKeyRangeEnd(88);
     m_midiDisplay.SetPositionY(windowHeight / 2.0f - windowHeight * 0.2f);
     m_midiDisplay.SetTimeline(&m_timeline);
+    m_midiDisplay.SetSettings(&m_settings);
 
     m_barDisplay.SetEngine(&m_engine);
-    m_barDisplay.SetHeight(windowHeight * 0.2f);
-    m_barDisplay.SetPositionY(windowHeight / 2.0f);
+    m_barDisplay.SetHeight(windowHeight * 0.1f);
+    m_barDisplay.SetPositionY(windowHeight / 2.0f - windowHeight * 0.1f);
     m_barDisplay.SetTextRenderer(&m_textRenderer);
     m_barDisplay.SetTimeline(&m_timeline);
     m_barDisplay.SetSettings(&m_settings);
 
+    m_pieceDisplay.SetEngine(&m_engine);
+    m_pieceDisplay.SetHeight(windowHeight * 0.1f);
+    m_pieceDisplay.SetPositionY(windowHeight / 2.0f);
+    m_pieceDisplay.SetTextRenderer(&m_textRenderer);
+    m_pieceDisplay.SetTimeline(&m_timeline);
+    m_pieceDisplay.SetSettings(&m_settings);
+
     MockMidiInput();
 
-    if (m_engine.IsKeyDown(ysKeyboard::KEY_F5)) {
+    if (m_engine.ProcessKeyDown(ysKeyboard::KEY_F5)) {
         ReloadThemes();
     }
+
+    m_testButton.Process();
+    m_numericInput.Process();
 }
 
 void toccata::Application::Render() {
     m_midiDisplay.Render();
     m_barDisplay.Render();
+    m_pieceDisplay.Render();
+    m_testButton.Render();
+    m_numericInput.Render();
 
     std::stringstream ss; 
     ss << "TOCCATA" << "\n";
@@ -195,9 +215,12 @@ void toccata::Application::ConstructReferenceNotes() {
     m_referenceSegment.NoteContainer.Clear();
 
     m_timeline.ClearBars();
+    m_timeline.ClearPieces();
 
     auto pieces = m_decisionThread.GetPieces();
     for (const DecisionTree::MatchedPiece &piece : pieces) {
+        m_timeline.AddPiece(*piece.Bars.begin(), *piece.Bars.rbegin());
+
         for (const DecisionTree::MatchedBar &bar : piece.Bars) {
             m_timeline.AddBar(bar);
         }
@@ -211,7 +234,7 @@ void toccata::Application::ReloadThemes() {
     compiler.Initialize();
     compiler.Compile(piranha::IrPath("../../themes/default.mr"));
     compiler.Execute();
-    compiler.Destroy();
+    //compiler.Destroy();
 
     m_settings.Fill(nullptr, SettingsManager::Get()->GetProfile("default"));
 }
@@ -254,7 +277,9 @@ void toccata::Application::InitializeLibrary() {
         toccata::MidiFile midiFile;
         midiFile.Read(path.c_str(), &stream);
 
-        toccata::SegmentGenerator::Convert(&stream, &m_library, 0);
+        std::string name = dbasic::Path(path).GetStem();
+
+        toccata::SegmentGenerator::Convert(&stream, &m_library, name, 0);
     }
 }
 
@@ -266,7 +291,7 @@ void toccata::Application::InitializeDecisionThread() {
 void toccata::Application::InitializeMidiInput() {
     m_midiSystem.Refresh();
 
-    const bool connectSuccess = m_midiSystem.Connect(0);
+    const bool connectSuccess = m_midiSystem.Connect(1);
 
     if (connectSuccess) {
         // TODO

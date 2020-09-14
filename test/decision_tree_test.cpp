@@ -346,7 +346,7 @@ TEST(DecisionTreeTest, SimpleStructure) {
 	toccata::MidiFile midiFile;
 	midiFile.Read(path.c_str(), &stream);
 
-	toccata::SegmentGenerator::Convert(&stream, &library, 0);
+	toccata::SegmentGenerator::Convert(&stream, &library, "", 0);
 
 	toccata::MusicSegment inputSegment;
 	inputSegment.PulseUnit = 1.0;
@@ -389,7 +389,7 @@ TEST(DecisionTreeTest, SimilarSongs_2) {
 		toccata::MidiFile midiFile;
 		midiFile.Read(path.c_str(), &stream);
 
-		toccata::SegmentGenerator::Convert(&stream, &library, 0);
+		toccata::SegmentGenerator::Convert(&stream, &library, "", 0);
 	}
 
 	toccata::MusicSegment inputSegment;

@@ -12,7 +12,7 @@ TEST(MidiConversionTest, SanityCheck) {
 
 	toccata::Library library;
 
-	toccata::SegmentGenerator::Convert(&stream, &library, 0);
+	toccata::SegmentGenerator::Convert(&stream, &library, "", 0);
 
 	EXPECT_EQ(library.GetBarCount(), 4);
 }

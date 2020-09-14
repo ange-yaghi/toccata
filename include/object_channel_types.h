@@ -8,6 +8,7 @@ namespace toccata {
     struct ObjectChannel {
         static const piranha::ChannelType SettingChannel;
         static const piranha::ChannelType ProfileChannel;
+        static const piranha::ChannelType HeatMapChannel;
     };
 
     template <typename Type>
@@ -19,6 +20,7 @@ namespace toccata {
     // Forward declaration of all types
     class Profile;
     class Setting;
+    class HeatMap;
 
     // Helper macro
 #define ASSIGN_CHANNEL_TYPE(type, channel) template <> extern inline const piranha::ChannelType *LookupChannelType<type>() { return &ObjectChannel::channel; }
@@ -26,6 +28,7 @@ namespace toccata {
     // Register all types
     ASSIGN_CHANNEL_TYPE(Profile, ProfileChannel);
     ASSIGN_CHANNEL_TYPE(Setting, SettingChannel);
+    ASSIGN_CHANNEL_TYPE(HeatMap, HeatMapChannel);
 
 } /* namespace toccata */
 

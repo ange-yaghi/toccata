@@ -2,6 +2,7 @@
 #define TOCCATA_UI_PROFILE_H
 
 #include "setting.h"
+#include "heat_map.h"
 
 #include "delta.h"
 
@@ -14,6 +15,8 @@ namespace toccata {
     public:
         Profile();
         ~Profile();
+
+        virtual HeatMap *GetHeatMap(const std::string &name) const;
 
         virtual bool GetSetting(const std::string &name, ysVector *v) const;
         virtual bool GetSetting(const std::string &name, std::string *v) const;
@@ -38,11 +41,14 @@ namespace toccata {
             return setting;
         }
 
+        HeatMap *NewHeatmap(const std::string &name);
+
     protected:
         Setting *GetSetting(const std::string &name) const;
 
     protected:
         std::map<std::string, Setting *> m_settings;
+        std::map<std::string, HeatMap *> m_heatMaps;
     };
 
 } /* namespace toccata */

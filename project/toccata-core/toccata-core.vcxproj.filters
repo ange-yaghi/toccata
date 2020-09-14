@@ -147,6 +147,9 @@
     <ClCompile Include="..\..\src\decision_thread.cpp">
       <Filter>Source Files\pmm</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\piece.cpp">
+      <Filter>Source Files\library</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\error_reporting.h">
@@ -253,6 +256,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\decision_thread.h">
       <Filter>Header Files\pmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\piece.h">
+      <Filter>Header Files\library</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

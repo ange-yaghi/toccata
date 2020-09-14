@@ -342,27 +342,25 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
     for (int i = 0; i < n; ++i) {
         if (!isLeaf[i]) continue;
 
-        Decision *decision = m_decisions[i];
+        Decision *parentDecision = m_decisions[i];
         double s_avg = 0.0;
         int s_samples = 0;
-        while (decision != nullptr) {
+        for (Decision *decision = parentDecision; decision != nullptr; decision = decision->ParentDecision) {
             if (!decision->Singular) {
                 s_avg += decision->T.s;
                 ++s_samples;
             }
-
-            decision = decision->ParentDecision;
         }
 
         s_avg /= s_samples;
 
         MatchedPiece newPiece;
+        newPiece.Piece = parentDecision->MatchedBar->GetPiece();
         newPiece.Start = INT_MAX;
         newPiece.End = INT_MIN;
         newPiece.MatchedNotes = GetBranchNoteCount(m_decisions[i]);
 
-        decision = m_decisions[i];
-        while (decision != nullptr) {
+        for (Decision *decision = parentDecision; decision != nullptr; decision = decision->ParentDecision) {
             MatchedBar bar;
             bar.MatchedBar = decision->MatchedBar;
             bar.Start = decision->GetStart();
@@ -387,8 +385,6 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
             newPiece.End = std::max(bar.End, newPiece.End);
 
             newPiece.Bars.push_back(bar);
-
-            decision = decision->ParentDecision;
         }
 
         std::reverse(newPiece.Bars.begin(), newPiece.Bars.end());

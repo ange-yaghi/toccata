@@ -1,0 +1,22 @@
+module {
+    @name:      "Heat Map"
+    @doc:       "Defines basic operations for heat maps"
+    @version:   "0.0.1a"
+}
+
+private import "profile.mr"
+private import "../types/types.mr" as types
+
+public node heat_map => heat_map_channel { /* void */ }
+
+public node blank_heat_map => toccata_blank_heat_map {
+    input name [types::string];
+    input profile [profile];
+    alias output heat_map [heat_map];
+}
+
+public node control_point => toccata_control_point {
+    input heat_map [heat_map];
+    input s [types::float];
+    input v [types::color];
+}

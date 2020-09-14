@@ -2,3 +2,4 @@
 
 const piranha::ChannelType toccata::ObjectChannel::ProfileChannel("ProfileChannel");
 const piranha::ChannelType toccata::ObjectChannel::SettingChannel("SettingChannel");
+const piranha::ChannelType toccata::ObjectChannel::HeatMapChannel("HeatMapChannel");

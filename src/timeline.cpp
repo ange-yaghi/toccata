@@ -16,6 +16,20 @@ toccata::Timeline::~Timeline() {
     /* void */
 }
 
+void toccata::Timeline::AddPiece(const DecisionTree::MatchedBar &start, const DecisionTree::MatchedBar &end) {
+    const double startInputSpace = ReferenceToInputSpace(0.0, start.T);
+    const double endInputSpace = ReferenceToInputSpace(
+        end.MatchedBar->GetSegment()->GetNormalizedLength(), end.T);
+
+    MatchedPiece piece;
+    piece.Channel = 0;
+    piece.InputSpaceEnd = endInputSpace;
+    piece.InputSpaceStart = startInputSpace;
+    piece.Piece = start.MatchedBar->GetPiece();
+
+    m_pieces.push_back(piece);
+}
+
 bool toccata::Timeline::InRange(timestamp timestamp) const {
     if (timestamp > m_timeOffset + m_timeRange) return false;
     else if (timestamp < m_timeOffset) return false;

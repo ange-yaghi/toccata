@@ -8,6 +8,12 @@ toccata::Profile::~Profile() {
     /* void */
 }
 
+toccata::HeatMap *toccata::Profile::GetHeatMap(const std::string &name) const {
+    auto f = m_heatMaps.find(name);
+    if (f == m_heatMaps.end()) return nullptr;
+    else return (*f).second;
+}
+
 bool toccata::Profile::GetSetting(const std::string &name, ysVector *v) const {
     const Setting *setting = GetSetting(name);
     if (setting == nullptr) return false;
@@ -55,6 +61,19 @@ bool toccata::Profile::GetSetting(const std::string &name, double *v) const {
     else {
         *v = setting->GetDouble();
         return true;
+    }
+}
+
+toccata::HeatMap *toccata::Profile::NewHeatmap(const std::string &name) {
+    HeatMap *existing = GetHeatMap(name);
+    if (existing != nullptr) {
+        existing->Clear();
+        return existing;
+    }
+    else {
+        HeatMap *newHeatMap = new HeatMap;
+        m_heatMaps[name] = newHeatMap;
+        return newHeatMap;
     }
 }
 
