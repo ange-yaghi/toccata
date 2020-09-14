@@ -45,6 +45,8 @@
     <ClCompile Include="..\..\src\theme_script_language_rules.cpp" />
     <ClCompile Include="..\..\src\timeline.cpp" />
     <ClCompile Include="..\..\src\timeline_element.cpp" />
+    <ClCompile Include="..\..\src\toggle.cpp" />
+    <ClCompile Include="..\..\src\toggle_group.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\analyzer.h" />
@@ -80,6 +82,8 @@
     <ClInclude Include="..\..\include\color_split_node.h" />
     <ClInclude Include="..\..\include\color_split_node_output.h" />
     <ClInclude Include="..\..\include\color_constructor_node_output.h" />
+    <ClInclude Include="..\..\include\toggle.h" />
+    <ClInclude Include="..\..\include\toggle_group.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dependencies\submodules\delta-studios\project\delta-basic-engine\delta-basic-engine.vcxproj">

@@ -11,6 +11,7 @@
 #include "timeline.h"
 #include "button.h"
 #include "numeric_input.h"
+#include "toggle.h"
 
 #include "delta.h"
 
@@ -54,7 +55,9 @@ namespace toccata {
         Timeline m_timeline;
         Analyzer m_analyzer;
 
-        Button m_testButton;
+        ToggleGroup m_practiceModeGroup;
+        Toggle m_timingToggle;
+        Toggle m_velocityToggle;
         NumericInput m_numericInput;
 
         MidiDeviceSystem m_midiSystem;

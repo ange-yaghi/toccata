@@ -70,9 +70,18 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
     m_testSegment.PulseUnit = 1000.0;
     m_testSegment.PulseRate = 1.0;
 
-    m_testButton.Initialize(&m_engine, &m_textRenderer, &m_settings);
-    m_testButton.SetPosition({ 0, 30 });
-    m_testButton.SetSize({ 30, 30 });
+    m_timingToggle.Initialize(&m_engine, &m_textRenderer, &m_settings);
+    m_timingToggle.SetPosition({ 10, 40 });
+    m_timingToggle.SetSize({ 30, 30 });
+    m_timingToggle.SetText("T");
+
+    m_velocityToggle.Initialize(&m_engine, &m_textRenderer, &m_settings);
+    m_velocityToggle.SetPosition({ 50, 40 });
+    m_velocityToggle.SetSize({ 30, 30 });
+    m_velocityToggle.SetText("V");
+
+    m_practiceModeGroup.AddToggle(&m_timingToggle);
+    m_practiceModeGroup.AddToggle(&m_velocityToggle);
 
     m_numericInput.Initialize(&m_engine, &m_textRenderer, &m_settings);
 
@@ -131,15 +140,27 @@ void toccata::Application::Process() {
         ReloadThemes();
     }
 
-    m_testButton.Process();
+    m_velocityToggle.Process();
+    m_timingToggle.Process();
     m_numericInput.Process();
+
+    if (m_velocityToggle.GetChecked()) {
+        m_midiDisplay.SetPracticeMode(MidiDisplay::PracticeMode::Velocity);
+    }
+    else if (m_timingToggle.GetChecked()) {
+        m_midiDisplay.SetPracticeMode(MidiDisplay::PracticeMode::Timing);
+    }
+    else {
+        m_midiDisplay.SetPracticeMode(MidiDisplay::PracticeMode::Default);
+    }
 }
 
 void toccata::Application::Render() {
     m_midiDisplay.Render();
     m_barDisplay.Render();
     m_pieceDisplay.Render();
-    m_testButton.Render();
+    m_velocityToggle.Render();
+    m_timingToggle.Render();
     m_numericInput.Render();
 
     std::stringstream ss; 
