@@ -61,34 +61,19 @@ void toccata::NumericInput::Render() {
     const ysVector enabledOuterColor = ysColor::srgbiToLinear(0xFF, 0xFF, 0x00);
     const ysVector disabledOuterColor = ysColor::srgbiToLinear(0x44, 0x44, 0x44);
 
-    const int wx = m_engine->GetScreenWidth();
-    const int wy = m_engine->GetScreenHeight();
+    const ysVector outerColor = HasControl()
+        ? enabledOuterColor
+        : disabledOuterColor;
 
-    if (HasControl()) m_engine->SetBaseColor(enabledOuterColor);
-    else m_engine->SetBaseColor(disabledOuterColor);
-
-    m_engine->SetObjectTransform(
-        ysMath::TranslationTransform(
-            ysMath::LoadVector(
-                m_position.x + m_size.x / 2 - wx / 2.0, 
-                m_position.y - m_size.y / 2 - wy / 2.0)));
-    m_engine->DrawBox(m_size.x, m_size.y);
-
-    m_engine->SetBaseColor(innerColor);
-    m_engine->SetObjectTransform(
-        ysMath::TranslationTransform(
-            ysMath::LoadVector(
-                m_position.x + m_size.x / 2 - wx / 2.0,
-                m_position.y - m_size.y / 2 - wy / 2.0)));
-    m_engine->DrawBox(m_size.x - 2.0f, m_size.y - 2.0f);
+    DrawBox(m_position, m_size, outerColor);
+    DrawBox({ m_position.x + 1, m_position.y - 1 }, { m_size.x - 2.0f, m_size.y - 2.0f }, innerColor);
 
     std::stringstream ss;
     ss.precision(m_precision);
     ss << m_currentValue;
 
-    m_textRenderer->RenderText(
+    RenderText(
         ss.str(),
-        m_position.x - wx / 2.0,
-        m_position.y - m_size.y / 2 - m_textHeight / 2 - wy / 2.0,
+        { m_position.x, m_position.y - m_size.y / 2 - (float)m_textHeight / 2 }, 
         (float)m_textHeight);
 }

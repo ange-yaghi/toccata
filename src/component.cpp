@@ -99,6 +99,31 @@ bool toccata::Component::IsVisible() const {
     else return m_visible;
 }
 
+void toccata::Component::DrawBox(const ysVector2 &position, const ysVector2 &size, const ysVector &color) {
+    const int wx = m_engine->GetScreenWidth();
+    const int wy = m_engine->GetScreenHeight();
+
+    m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
+    m_engine->SetBaseColor(color);
+    m_engine->SetObjectTransform(
+        ysMath::TranslationTransform(
+            ysMath::LoadVector(
+                position.x + size.x / 2 - wx / 2.0,
+                position.y - size.y / 2 - wy / 2.0)));
+    m_engine->DrawBox(size.x, size.y);
+}
+
+void toccata::Component::RenderText(const std::string &text, const ysVector2 &position, float textHeight) {
+    const int wx = m_engine->GetScreenWidth();
+    const int wy = m_engine->GetScreenHeight();
+
+    m_textRenderer->RenderText(
+        text,
+        position.x - wx / 2.0,
+        position.y - wy / 2.0,
+        (float)textHeight);
+}
+
 void toccata::Component::Render() {
     /* void */
 }

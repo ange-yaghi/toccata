@@ -59,23 +59,11 @@ void toccata::Toggle::Render() {
         }
     }
 
-    const int wx = m_engine->GetScreenWidth();
-    const int wy = m_engine->GetScreenHeight();
-
-    m_engine->SetBaseColor(color);
-
-    m_engine->SetObjectTransform(
-        ysMath::TranslationTransform(
-            ysMath::LoadVector(
-                m_position.x + m_size.x / 2 - wx / 2.0,
-                m_position.y - m_size.y / 2 - wy / 2.0)));
-    m_engine->DrawBox(m_size.x, m_size.y);
-
     const double margin = m_textHeight * 0.1;
 
-    m_textRenderer->RenderText(
+    DrawBox(m_position, m_size, color);
+    RenderText(
         m_text,
-        m_position.x - wx / 2.0 + margin,
-        m_position.y - m_size.y / 2 - m_textHeight / 2 - wy / 2.0 + margin,
-        (float)m_textHeight);
+        { m_position.x + (float)margin, m_position.y - m_size.y / 2 - (float)m_textHeight / 2 + (float)margin },
+        m_textHeight);
 }

@@ -47,6 +47,10 @@ namespace toccata {
         bool IsVisible() const;
 
     protected:
+        void DrawBox(const ysVector2 &position, const ysVector2 &size, const ysVector &color);
+        void RenderText(const std::string &text, const ysVector2 &position, float textHeight);
+
+    protected:
         virtual void Render();
         virtual void Update();
         virtual void ProcessInput();
