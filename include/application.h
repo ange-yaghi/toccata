@@ -9,9 +9,7 @@
 #include "midi_device_system.h"
 #include "decision_thread.h"
 #include "timeline.h"
-#include "button.h"
-#include "numeric_input.h"
-#include "toggle.h"
+#include "practice_mode_panel.h"
 
 #include "delta.h"
 
@@ -55,12 +53,8 @@ namespace toccata {
         Timeline m_timeline;
         Analyzer m_analyzer;
 
-        ToggleGroup m_practiceModeGroup;
-        Toggle m_timingToggle;
-        Toggle m_velocityToggle;
-        NumericInput m_numericInput;
-
         MidiDeviceSystem m_midiSystem;
+        PracticeModePanel m_practiceModePanel;
 
         Library m_library;
         DecisionThread m_decisionThread;

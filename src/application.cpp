@@ -70,20 +70,7 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
     m_testSegment.PulseUnit = 1000.0;
     m_testSegment.PulseRate = 1.0;
 
-    m_timingToggle.Initialize(&m_engine, &m_textRenderer, &m_settings);
-    m_timingToggle.SetPosition({ 10, 40 });
-    m_timingToggle.SetSize({ 30, 30 });
-    m_timingToggle.SetText("T");
-
-    m_velocityToggle.Initialize(&m_engine, &m_textRenderer, &m_settings);
-    m_velocityToggle.SetPosition({ 50, 40 });
-    m_velocityToggle.SetSize({ 30, 30 });
-    m_velocityToggle.SetText("V");
-
-    m_practiceModeGroup.AddToggle(&m_timingToggle);
-    m_practiceModeGroup.AddToggle(&m_velocityToggle);
-
-    m_numericInput.Initialize(&m_engine, &m_textRenderer, &m_settings);
+    m_practiceModePanel.Initialize(&m_engine, &m_textRenderer, &m_settings);
 
     ReloadThemes();
 }
@@ -140,28 +127,22 @@ void toccata::Application::Process() {
         ReloadThemes();
     }
 
-    m_velocityToggle.Process();
-    m_timingToggle.Process();
-    m_numericInput.Process();
+    m_practiceModePanel.ProcessAll();
 
-    if (m_velocityToggle.GetChecked()) {
-        m_midiDisplay.SetPracticeMode(MidiDisplay::PracticeMode::Velocity);
-    }
-    else if (m_timingToggle.GetChecked()) {
-        m_midiDisplay.SetPracticeMode(MidiDisplay::PracticeMode::Timing);
-    }
-    else {
-        m_midiDisplay.SetPracticeMode(MidiDisplay::PracticeMode::Default);
-    }
+    m_midiDisplay.SetPracticeMode(m_practiceModePanel.GetPracticeMode());
+    m_midiDisplay.SetTimingErrorThreshold(
+        m_practiceModePanel.GetTimingPracticeControls().GetThreshold());
+    m_midiDisplay.SetVelocityErrorThreshold(
+        m_practiceModePanel.GetVelocityPracticeControls().GetThreshold());
+    m_midiDisplay.SetTargetVelocity(
+        m_practiceModePanel.GetVelocityPracticeControls().GetTarget());
 }
 
 void toccata::Application::Render() {
     m_midiDisplay.Render();
     m_barDisplay.Render();
     m_pieceDisplay.Render();
-    m_velocityToggle.Render();
-    m_timingToggle.Render();
-    m_numericInput.Render();
+    m_practiceModePanel.RenderAll();
 
     std::stringstream ss; 
     ss << "TOCCATA" << "\n";

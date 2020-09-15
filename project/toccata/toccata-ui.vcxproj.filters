@@ -135,7 +135,16 @@
     <ClCompile Include="..\..\src\toggle.cpp">
       <Filter>Source Files\components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\timing_practice_controls.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\toggle_group.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\velocity_practice_controls.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\practice_mode_panel.cpp">
       <Filter>Source Files\components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -242,7 +251,16 @@
     <ClInclude Include="..\..\include\toggle.h">
       <Filter>Header Files\components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\timing_practice_controls.h">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\toggle_group.h">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\velocity_practice_controls.h">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\practice_mode_panel.h">
       <Filter>Header Files\components</Filter>
     </ClInclude>
   </ItemGroup>

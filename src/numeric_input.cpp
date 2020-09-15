@@ -10,7 +10,6 @@ toccata::NumericInput::NumericInput() {
     m_textHeight = 32.0;
     m_precision = 2;
 
-    m_active = false;
     m_disabled = true;
     m_wrap = true;
 
@@ -22,24 +21,18 @@ toccata::NumericInput::~NumericInput() {
     /* void */
 }
 
-void toccata::NumericInput::Initialize(
-    dbasic::DeltaEngine *engine, dbasic::TextRenderer *renderer, Settings *settings) 
-{
-    Component::Initialize(engine, renderer, settings);
+void toccata::NumericInput::Construct() {
+    AddChild(&m_button);
 
-    m_button.Initialize(engine, renderer, settings);
+    m_button.SetVisible(false);
 }
 
-void toccata::NumericInput::Process() {
-    m_button.SetPosition(m_position);
-    m_button.SetSize(m_size);
-    m_button.Process();
-
-    if (m_button.ProcessClick()) {
-        m_active = true;
+void toccata::NumericInput::ProcessInput() {
+    if (m_button.IsHeld()) {
+        RequestControl();
     }
 
-    if (m_active) {
+    if (HasControl()) {
         if (m_engine->ProcessKeyDown(ysKeyboard::KEY_UP)) {
             m_currentValue += m_step;
         }
@@ -58,6 +51,11 @@ void toccata::NumericInput::Process() {
     }
 }
 
+void toccata::NumericInput::Update() {
+    m_button.SetPosition(m_position);
+    m_button.SetSize(m_size);
+}
+
 void toccata::NumericInput::Render() {
     const ysVector innerColor = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
     const ysVector enabledOuterColor = ysColor::srgbiToLinear(0xFF, 0xFF, 0x00);
@@ -66,7 +64,7 @@ void toccata::NumericInput::Render() {
     const int wx = m_engine->GetScreenWidth();
     const int wy = m_engine->GetScreenHeight();
 
-    if (m_active) m_engine->SetBaseColor(enabledOuterColor);
+    if (HasControl()) m_engine->SetBaseColor(enabledOuterColor);
     else m_engine->SetBaseColor(disabledOuterColor);
 
     m_engine->SetObjectTransform(

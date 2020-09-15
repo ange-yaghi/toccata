@@ -11,17 +11,17 @@ toccata::Toggle::~Toggle() {
     /* void */
 }
 
-void toccata::Toggle::Initialize(
-    dbasic::DeltaEngine *engine, dbasic::TextRenderer *renderer, Settings *settings) 
-{
-    Component::Initialize(engine, renderer, settings);
-    m_button.Initialize(engine, renderer, settings);
+void toccata::Toggle::Construct() {
+    AddChild(&m_button);
 
     m_button.SetVisible(false);
 }
 
-void toccata::Toggle::Process() {
-    m_button.Process();
+void toccata::Toggle::Update() {
+    /* void */
+}
+
+void toccata::Toggle::ProcessInput() {
     m_button.SetSize(m_size);
     m_button.SetPosition(m_position);
 

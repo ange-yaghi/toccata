@@ -16,15 +16,6 @@ namespace toccata {
         Button();
         virtual ~Button();
 
-        virtual void Process();
-        virtual void Render();
-
-        void SetDisabled(bool disabled) { m_disabled = disabled; }
-        bool IsDisabled() const { return m_disabled; }
-
-        void SetVisible(bool visible) { m_visible = visible; }
-        bool IsVisible() const { return m_visible; }
-
         ysVector2 GetPosition() const { return m_position; }
         void SetPosition(const ysVector2 &position) { m_position = position; }
 
@@ -42,6 +33,11 @@ namespace toccata {
         std::string GetText() const { return m_text; }
 
     protected:
+        virtual void Update();
+        virtual void ProcessInput();
+        virtual void Render();
+
+    protected:
         ysVector2 m_position;
         ysVector2 m_size;
 
@@ -52,9 +48,6 @@ namespace toccata {
         bool m_mouseHover;
         bool m_mouseHold;
         bool m_clicked;
-
-        bool m_disabled;
-        bool m_visible;
     };
 
 } /* namespace toccata */

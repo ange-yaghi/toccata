@@ -37,6 +37,7 @@
     <ClCompile Include="..\..\src\numeric_input.cpp" />
     <ClCompile Include="..\..\src\object_channel_types.cpp" />
     <ClCompile Include="..\..\src\piece_display.cpp" />
+    <ClCompile Include="..\..\src\practice_mode_panel.cpp" />
     <ClCompile Include="..\..\src\profile.cpp" />
     <ClCompile Include="..\..\src\settings_manager.cpp" />
     <ClCompile Include="..\..\src\srgbi_node.cpp" />
@@ -45,8 +46,10 @@
     <ClCompile Include="..\..\src\theme_script_language_rules.cpp" />
     <ClCompile Include="..\..\src\timeline.cpp" />
     <ClCompile Include="..\..\src\timeline_element.cpp" />
+    <ClCompile Include="..\..\src\timing_practice_controls.cpp" />
     <ClCompile Include="..\..\src\toggle.cpp" />
     <ClCompile Include="..\..\src\toggle_group.cpp" />
+    <ClCompile Include="..\..\src\velocity_practice_controls.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\analyzer.h" />
@@ -69,6 +72,7 @@
     <ClInclude Include="..\..\include\object_reference_node.h" />
     <ClInclude Include="..\..\include\object_reference_node_output.h" />
     <ClInclude Include="..\..\include\piece_display.h" />
+    <ClInclude Include="..\..\include\practice_mode_panel.h" />
     <ClInclude Include="..\..\include\profile.h" />
     <ClInclude Include="..\..\include\setting.h" />
     <ClInclude Include="..\..\include\settings.h" />
@@ -82,8 +86,10 @@
     <ClInclude Include="..\..\include\color_split_node.h" />
     <ClInclude Include="..\..\include\color_split_node_output.h" />
     <ClInclude Include="..\..\include\color_constructor_node_output.h" />
+    <ClInclude Include="..\..\include\timing_practice_controls.h" />
     <ClInclude Include="..\..\include\toggle.h" />
     <ClInclude Include="..\..\include\toggle_group.h" />
+    <ClInclude Include="..\..\include\velocity_practice_controls.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dependencies\submodules\delta-studios\project\delta-basic-engine\delta-basic-engine.vcxproj">

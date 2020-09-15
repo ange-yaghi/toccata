@@ -3,11 +3,9 @@
 toccata::Button::Button() {
     m_mouseHover = false;
     m_mouseHold = false;
-    m_disabled = false;
     m_clicked = false;
-    m_visible = true;
 
-    m_text = "+";
+    m_text = "";
     m_textHeight = 32.0;
 }
 
@@ -15,13 +13,17 @@ toccata::Button::~Button() {
     /* void */
 }
 
-void toccata::Button::Process() {
+void toccata::Button::Update() {
+    /* void */
+}
+
+void toccata::Button::ProcessInput() {
     int mx, my;
     m_engine->GetOsMousePos(&mx, &my);
 
     m_mouseHover = false;
 
-    if (mx > m_position.x && mx < m_position.x + m_size.x) {
+    if (mx > m_position.x &&mx < m_position.x + m_size.x) {
         if (my < m_position.y && my > m_position.y - m_size.y) {
             m_mouseHover = true;
         }
@@ -38,8 +40,6 @@ void toccata::Button::Process() {
 }
 
 void toccata::Button::Render() {
-    if (!IsVisible()) return;
-
     if (m_clicked) {
         m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
     }

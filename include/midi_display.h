@@ -51,6 +51,15 @@ namespace toccata {
         ysVector GetVelocityColor(unsigned short velocity) const;
         ysVector GetTimingColor(double error) const;
 
+        void SetTargetVelocity(double velocity) { m_targetVelocity = velocity; }
+        double GetTargetVelocity() const { return m_targetVelocity; }
+
+        void SetVelocityErrorThreshold(double threshold) { m_velocityErrorThreshold = threshold; }
+        double GetVelocityErrorThreshold() const { return m_velocityErrorThreshold; }
+
+        void SetTimingErrorThreshold(double threshold) { m_timingErrorThreshold = threshold; }
+        double GetTimingErrorThreshold() const { return m_timingErrorThreshold; }
+
     protected:
         void RenderReferenceNotes();
         void RenderPlayedNotes();

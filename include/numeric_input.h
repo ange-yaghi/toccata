@@ -15,10 +15,7 @@ namespace toccata {
         NumericInput();
         virtual ~NumericInput();
 
-        virtual void Initialize(dbasic::DeltaEngine *engine, dbasic::TextRenderer *renderer, Settings *settings);
-
-        virtual void Process();
-        virtual void Render();
+        virtual void Construct();
 
         void SetPosition(const ysVector2 position) { m_position = position; }
         ysVector2 GetPosition() const { return m_position; }
@@ -44,14 +41,16 @@ namespace toccata {
         void SetPrecision(int precision) { m_precision = precision; }
         int GetPrecision() const { return m_precision; }
 
-        void SetActive(bool active) { m_active = active; }
-        bool GetActive() const { return m_active; }
-
         void SetDisabled(bool disabled) { m_disabled = disabled; }
         bool GetDisabled() const { return m_disabled; }
 
         void SetWrap(bool wrap) { m_wrap = wrap; }
         bool GetWrap() const { return m_wrap; }
+
+    protected:
+        virtual void Update();
+        virtual void ProcessInput();
+        virtual void Render();
 
     protected:
         Button m_button;
@@ -69,7 +68,6 @@ namespace toccata {
 
         int m_precision;
 
-        bool m_active;
         bool m_disabled;
         bool m_wrap;
     };

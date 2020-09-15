@@ -12,10 +12,11 @@ namespace toccata {
         Component();
         ~Component();
 
-        virtual void Initialize(dbasic::DeltaEngine *engine, dbasic::TextRenderer *renderer, Settings *settings);
+        void Initialize(dbasic::DeltaEngine *engine, dbasic::TextRenderer *renderer, Settings *settings);
+        virtual void Construct();
 
-        virtual void Render() = 0;
-        virtual void Process() = 0;
+        virtual void RenderAll();
+        void ProcessAll();
 
         void SetTextRenderer(dbasic::TextRenderer *renderer) { m_textRenderer = renderer; }
         dbasic::TextRenderer *GetTextRenderer() const { return m_textRenderer; }
@@ -26,11 +27,42 @@ namespace toccata {
         void SetSettings(Settings *settings) { m_settings = settings; }
         Settings *GetSettings() { return m_settings; }
 
+        void AddChild(Component *component);
+        int GetChildCount() const { return (int)m_children.size(); }
+
+        void SetParent(Component *component) { m_parent = component; }
+        Component *GetParent() const { return m_parent; }
+
+        void RequestControl();
+        void ReleaseControl();
+        bool HasControl() const;
+
+        void SetVisible(bool visible) { m_visible = visible; }
+        bool GetVisible() const { return m_visible; }
+
+        void SetEnabled(bool enabled) { m_enabled = enabled; }
+        bool GetEnabled() const { return m_enabled; }
+
+        bool InputEnabled() const;
+        bool IsVisible() const;
+
     protected:
+        virtual void Render();
+        virtual void Update();
+        virtual void ProcessInput();
+
         dbasic::DeltaEngine *m_engine;
         dbasic::TextRenderer *m_textRenderer;
 
         Settings *m_settings;
+
+        Component *m_parent;
+        std::vector<Component *> m_children;
+
+        Component *m_activeElement;
+
+        bool m_visible;
+        bool m_enabled;
     };
 
 } /* namespace toccata */

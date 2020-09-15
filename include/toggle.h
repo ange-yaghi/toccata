@@ -16,10 +16,7 @@ namespace toccata {
         Toggle();
         virtual ~Toggle();
 
-        virtual void Initialize(dbasic::DeltaEngine *engine, dbasic::TextRenderer *renderer, Settings *settings);
-
-        virtual void Process();
-        virtual void Render();
+        virtual void Construct();
 
         void SetPosition(const ysVector2 position) { m_position = position; }
         ysVector2 GetPosition() const { return m_position; }
@@ -38,6 +35,11 @@ namespace toccata {
 
         void SetChecked(bool checked) { m_checked = checked; }
         bool GetChecked() const { return m_checked; }
+
+    protected:
+        virtual void Update();
+        virtual void ProcessInput();
+        virtual void Render();
 
     protected:
         ToggleGroup *m_group;
