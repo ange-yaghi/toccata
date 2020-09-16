@@ -64,6 +64,8 @@ namespace toccata {
         void RenderReferenceNotes();
         void RenderPlayedNotes();
 
+        void RenderCursor();
+
     protected:
         int m_keyStart;
         int m_keyEnd;

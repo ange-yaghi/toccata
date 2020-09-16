@@ -23,8 +23,8 @@ void toccata::Button::ProcessInput() {
 
     m_mouseHover = false;
 
-    if (mx > m_position.x &&mx < m_position.x + m_size.x) {
-        if (my < m_position.y && my > m_position.y - m_size.y) {
+    if (mx > m_boundingBox.Left() && mx < m_boundingBox.Right()) {
+        if (my < m_boundingBox.Top() && my > m_boundingBox.Bottom()) {
             m_mouseHover = true;
         }
     }
@@ -58,13 +58,13 @@ void toccata::Button::Render() {
 
     m_engine->SetObjectTransform(
         ysMath::TranslationTransform(
-            ysMath::LoadVector(m_position.x + m_size.x / 2 - wx / 2.0, m_position.y - m_size.y / 2 - wy / 2.0)));
-    m_engine->DrawBox(m_size.x, m_size.y);
+            ysMath::LoadVector(m_boundingBox.CenterX() - wx / 2.0, m_boundingBox.CenterY() - wy / 2.0)));
+    m_engine->DrawBox(m_boundingBox.Width(), m_boundingBox.Height());
 
     m_textRenderer->RenderText(
-        m_text, 
-        m_position.x - wx / 2.0, 
-        m_position.y - m_size.y - wy / 2.0, 
+        m_text,
+        m_boundingBox.Left() - wx / 2.0,
+        m_boundingBox.Top() - wy / 2.0,
         (float)m_textHeight);
 }
 

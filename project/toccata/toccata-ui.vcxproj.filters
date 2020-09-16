@@ -52,6 +52,12 @@
     <Filter Include="Source Files\components">
       <UniqueIdentifier>{5e3ec281-6ce9-4145-9d2b-012c270ed756}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\components\utilities">
+      <UniqueIdentifier>{f0deb8c7-5865-4336-98ff-a691af42a1d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\components\utilities">
+      <UniqueIdentifier>{35e40056-0096-443f-9e3b-e604dfbb7a2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\main.cpp">
@@ -145,6 +151,12 @@
       <Filter>Source Files\components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\practice_mode_panel.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\bounding_box.cpp">
+      <Filter>Source Files\components\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\current_time_display.cpp">
       <Filter>Source Files\components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -261,6 +273,12 @@
       <Filter>Header Files\components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\practice_mode_panel.h">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\bounding_box.h">
+      <Filter>Header Files\components\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\current_time_display.h">
       <Filter>Header Files\components</Filter>
     </ClInclude>
   </ItemGroup>

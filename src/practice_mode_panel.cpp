@@ -31,19 +31,17 @@ void toccata::PracticeModePanel::Render() {
 }
 
 void toccata::PracticeModePanel::Update() {
-    m_timingToggle.SetPosition({ 10, 40 });
-    m_timingToggle.SetSize({ 30, 30 });
+    const double width = m_size.x;
+    const double height = m_size.y;
+
+    m_timingToggle.SetBoundingBox(BoundingBox(30, 30).AlignLeft(10).AlignTop(40));
     m_timingToggle.SetText("T");
 
-    m_velocityToggle.SetPosition({ 50, 40 });
-    m_velocityToggle.SetSize({ 30, 30 });
+    m_velocityToggle.SetBoundingBox(BoundingBox(30, 30).AlignLeft(50).AlignTop(40));
     m_velocityToggle.SetText("V");
 
-    m_timingPracticeControls.SetSize({ 200, 40 });
-    m_timingPracticeControls.SetPosition({ 100, 50 });
-
-    m_velocityPracticeControls.SetSize({ 200, 40 });
-    m_velocityPracticeControls.SetPosition({ 100, 50 });
+    m_timingPracticeControls.SetBoundingBox(BoundingBox(200, 40).AlignLeft(100).AlignTop(50));
+    m_velocityPracticeControls.SetBoundingBox(BoundingBox(200, 40).AlignLeft(100).AlignTop(50));
 
     if (m_timingToggle.GetChecked()) {
         m_mode = MidiDisplay::PracticeMode::Timing;

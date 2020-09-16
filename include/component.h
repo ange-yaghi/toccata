@@ -4,6 +4,7 @@
 #include "timeline.h"
 #include "analyzer.h"
 #include "settings.h"
+#include "bounding_box.h"
 
 namespace toccata {
 
@@ -46,8 +47,11 @@ namespace toccata {
         bool InputEnabled() const;
         bool IsVisible() const;
 
+        BoundingBox &GetBoundingBox() { return m_boundingBox; }
+        void SetBoundingBox(const BoundingBox &box) { m_boundingBox = box; }
+
     protected:
-        void DrawBox(const ysVector2 &position, const ysVector2 &size, const ysVector &color);
+        void DrawBox(const BoundingBox &box, const ysVector &color);
         void RenderText(const std::string &text, const ysVector2 &position, float textHeight);
 
     protected:
@@ -64,6 +68,8 @@ namespace toccata {
         std::vector<Component *> m_children;
 
         Component *m_activeElement;
+
+        BoundingBox m_boundingBox;
 
         bool m_visible;
         bool m_enabled;

@@ -16,12 +16,6 @@ namespace toccata {
         Button();
         virtual ~Button();
 
-        ysVector2 GetPosition() const { return m_position; }
-        void SetPosition(const ysVector2 &position) { m_position = position; }
-
-        ysVector2 GetSize() const { return m_size; }
-        void SetSize(const ysVector2 &size) { m_size = size; }
-
         bool IsHovering() const { return m_mouseHover; }
         bool IsHeld() const { return m_mouseHold; }
         bool ProcessClick();
@@ -36,10 +30,6 @@ namespace toccata {
         virtual void Update();
         virtual void ProcessInput();
         virtual void Render();
-
-    protected:
-        ysVector2 m_position;
-        ysVector2 m_size;
 
         std::string m_text;
 

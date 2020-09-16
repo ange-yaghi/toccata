@@ -52,6 +52,7 @@ void toccata::MidiHandler::ProcessEvent(int status, int midiByte1, int midiByte2
     m_bufferLock.lock();
 
     m_lastTimestamp = timestamp;
+    m_lastTimestampSystemTime = std::chrono::system_clock::now();
 
     m_buffer.ProcessMidiEvent(status, midiByte1, midiByte2, timestamp + m_timestampOffset);
 
@@ -64,4 +65,10 @@ void toccata::MidiHandler::ProcessMidiTick(unsigned long timestamp) {
 
 void toccata::MidiHandler::AlignTimestampOffset() {
     m_timestampOffset = m_lastTimestamp;
+}
+
+toccata::timestamp toccata::MidiHandler::GetEstimatedTimestamp() const {
+    auto now = std::chrono::system_clock::now();
+    return m_timestampOffset + m_lastTimestamp +
+        std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastTimestampSystemTime).count();
 }

@@ -10,6 +10,7 @@
 #include "decision_thread.h"
 #include "timeline.h"
 #include "practice_mode_panel.h"
+#include "current_time_display.h"
 
 #include "delta.h"
 
@@ -55,6 +56,7 @@ namespace toccata {
 
         MidiDeviceSystem m_midiSystem;
         PracticeModePanel m_practiceModePanel;
+        CurrentTimeDisplay m_currentTimeDisplay;
 
         Library m_library;
         DecisionThread m_decisionThread;

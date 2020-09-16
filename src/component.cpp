@@ -43,12 +43,12 @@ void toccata::Component::RenderAll() {
 }
 
 void toccata::Component::ProcessAll() {
-    Update();
-    if (InputEnabled()) ProcessInput();
-
     for (Component *component : m_children) {
         component->ProcessAll();
     }
+
+    Update();
+    if (InputEnabled()) ProcessInput();
 }
 
 void toccata::Component::AddChild(Component *component) {
@@ -99,7 +99,7 @@ bool toccata::Component::IsVisible() const {
     else return m_visible;
 }
 
-void toccata::Component::DrawBox(const ysVector2 &position, const ysVector2 &size, const ysVector &color) {
+void toccata::Component::DrawBox(const BoundingBox &box, const ysVector &color) {
     const int wx = m_engine->GetScreenWidth();
     const int wy = m_engine->GetScreenHeight();
 
@@ -108,9 +108,9 @@ void toccata::Component::DrawBox(const ysVector2 &position, const ysVector2 &siz
     m_engine->SetObjectTransform(
         ysMath::TranslationTransform(
             ysMath::LoadVector(
-                position.x + size.x / 2 - wx / 2.0,
-                position.y - size.y / 2 - wy / 2.0)));
-    m_engine->DrawBox(size.x, size.y);
+                box.CenterX() - wx / 2.0,
+                box.CenterY() - wy / 2.0)));
+    m_engine->DrawBox(box.Width(), box.Height());
 }
 
 void toccata::Component::RenderText(const std::string &text, const ysVector2 &position, float textHeight) {

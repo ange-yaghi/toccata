@@ -17,12 +17,11 @@ void toccata::TimingPracticeControls::Render() {
 }
 
 void toccata::TimingPracticeControls::Update() {
-    m_threshold.SetPosition(m_position);
-    m_threshold.SetSize(m_size);
+    m_threshold.SetBoundingBox(m_boundingBox);
     m_threshold.SetMin(0.0);
     m_threshold.SetMax(1.0);
     m_threshold.SetStep(0.002);
     m_threshold.SetPrecision(4);
-    m_threshold.SetTextHeight(m_size.y * 0.9f);
+    m_threshold.SetTextHeight((double)m_boundingBox.Height() * 0.9);
     m_threshold.SetWrap(true);
 }

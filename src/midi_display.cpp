@@ -1,6 +1,7 @@
 #include "../include/midi_display.h"
 
 #include "../include/transform.h"
+#include "../include/midi_handler.h"
 
 toccata::MidiDisplay::MidiDisplay() {
     m_keyStart = 0;
@@ -104,6 +105,8 @@ void toccata::MidiDisplay::Render() {
             m_engine->DrawBox(2.0, height);
         }
     }
+
+    RenderCursor();
 }
 
 bool toccata::MidiDisplay::IsAccidental(int key) const {
@@ -305,4 +308,25 @@ void toccata::MidiDisplay::RenderPlayedNotes() {
             m_engine->DrawBox((float)noteWidth, channelHeight);
         }
     }
+}
+
+void toccata::MidiDisplay::RenderCursor() {
+    const float height = m_height;
+
+    const float channelHeight = height / (m_keyEnd - m_keyStart + 1);
+    const float start_y = m_positionY;
+    const float middle_y = start_y - height / 2;
+
+    const timestamp currentTimestamp = MidiHandler::Get()->GetEstimatedTimestamp();
+    const double cursor = m_timeline->TimestampToInputSpace(currentTimestamp);
+
+    const float x = (float)m_timeline->InputSpaceToWorldX(cursor);
+    const ysVector positionEnd = ysMath::LoadVector(x - 1.0, middle_y);
+
+    m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
+    m_engine->SetObjectTransform(ysMath::TranslationTransform(positionEnd));
+    m_engine->SetLit(false);
+    m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
+
+    m_engine->DrawBox(2.0, height);
 }

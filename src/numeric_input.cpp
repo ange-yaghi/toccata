@@ -12,9 +12,6 @@ toccata::NumericInput::NumericInput() {
 
     m_disabled = true;
     m_wrap = true;
-
-    m_position = ysVector2(100, 100);
-    m_size = ysVector2(200, 40);
 }
 
 toccata::NumericInput::~NumericInput() {
@@ -52,8 +49,7 @@ void toccata::NumericInput::ProcessInput() {
 }
 
 void toccata::NumericInput::Update() {
-    m_button.SetPosition(m_position);
-    m_button.SetSize(m_size);
+    m_button.SetBoundingBox(m_boundingBox);
 }
 
 void toccata::NumericInput::Render() {
@@ -65,8 +61,8 @@ void toccata::NumericInput::Render() {
         ? enabledOuterColor
         : disabledOuterColor;
 
-    DrawBox(m_position, m_size, outerColor);
-    DrawBox({ m_position.x + 1, m_position.y - 1 }, { m_size.x - 2.0f, m_size.y - 2.0f }, innerColor);
+    DrawBox(m_boundingBox, outerColor);
+    DrawBox(m_boundingBox.MarginOffset(-1.0f, -1.0f), innerColor);
 
     std::stringstream ss;
     ss.precision(m_precision);
@@ -74,6 +70,6 @@ void toccata::NumericInput::Render() {
 
     RenderText(
         ss.str(),
-        { m_position.x, m_position.y - m_size.y / 2 - (float)m_textHeight / 2 }, 
+        { m_boundingBox.Left(), m_boundingBox.CenterY() - (float)m_textHeight / 2 }, 
         (float)m_textHeight);
 }

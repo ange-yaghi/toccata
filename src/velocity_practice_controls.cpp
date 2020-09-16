@@ -18,21 +18,21 @@ void toccata::VelocityPracticeControls::Render() {
 }
 
 void toccata::VelocityPracticeControls::Update() {
-    m_target.SetPosition(m_position);
-    m_target.SetSize({ m_size.x / 2, m_size.y });
+    m_target.SetBoundingBox(BoundingBox(m_boundingBox.Width() / 2, m_boundingBox.Height())
+        .AlignLeft(m_boundingBox.Left()).AlignTop(m_boundingBox.Top()));
     m_target.SetMin(0.0);
     m_target.SetMax(128.0);
     m_target.SetStep(0.5);
     m_target.SetPrecision(4);
-    m_target.SetTextHeight(m_size.y * 0.9f);
+    m_target.SetTextHeight((double)m_target.GetBoundingBox().Height() * 0.9);
     m_target.SetWrap(true);
 
-    m_threshold.SetPosition({ m_position.x + m_size.x / 2, m_position.y});
-    m_threshold.SetSize({ m_size.x / 2, m_size.y });
+    m_threshold.SetBoundingBox(BoundingBox(m_boundingBox.Width() / 2, m_boundingBox.Height())
+        .AlignLeft(m_target.GetBoundingBox().Right()).AlignTop(m_target.GetBoundingBox().Top()));
     m_threshold.SetMin(0.0);
     m_threshold.SetMax(128.0);
     m_threshold.SetStep(0.5);
     m_threshold.SetPrecision(4);
-    m_threshold.SetTextHeight(m_size.y * 0.9f);
+    m_threshold.SetTextHeight((double)m_threshold.GetBoundingBox().Height() * 0.9);
     m_threshold.SetWrap(true);
 }

@@ -71,6 +71,7 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
     m_testSegment.PulseRate = 1.0;
 
     m_practiceModePanel.Initialize(&m_engine, &m_textRenderer, &m_settings);
+    m_currentTimeDisplay.Initialize(&m_engine, &m_textRenderer, &m_settings);
 
     ReloadThemes();
 }
@@ -86,9 +87,10 @@ void toccata::Application::Process() {
     timestamp windowStart = m_timeline.GetTimeOffset();
     if (n > 0) {
         const MusicPoint &lastPoint = m_testSegment.NoteContainer.GetPoints()[n - 1];
+        timestamp lastTimestamp = lastPoint.Timestamp;
 
-        if (lastPoint.Timestamp + 2000 > m_timeline.GetTimeRange() + m_timeline.GetTimeOffset()) {
-            windowStart = lastPoint.Timestamp + 2000 - 5000;
+        if (lastTimestamp + 2000 > m_timeline.GetTimeRange() + m_timeline.GetTimeOffset()) {
+            windowStart = lastTimestamp + 2000 - 5000;
         }
     }
 
@@ -97,6 +99,9 @@ void toccata::Application::Process() {
     m_timeline.SetTimeOffset(windowStart);
     m_timeline.SetTimeRange(5000);
     m_timeline.SetWidth((float)windowWidth);
+
+    ConstructReferenceNotes();
+    m_analyzer.Analyze();
 
     m_midiDisplay.SetEngine(&m_engine);
     m_midiDisplay.SetTextRenderer(&m_textRenderer);
@@ -121,6 +126,10 @@ void toccata::Application::Process() {
     m_pieceDisplay.SetTimeline(&m_timeline);
     m_pieceDisplay.SetSettings(&m_settings);
 
+    m_currentTimeDisplay.SetBoundingBox(BoundingBox(300, 50)
+        .AlignCenterX(windowWidth / 2.0)
+        .AlignBottom(20.0));
+
     MockMidiInput();
 
     if (m_engine.ProcessKeyDown(ysKeyboard::KEY_F5)) {
@@ -128,6 +137,7 @@ void toccata::Application::Process() {
     }
 
     m_practiceModePanel.ProcessAll();
+    m_currentTimeDisplay.ProcessAll();
 
     m_midiDisplay.SetPracticeMode(m_practiceModePanel.GetPracticeMode());
     m_midiDisplay.SetTimingErrorThreshold(
@@ -143,6 +153,7 @@ void toccata::Application::Render() {
     m_barDisplay.Render();
     m_pieceDisplay.Render();
     m_practiceModePanel.RenderAll();
+    m_currentTimeDisplay.RenderAll();
 
     std::stringstream ss; 
     ss << "TOCCATA" << "\n";
@@ -227,8 +238,6 @@ void toccata::Application::ConstructReferenceNotes() {
             m_timeline.AddBar(bar);
         }
     }
-
-    m_analyzer.Analyze();
 }
 
 void toccata::Application::ReloadThemes() {
@@ -250,7 +259,6 @@ void toccata::Application::Run() {
         m_engine.StartFrame();
 
         CheckMidiStatus();
-        ConstructReferenceNotes();
 
         Process();
         Render();

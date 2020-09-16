@@ -18,12 +18,6 @@ namespace toccata {
 
         virtual void Construct();
 
-        void SetPosition(const ysVector2 position) { m_position = position; }
-        ysVector2 GetPosition() const { return m_position; }
-
-        void SetSize(const ysVector2 size) { m_size = size; }
-        ysVector2 GetSize() const { return m_size; }
-
         void SetTextHeight(double textHeight) { m_textHeight = textHeight; }
         double GetTextHeight() const { return m_textHeight; }
 
@@ -44,9 +38,6 @@ namespace toccata {
     protected:
         ToggleGroup *m_group;
         Button m_button;
-
-        ysVector2 m_position;
-        ysVector2 m_size;
 
         std::string m_text;
 

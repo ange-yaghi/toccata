@@ -7,7 +7,8 @@ void toccata::MidiCallback(
     UINT wMsg,
     DWORD_PTR dwInstance,
     DWORD_PTR dwParam1,
-    DWORD_PTR dwParam2) {
+    DWORD_PTR dwParam2) 
+{
     if (wMsg == MIM_DATA) {
         DWORD_PTR dwMidiMessage = dwParam1;
         timestamp dwTimestamp = dwParam2;

@@ -4,6 +4,7 @@
 #include "midi_stream.h"
 
 #include <mutex>
+#include <chrono>
 
 namespace toccata {
 
@@ -23,12 +24,16 @@ namespace toccata {
         void ProcessMidiTick(unsigned long timestamp);
         void AlignTimestampOffset();
 
+        timestamp GetEstimatedTimestamp() const;
+
     protected:
         std::mutex m_bufferLock;
         MidiStream m_buffer;
 
         timestamp m_timestampOffset;
         timestamp m_lastTimestamp;
+
+        std::chrono::time_point<std::chrono::system_clock> m_lastTimestampSystemTime;
     };
 
 } /* namespace toccata */

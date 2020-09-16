@@ -22,8 +22,7 @@ void toccata::Toggle::Update() {
 }
 
 void toccata::Toggle::ProcessInput() {
-    m_button.SetSize(m_size);
-    m_button.SetPosition(m_position);
+    m_button.SetBoundingBox(m_boundingBox);
 
     if (m_button.ProcessClick()) {
         m_checked = !m_checked;
@@ -61,9 +60,9 @@ void toccata::Toggle::Render() {
 
     const double margin = m_textHeight * 0.1;
 
-    DrawBox(m_position, m_size, color);
+    DrawBox(m_boundingBox, color);
     RenderText(
         m_text,
-        { m_position.x + (float)margin, m_position.y - m_size.y / 2 - (float)m_textHeight / 2 + (float)margin },
+        { m_boundingBox.Left() + (float)margin, m_boundingBox.CenterY() - (float)m_textHeight / 2 + (float)margin },
         m_textHeight);
 }
