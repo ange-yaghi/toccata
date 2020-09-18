@@ -94,7 +94,7 @@ void toccata::Application::Process() {
         }
     }
 
-    m_timeline.SetPositionX(-windowWidth / 2.0f);
+    m_timeline.SetPositionX(0.0f);
     m_timeline.SetInputSegment(&m_testSegment);
     m_timeline.SetTimeOffset(windowStart);
     m_timeline.SetTimeRange(5000);
@@ -108,7 +108,7 @@ void toccata::Application::Process() {
     m_midiDisplay.SetHeight(windowHeight * 0.7f);
     m_midiDisplay.SetKeyRangeStart(0);
     m_midiDisplay.SetKeyRangeEnd(88);
-    m_midiDisplay.SetPositionY(windowHeight / 2.0f - windowHeight * 0.2f);
+    m_midiDisplay.SetPositionY(windowHeight - windowHeight * 0.2f);
     m_midiDisplay.SetTimeline(&m_timeline);
     m_midiDisplay.SetSettings(&m_settings);
 
@@ -121,7 +121,7 @@ void toccata::Application::Process() {
 
     m_pieceDisplay.SetEngine(&m_engine);
     m_pieceDisplay.SetHeight(windowHeight * 0.1f);
-    m_pieceDisplay.SetPositionY(windowHeight / 2.0f);
+    m_pieceDisplay.SetPositionY(windowHeight);
     m_pieceDisplay.SetTextRenderer(&m_textRenderer);
     m_pieceDisplay.SetTimeline(&m_timeline);
     m_pieceDisplay.SetSettings(&m_settings);

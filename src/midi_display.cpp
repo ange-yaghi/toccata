@@ -39,21 +39,18 @@ void toccata::MidiDisplay::Render() {
     const float lower_y = start_y - height;
     for (int i = m_keyStart; i <= m_keyEnd; ++i) {
         const int j = (i - m_keyStart);
-        const ysVector channelPosition = 
-            ysMath::LoadVector(middle_x, lower_y + channelHeight * j + channelHeight / 2);
 
-        m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
-        m_engine->SetObjectTransform(ysMath::TranslationTransform(channelPosition));
-        m_engine->SetLit(false);
-
+        ysVector color;
         if (IsAccidental(i)) {
-            m_engine->SetBaseColor(ysColor::srgbiToLinear(0x40, 0x40, 0x40));
+            color = ysColor::srgbiToLinear(0x40, 0x40, 0x40);
         }
         else {
-            m_engine->SetBaseColor(ysColor::srgbiToLinear(0x50, 0x50, 0x50));
+            color = ysColor::srgbiToLinear(0x50, 0x50, 0x50);
         }
 
-        m_engine->DrawBox(width, channelHeight);
+        DrawBox(BoundingBox(width, channelHeight)
+            .AlignCenterY(lower_y + channelHeight * j + channelHeight / 2)
+            .AlignLeft(start_x), color);
     }
 
     for (int i = m_keyStart; i <= m_keyEnd + 1; ++i) {
