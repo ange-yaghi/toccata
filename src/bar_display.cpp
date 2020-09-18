@@ -51,8 +51,10 @@ void toccata::BarDisplay::Render() {
         const float x = world_s;
         const float width = world_e - world_s;
 
-        m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
-        DrawBox(x, y, width, channelHeight);
+        const ysVector color = ysColor::srgbiToLinear(0xFF, 0x00, 0x00);
+        DrawBox(BoundingBox(width, channelHeight)
+            .AlignBottom(y)
+            .AlignLeft(x), color);
 
         RenderBarInformation(info, x, y, x + channelHeight, y + channelHeight);
     }
@@ -99,23 +101,18 @@ void toccata::BarDisplay::AllocateChannels() {
     }
 }
 
-void toccata::BarDisplay::DrawBox(float x, float y, float w, float h) {
-    m_engine->SetObjectTransform(ysMath::TranslationTransform(ysMath::LoadVector(x + w / 2, y + h / 2)));
-    m_engine->DrawBox(w, h);
-}
-
 void toccata::BarDisplay::RenderBarInformation(
     const Analyzer::BarInformation &info, float x0, float y0, float x1, float y1)
 {
     std::stringstream ss;
     ss << (int)std::round(info.Tempo) << " BPM";
 
-    m_textRenderer->RenderText(ss.str(), x0, y0, 30.0f);
+    RenderText(ss.str(), { x0, y0 }, 30.0f);
 
     ss = std::stringstream();
     ss << "B: " << info.Bar;
 
-    m_textRenderer->RenderText(ss.str(), x0 + 175.0f, y0, 20.0f);
+    RenderText(ss.str(), { x0 + 175.0f, y0 }, 20.0f);
 
     const Timeline::MatchedBar &bar = m_timeline->GetBar(info.Bar);
     int missedNotes = 0;
@@ -133,5 +130,5 @@ void toccata::BarDisplay::RenderBarInformation(
         ss << "/-";
     }
 
-    m_textRenderer->RenderText(ss.str(), x0 + 175.0f, y0 + 20.0f, 20.0f);
+    RenderText(ss.str(), { x0 + 175.0f, y0 + 20.0f }, 20.0f);
 }

@@ -54,7 +54,7 @@ void toccata::PieceDisplay::Render() {
             .AlignLeft(x)
             .AlignTop(y), ysColor::srgbiToLinear(0x00, 0x00, 0xFF));
 
-        RenderPieceInformation(piece.Piece->GetName(), x, y, x + channelHeight, y + channelHeight);
+        RenderPieceInformation(piece.Piece->GetName(), x, y - channelHeight, x + channelHeight, y);
     }
 }
 
@@ -100,5 +100,5 @@ void toccata::PieceDisplay::AllocateChannels() {
 void toccata::PieceDisplay::RenderPieceInformation(
     const std::string &name, float x0, float y0, float x1, float y1) 
 {
-    m_textRenderer->RenderText(name, x0, y0, 20.0f);
+    RenderText(name, { x0, y0 }, 20.0f);
 }

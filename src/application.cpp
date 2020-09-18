@@ -114,7 +114,7 @@ void toccata::Application::Process() {
 
     m_barDisplay.SetEngine(&m_engine);
     m_barDisplay.SetHeight(windowHeight * 0.1f);
-    m_barDisplay.SetPositionY(windowHeight / 2.0f - windowHeight * 0.1f);
+    m_barDisplay.SetPositionY(windowHeight - windowHeight * 0.1f);
     m_barDisplay.SetTextRenderer(&m_textRenderer);
     m_barDisplay.SetTimeline(&m_timeline);
     m_barDisplay.SetSettings(&m_settings);

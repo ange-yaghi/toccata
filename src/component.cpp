@@ -105,6 +105,7 @@ void toccata::Component::DrawBox(const BoundingBox &box, const ysVector &color) 
 
     m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
     m_engine->SetBaseColor(color);
+    m_engine->SetLit(false);
     m_engine->SetObjectTransform(
         ysMath::TranslationTransform(
             ysMath::LoadVector(

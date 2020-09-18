@@ -40,13 +40,9 @@ void toccata::MidiDisplay::Render() {
     for (int i = m_keyStart; i <= m_keyEnd; ++i) {
         const int j = (i - m_keyStart);
 
-        ysVector color;
-        if (IsAccidental(i)) {
-            color = ysColor::srgbiToLinear(0x40, 0x40, 0x40);
-        }
-        else {
-            color = ysColor::srgbiToLinear(0x50, 0x50, 0x50);
-        }
+        ysVector color = IsAccidental(i)
+            ? ysColor::srgbiToLinear(0x40, 0x40, 0x40)
+            : color = ysColor::srgbiToLinear(0x50, 0x50, 0x50);
 
         DrawBox(BoundingBox(width, channelHeight)
             .AlignCenterY(lower_y + channelHeight * j + channelHeight / 2)
@@ -55,16 +51,11 @@ void toccata::MidiDisplay::Render() {
 
     for (int i = m_keyStart; i <= m_keyEnd + 1; ++i) {
         const int j = (i - m_keyStart);
-        const ysVector linePosition = 
-            ysMath::LoadVector(middle_x, lower_y + channelHeight * j);
 
-        m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
-        m_engine->SetObjectTransform(ysMath::TranslationTransform(linePosition));
-        m_engine->SetLit(false);
-
-        m_engine->SetBaseColor(ysColor::srgbiToLinear(0x20, 0x20, 0x20));
-
-        m_engine->DrawBox(width, 1);
+        ysVector color = ysColor::srgbiToLinear(0x20, 0x20, 0x20);
+        DrawBox(BoundingBox(width, 1)
+            .AlignCenterY(lower_y + channelHeight * j)
+            .AlignLeft(start_x), color);
     }
 
     if (m_showReferenceNotes) RenderReferenceNotes();
@@ -80,26 +71,20 @@ void toccata::MidiDisplay::Render() {
 
         if (m_timeline->InRangeInputSpace(start)) {
             const float x = (float)m_timeline->InputSpaceToWorldX(start);
-            const ysVector positionStart = ysMath::LoadVector(x + 1.0, middle_y);
 
-            m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
-            m_engine->SetObjectTransform(ysMath::TranslationTransform(positionStart));
-            m_engine->SetLit(false);
-            m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
-
-            m_engine->DrawBox(2.0, height);
+            ysVector color = ysColor::srgbiToLinear(0xFF, 0x00, 0x00);
+            DrawBox(BoundingBox(2.0, height)
+                .AlignCenterX(x)
+                .AlignTop(start_y), color);
         }
 
         if (m_timeline->InRangeInputSpace(end)) {
             const float x = (float)m_timeline->InputSpaceToWorldX(end);
-            const ysVector positionEnd = ysMath::LoadVector(x - 1.0, middle_y);
 
-            m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
-            m_engine->SetObjectTransform(ysMath::TranslationTransform(positionEnd));
-            m_engine->SetLit(false);
-            m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0xFF));
-
-            m_engine->DrawBox(2.0, height);
+            ysVector color = ysColor::srgbiToLinear(0x00, 0x00, 0xFF);
+            DrawBox(BoundingBox(2.0, height)
+                .AlignCenterX(x)
+                .AlignTop(start_y), color);
         }
     }
 
@@ -230,17 +215,11 @@ void toccata::MidiDisplay::RenderReferenceNotes() {
             const double noteWidth = noteEnd - noteStart;
 
             const float y = lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2;
-            const float x = (float)(noteStart + noteWidth / 2);
 
-            const ysVector position = ysMath::LoadVector(x, y);
-
-            m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
-            m_engine->SetObjectTransform(ysMath::TranslationTransform(position));
-            m_engine->SetLit(false);
-
-            m_engine->SetBaseColor(GetColor(noteInfo));
-
-            m_engine->DrawBox((float)noteWidth, channelHeight * 0.8f);
+            const ysVector color = GetColor(noteInfo);
+            DrawBox(BoundingBox(noteWidth, channelHeight)
+                .AlignLeft(noteStart)
+                .AlignCenterY(y), color);
         }
     }
 }
@@ -269,13 +248,6 @@ void toccata::MidiDisplay::RenderPlayedNotes() {
         const double noteWidth = noteEnd - noteStart;
 
         const float y = (float)(lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2);
-        const float x = (float)(noteStart + noteWidth / 2);
-
-        const ysVector position = ysMath::LoadVector(x, y);
-
-        m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
-        m_engine->SetObjectTransform(ysMath::TranslationTransform(position));
-        m_engine->SetLit(false);
 
         if (m_showReferenceNotes) {
             ysVector color;
@@ -286,8 +258,9 @@ void toccata::MidiDisplay::RenderPlayedNotes() {
                 color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
             }
 
-            m_engine->SetBaseColor(color);
-            m_engine->DrawBox((float)noteWidth, channelHeight * 0.333f);
+            DrawBox(BoundingBox(noteWidth, channelHeight * 0.333f)
+                .AlignCenterY(y)
+                .AlignLeft(noteStart), color);
         }
         else {
             ysVector color;
@@ -301,8 +274,9 @@ void toccata::MidiDisplay::RenderPlayedNotes() {
                 color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
             }
 
-            m_engine->SetBaseColor(color);
-            m_engine->DrawBox((float)noteWidth, channelHeight);
+            DrawBox(BoundingBox(noteWidth, channelHeight)
+                .AlignCenterY(y)
+                .AlignLeft(noteStart), color);
         }
     }
 }
@@ -311,19 +285,15 @@ void toccata::MidiDisplay::RenderCursor() {
     const float height = m_height;
 
     const float channelHeight = height / (m_keyEnd - m_keyStart + 1);
-    const float start_y = m_positionY;
-    const float middle_y = start_y - height / 2;
 
     const timestamp currentTimestamp = MidiHandler::Get()->GetEstimatedTimestamp();
     const double cursor = m_timeline->TimestampToInputSpace(currentTimestamp);
 
     const float x = (float)m_timeline->InputSpaceToWorldX(cursor);
-    const ysVector positionEnd = ysMath::LoadVector(x - 1.0, middle_y);
 
-    m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
-    m_engine->SetObjectTransform(ysMath::TranslationTransform(positionEnd));
-    m_engine->SetLit(false);
-    m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
+    const ysVector color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
 
-    m_engine->DrawBox(2.0, height);
+    DrawBox(BoundingBox(2.0, height)
+        .AlignCenterX(x)
+        .AlignTop(m_positionY), color);
 }

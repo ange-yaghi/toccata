@@ -22,8 +22,6 @@ namespace toccata {
 
         void AllocateChannels();
 
-        void DrawBox(float x, float y, float w, float h);
-
         void RenderBarInformation(const Analyzer::BarInformation &info, float x0, float y0, float x1, float y1);
 
     protected:
