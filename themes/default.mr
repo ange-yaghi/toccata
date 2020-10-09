@@ -5,12 +5,45 @@ profile default(
 )
 
 int_setting("BarDisplay_MinimumChannelCount", 0, default)
+color_setting("BarDisplay_BackgroundColor", srgb(0xFF, 0x00, 0x00), default)
 
-blank_heat_map velocity_heat_map("BarDisplay_VelocityHeatMap", default)
+blank_heat_map velocity_heat_map("MidiDisplay_VelocityHeatMap", default)
     control_point(velocity_heat_map, -1.0, srgb(255, 0, 255))
     control_point(velocity_heat_map, 0.0, srgb(0, 255, 0))
     control_point(velocity_heat_map, 1.0, srgb(255, 0, 0))
 
-blank_heat_map timing_heat_map("BarDisplay_TimingHeatMap", default)
+blank_heat_map timing_heat_map("MidiDisplay_TimingHeatMap", default)
     control_point(timing_heat_map, 0.0, srgb(0, 255, 0))
     control_point(timing_heat_map, 1.0, srgb(255, 0, 0))
+
+color_setting("MidiDisplay_AccidentalChannelColor", srgb(0x40, 0x40, 0x40), default)
+color_setting("MidiDisplay_NaturalChannelColor", srgb(0x50, 0x50, 0x50), default)
+color_setting("MidiDisplay_ChannelLineColor", srgb(0x20, 0x20, 0x20), default)
+color_setting("MidiDisplay_BarStartLineColor", srgb(0xFF, 0x00, 0x00), default)
+color_setting("MidiDisplay_BarEndLineColor", srgb(0x00, 0x00, 0xFF), default)
+color_setting("MidiDisplay_MissedNoteColor", srgb(0xFF, 0x00, 0x00), default)
+color_setting("MidiDisplay_IgnoredNoteColor", srgb(0x44, 0x44, 0x44), default)
+color_setting("MidiDisplay_DefaultNoteColor", srgb(0xFF, 0xFF, 0x00), default)
+color_setting("MidiDisplay_UnmappedPlayedNoteColor", srgb(0xFF, 0x00, 0x00), default)
+color_setting("MidiDisplay_MappedPlayedNoteColor", srgb(0x00, 0x00, 0x00), default)
+color_setting("MidiDisplay_DefaultPlayedNoteColor", srgb(0x00, 0x00, 0x00), default)
+color_setting("MidiDisplay_CursorColor", srgb(0x00, 0x00, 0x00), default)
+
+int_setting("PieceDisplay_MinimumChannelCount", 0, default)
+color_setting("PieceDisplay_BackgroundColor", srgb(0x00, 0x00, 0xFF), default)
+
+color_setting("Button_ClickedColor", srgb(0xFF, 0x00, 0x00), default)
+color_setting("Button_HoldColor", srgb(0xFF, 0xFF, 0x00), default)
+color_setting("Button_HoverColor", srgb(0x00, 0xFF, 0x00), default)
+color_setting("Button_DefaultColor", srgb(0x00, 0x00, 0x00), default)
+
+color_setting("Toggle_CheckedHoldColor", srgb(0xFF, 0x88, 0x00), default)
+color_setting("Toggle_CheckedHoverColor", srgb(0xFF, 0x10, 0x10), default)
+color_setting("Toggle_UncheckedHoldColor", srgb(0xFF, 0x55, 0x00), default)
+color_setting("Toggle_UncheckedHoverColor", srgb(0xDD, 0xDD, 0xDD), default)
+color_setting("Toggle_CheckedColor", srgb(0xFF, 0x00, 0x00), default)
+color_setting("Toggle_UncheckedColor", srgb(0x55, 0x55, 0x55), default)
+
+color_setting("NumericInput_InnerColor", srgb(0x00, 0x00, 0x00), default)
+color_setting("NumericInput_EnabledOuterColor", srgb(0xFF, 0xFF, 0x00), default)
+color_setting("NumericInput_DisabledOuterColor", srgb(0x44, 0x44, 0x44), default)

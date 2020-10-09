@@ -42,16 +42,16 @@ void toccata::Button::ProcessInput() {
 void toccata::Button::Render() {
     ysVector color;
     if (m_clicked) {
-        color = ysColor::srgbiToLinear(0xFF, 0x00, 0x00);
+        color = m_settings->Button_ClickedColor;
     }
     else if (m_mouseHold) {
-        color = ysColor::srgbiToLinear(0xFF, 0xFF, 0x00);
+        color = m_settings->Button_HoldColor;
     }
     else if (m_mouseHover) {
-        color = ysColor::srgbiToLinear(0x00, 0xFF, 0x00);
+        color = m_settings->Button_HoverColor;
     }
     else {
-        color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
+        color = m_settings->Button_DefaultColor;
     }
 
     DrawBox(m_boundingBox, color);

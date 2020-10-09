@@ -52,7 +52,7 @@ void toccata::PieceDisplay::Render() {
 
         DrawBox(BoundingBox(width, channelHeight)
             .AlignLeft(x)
-            .AlignTop(y), ysColor::srgbiToLinear(0x00, 0x00, 0xFF));
+            .AlignTop(y), m_settings->PieceDisplay_BackgroundColor);
 
         RenderPieceInformation(piece.Piece->GetName(), x, y - channelHeight, x + channelHeight, y);
     }

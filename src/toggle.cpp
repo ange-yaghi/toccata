@@ -37,24 +37,24 @@ void toccata::Toggle::Render() {
     ysVector color;
     if (m_checked) {
         if (m_button.IsHeld()) {
-            color = ysColor::srgbiToLinear(0xFF, 0x88, 0x00);
+            color = m_settings->Toggle_CheckedHoldColor;
         }
         else if (m_button.IsHovering()) {
-            color = ysColor::srgbiToLinear(0xFF, 0x10, 0x10);
+            color = m_settings->Toggle_CheckedHoverColor;
         }
         else {
-            color = ysColor::srgbiToLinear(0xFF, 0x00, 0x00);
+            color = m_settings->Toggle_CheckedColor;
         }
     }
     else {
         if (m_button.IsHeld()) {
-            color = ysColor::srgbiToLinear(0xFF, 0x55, 0x00);
+            color = m_settings->Toggle_UncheckedHoldColor;
         }
         else if (m_button.IsHovering()) {
-            color = ysColor::srgbiToLinear(0xdd, 0xdd, 0xdd);
+            color = m_settings->Toggle_UncheckedHoverColor;
         }
         else {
-            color = ysColor::srgbiToLinear(0x55, 0x55, 0x55);
+            color = m_settings->Toggle_UncheckedColor;
         }
     }
 

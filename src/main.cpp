@@ -7,10 +7,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     (void)lpCmdLine;
     (void)hPrevInstance;
 
-    toccata::Application app; 
-    app.Initialize((void *)&hInstance, ysContextObject::DeviceAPI::OpenGL4_0);
-    app.Run();
-    app.Destroy();
+    toccata::Application *app = new toccata::Application; 
+    app->Initialize((void *)&hInstance, ysContextObject::DeviceAPI::OpenGL4_0);
+    app->Run();
+    app->Destroy();
+
+    delete app;
 
     return 0;
 }

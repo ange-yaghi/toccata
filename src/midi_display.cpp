@@ -41,8 +41,8 @@ void toccata::MidiDisplay::Render() {
         const int j = (i - m_keyStart);
 
         ysVector color = IsAccidental(i)
-            ? ysColor::srgbiToLinear(0x40, 0x40, 0x40)
-            : color = ysColor::srgbiToLinear(0x50, 0x50, 0x50);
+            ? m_settings->MidiDisplay_AccidentalChannelColor
+            : m_settings->MidiDisplay_NaturalChannelColor;
 
         DrawBox(BoundingBox(width, channelHeight)
             .AlignCenterY(lower_y + channelHeight * j + channelHeight / 2)
@@ -52,7 +52,7 @@ void toccata::MidiDisplay::Render() {
     for (int i = m_keyStart; i <= m_keyEnd + 1; ++i) {
         const int j = (i - m_keyStart);
 
-        ysVector color = ysColor::srgbiToLinear(0x20, 0x20, 0x20);
+        const ysVector color = m_settings->MidiDisplay_ChannelLineColor;
         DrawBox(BoundingBox(width, 1)
             .AlignCenterY(lower_y + channelHeight * j)
             .AlignLeft(start_x), color);
@@ -72,18 +72,18 @@ void toccata::MidiDisplay::Render() {
         if (m_timeline->InRangeInputSpace(start)) {
             const float x = (float)m_timeline->InputSpaceToWorldX(start);
 
-            ysVector color = ysColor::srgbiToLinear(0xFF, 0x00, 0x00);
+            const ysVector color = m_settings->MidiDisplay_BarStartLineColor;
             DrawBox(BoundingBox(2.0, height)
-                .AlignCenterX(x)
+                .AlignLeft(x)
                 .AlignTop(start_y), color);
         }
 
         if (m_timeline->InRangeInputSpace(end)) {
             const float x = (float)m_timeline->InputSpaceToWorldX(end);
 
-            ysVector color = ysColor::srgbiToLinear(0x00, 0x00, 0xFF);
+            const ysVector color = m_settings->MidiDisplay_BarEndLineColor;
             DrawBox(BoundingBox(2.0, height)
-                .AlignCenterX(x)
+                .AlignRight(x)
                 .AlignTop(start_y), color);
         }
     }
@@ -131,15 +131,15 @@ void toccata::MidiDisplay::FindUnmappedNotes(std::set<int> &mapped) const {
 ysVector toccata::MidiDisplay::GetColor(const Analyzer::NoteInformation &noteInfo) const {
     if (m_mode == PracticeMode::Default) {
         if (noteInfo.InputNote == -1) {
-            return ysColor::srgbiToLinear(0xFF, 0x00, 0x00);
+            return m_settings->MidiDisplay_MissedNoteColor;
         }
         else {
-            return ysColor::srgbiToLinear(0xFF, 0xFF, 0x00);
+            return m_settings->MidiDisplay_DefaultNoteColor;
         }
     }
     else if (m_mode == PracticeMode::Timing) {
         if (noteInfo.InputNote == -1) {
-            return ysColor::srgbiToLinear(0x44, 0x44, 0x44);
+            return m_settings->MidiDisplay_IgnoredNoteColor;
         }
         else {
             return GetTimingColor(noteInfo.Error);
@@ -147,7 +147,7 @@ ysVector toccata::MidiDisplay::GetColor(const Analyzer::NoteInformation &noteInf
     }
     else if (m_mode == PracticeMode::Velocity) {
         if (noteInfo.InputNote == -1) {
-            return ysColor::srgbiToLinear(0x44, 0x44, 0x44);
+            return m_settings->MidiDisplay_IgnoredNoteColor;
         }
         else {
             const unsigned short velocity =
@@ -166,14 +166,14 @@ ysVector toccata::MidiDisplay::GetVelocityColor(unsigned short velocity) const {
     const int error = (int)velocity - m_targetVelocity;
     const double s = error / m_velocityErrorThreshold;
 
-    const ysVector color = m_settings->BarDisplay_VelocityHeatMap->Sample(s);
+    const ysVector color = m_settings->MidiDisplay_VelocityHeatMap->Sample(s);
     return color;
 }
 
 ysVector toccata::MidiDisplay::GetTimingColor(double error) const {
     const double s = error / m_timingErrorThreshold;
 
-    const ysVector color = m_settings->BarDisplay_TimingHeatMap->Sample(s);
+    const ysVector color = m_settings->MidiDisplay_TimingHeatMap->Sample(s);
     return color;
 }
 
@@ -252,10 +252,10 @@ void toccata::MidiDisplay::RenderPlayedNotes() {
         if (m_showReferenceNotes) {
             ysVector color;
             if (mappedNotes.count(i) == 0) {
-                color = ysColor::srgbiToLinear(0xFF, 0x00, 0x00);
+                color = m_settings->MidiDisplay_UnmappedPlayedNoteColor;
             }
             else {
-                color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
+                color = m_settings->MidiDisplay_MappedPlayedNoteColor;
             }
 
             DrawBox(BoundingBox(noteWidth, channelHeight * 0.333f)
@@ -265,13 +265,13 @@ void toccata::MidiDisplay::RenderPlayedNotes() {
         else {
             ysVector color;
             if (m_mode == PracticeMode::Timing) {
-                color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
+                color = m_settings->MidiDisplay_DefaultPlayedNoteColor;
             }
             else if (m_mode == PracticeMode::Velocity) {
                 color = GetVelocityColor(point.Velocity);
             }
             else if (m_mode == PracticeMode::Default) {
-                color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
+                color = m_settings->MidiDisplay_DefaultPlayedNoteColor;
             }
 
             DrawBox(BoundingBox(noteWidth, channelHeight)
@@ -291,7 +291,7 @@ void toccata::MidiDisplay::RenderCursor() {
 
     const float x = (float)m_timeline->InputSpaceToWorldX(cursor);
 
-    const ysVector color = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
+    const ysVector color = m_settings->MidiDisplay_CursorColor;
 
     DrawBox(BoundingBox(2.0, height)
         .AlignCenterX(x)

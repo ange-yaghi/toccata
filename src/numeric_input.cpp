@@ -53,9 +53,9 @@ void toccata::NumericInput::Update() {
 }
 
 void toccata::NumericInput::Render() {
-    const ysVector innerColor = ysColor::srgbiToLinear(0x00, 0x00, 0x00);
-    const ysVector enabledOuterColor = ysColor::srgbiToLinear(0xFF, 0xFF, 0x00);
-    const ysVector disabledOuterColor = ysColor::srgbiToLinear(0x44, 0x44, 0x44);
+    const ysVector innerColor = m_settings->NumericInput_InnerColor;
+    const ysVector enabledOuterColor = m_settings->NumericInput_EnabledOuterColor;
+    const ysVector disabledOuterColor = m_settings->NumericInput_DisabledOuterColor;
 
     const ysVector outerColor = HasControl()
         ? enabledOuterColor

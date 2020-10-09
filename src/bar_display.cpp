@@ -51,7 +51,7 @@ void toccata::BarDisplay::Render() {
         const float x = world_s;
         const float width = world_e - world_s;
 
-        const ysVector color = ysColor::srgbiToLinear(0xFF, 0x00, 0x00);
+        const ysVector color = m_settings->BarDisplay_BackgroundColor;
         DrawBox(BoundingBox(width, channelHeight)
             .AlignBottom(y)
             .AlignLeft(x), color);
