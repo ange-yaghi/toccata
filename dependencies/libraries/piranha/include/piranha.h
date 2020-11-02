@@ -1,4 +1,4 @@
-// Auto-generated on: 2020-09-14 01:19:24.964981
+// Auto-generated on: 2020-11-01 17:41:09.876888
 
 #ifndef PIRANHA_PIRANHA_H
 #define PIRANHA_PIRANHA_H
@@ -35,7 +35,6 @@
 #include "include/ir_node.h"
 #include "include/ir_node_definition.h"
 #include "include/ir_parser_structure.h"
-#include "include/ir_reference.h"
 #include "include/ir_structure_list.h"
 #include "include/ir_token_info.h"
 #include "include/ir_unary_operator.h"
@@ -50,6 +49,7 @@
 #include "include/memory_tracker.h"
 #include "include/multiply_operation_output.h"
 #include "include/node.h"
+#include "include/node_allocator.h"
 #include "include/node_container.h"
 #include "include/node_graph.h"
 #include "include/node_output.h"

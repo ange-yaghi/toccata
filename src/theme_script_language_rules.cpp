@@ -72,10 +72,10 @@ void toccata::LanguageRules::registerBuiltinNodeTypes() {
     registerBuiltinType<IntToColorNode>("toccata_int_to_color");
 
     // Literals ===========================================
-    registerLiteralType(piranha::LITERAL_INT, "literal_int");
-    registerLiteralType(piranha::LITERAL_STRING, "literal_string");
-    registerLiteralType(piranha::LITERAL_BOOL, "literal_bool");
-    registerLiteralType(piranha::LITERAL_FLOAT, "literal_float");
+    registerLiteralType(piranha::LiteralType::Integer, "literal_int");
+    registerLiteralType(piranha::LiteralType::String, "literal_string");
+    registerLiteralType(piranha::LiteralType::Boolean, "literal_bool");
+    registerLiteralType(piranha::LiteralType::Float, "literal_float");
 
     // Operations =========================================
     registerUnaryOperator(

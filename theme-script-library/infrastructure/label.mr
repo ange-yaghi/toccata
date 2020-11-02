@@ -1,0 +1,10 @@
+module {
+    @name:      "Label"
+    @doc:       "Defines basic type to label nodes or values"
+    @version:   "0.0.1a"
+}
+
+public node label {
+    input __in;
+    alias output __out: __in;
+}
