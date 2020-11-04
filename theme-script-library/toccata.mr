@@ -11,3 +11,5 @@ public import "types/operators.mr"
 public import "settings/profile.mr"
 public import "settings/setting.mr"
 public import "settings/heat_map.mr"
+
+public import "infrastructure/label.mr"

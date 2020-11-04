@@ -52,6 +52,9 @@ namespace toccata {
 
     protected:
         void DrawBox(const BoundingBox &box, const ysVector &color);
+
+        float CalculateFontSize(const std::string &text, float maxFontSize, float minFontSize, const BoundingBox &box);
+        void RenderText(const std::string &text, const BoundingBox &box, float maxFontSize, float minFontSize);
         void RenderText(const std::string &text, const ysVector2 &position, float textHeight);
 
     protected:

@@ -47,8 +47,7 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
             currentSegment->Length = barLength;
             currentBar->SetSegment(currentSegment);
             currentBar->SetPiece(newPiece);
-
-            ++barIndex;
+            currentBar->SetIndex(++barIndex);
         }
 
         if (currentSegment == nullptr) {
@@ -60,6 +59,7 @@ void toccata::SegmentGenerator::Convert(const MidiStream *midi, Library *target,
             currentSegment->PulseRate = 120 / 60.0;
             currentBar->SetSegment(currentSegment);
             currentBar->SetPiece(newPiece);
+            currentBar->SetIndex(barIndex);
         }
 
         const timestamp barStart = barIndex * (timestamp)barLength;

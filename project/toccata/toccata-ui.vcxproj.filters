@@ -159,6 +159,9 @@
     <ClCompile Include="..\..\src\current_time_display.cpp">
       <Filter>Source Files\components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\grid.cpp">
+      <Filter>Source Files\components\utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\delta.h">
@@ -280,6 +283,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\current_time_display.h">
       <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\grid.h">
+      <Filter>Header Files\components\utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

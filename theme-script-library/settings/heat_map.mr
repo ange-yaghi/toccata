@@ -20,3 +20,12 @@ public node control_point => toccata_control_point {
     input s [types::float];
     input v [types::color];
 }
+
+public node add_control_point {
+    input s [types::float];
+    input v [types::color];
+    input this [heat_map];
+    alias output __out: this;
+
+    control_point(this, s, v)
+}

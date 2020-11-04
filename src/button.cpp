@@ -40,32 +40,22 @@ void toccata::Button::ProcessInput() {
 }
 
 void toccata::Button::Render() {
+    ysVector color;
     if (m_clicked) {
-        m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
+        color = m_settings->Button_ClickedColor;
     }
     else if (m_mouseHold) {
-        m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0xFF, 0x00));
+        color = m_settings->Button_HoldColor;
     }
     else if (m_mouseHover) {
-        m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0xFF, 0x00));
+        color = m_settings->Button_HoverColor;
     }
     else {
-        m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
+        color = m_settings->Button_DefaultColor;
     }
 
-    const int wx = m_engine->GetScreenWidth();
-    const int wy = m_engine->GetScreenHeight();
-
-    m_engine->SetObjectTransform(
-        ysMath::TranslationTransform(
-            ysMath::LoadVector(m_boundingBox.CenterX() - wx / 2.0, m_boundingBox.CenterY() - wy / 2.0)));
-    m_engine->DrawBox(m_boundingBox.Width(), m_boundingBox.Height());
-
-    m_textRenderer->RenderText(
-        m_text,
-        m_boundingBox.Left() - wx / 2.0,
-        m_boundingBox.Top() - wy / 2.0,
-        (float)m_textHeight);
+    DrawBox(m_boundingBox, color);
+    RenderText(m_text, { m_boundingBox.Left(), m_boundingBox.Top() }, (float)m_textHeight);
 }
 
 bool toccata::Button::ProcessClick() {

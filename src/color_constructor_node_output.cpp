@@ -21,7 +21,7 @@ void toccata::ColorConstructorNodeOutput::fullCompute(void *target) const {
     a->fullCompute(&a_v);
 
     ysVector *output = reinterpret_cast<ysVector *>(target);
-    *output = ysMath::LoadVector(r_v, g_v, b_v, a_v);
+    *output = ysMath::LoadVector((float)r_v, (float)g_v, (float)b_v, (float)a_v);
 }
 
 void toccata::ColorConstructorNodeOutput::registerInputs() {

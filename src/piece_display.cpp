@@ -46,14 +46,15 @@ void toccata::PieceDisplay::Render() {
         const double xs = m_timeline->InputSpaceToWorldX(s);
         const double xe = m_timeline->InputSpaceToWorldX(e);
 
-        const float y = cornerY - (m_channelCount - piece.Channel) * channelHeight;
+        const float y = cornerY - (m_channelCount - piece.Channel - 1) * channelHeight;
         const float x = (float)xs;
         const float width = (float)(xe - xs);
 
-        m_engine->SetBaseColor(ysColor::srgbiToLinear(0x00, 0x00, 0xFF));
-        DrawBox(x, y, width, channelHeight);
+        DrawBox(BoundingBox(width, channelHeight)
+            .AlignLeft(x)
+            .AlignTop(y), m_settings->PieceDisplay_BackgroundColor);
 
-        RenderPieceInformation(piece.Piece->GetName(), x, y, x + channelHeight, y + channelHeight);
+        RenderPieceInformation(piece.Piece->GetName(), x, y - channelHeight, x + channelHeight, y);
     }
 }
 
@@ -96,13 +97,8 @@ void toccata::PieceDisplay::AllocateChannels() {
     }
 }
 
-void toccata::PieceDisplay::DrawBox(float x, float y, float w, float h) {
-    m_engine->SetObjectTransform(ysMath::TranslationTransform(ysMath::LoadVector(x + w / 2, y + h / 2)));
-    m_engine->DrawBox(w, h);
-}
-
 void toccata::PieceDisplay::RenderPieceInformation(
     const std::string &name, float x0, float y0, float x1, float y1) 
 {
-    m_textRenderer->RenderText(name, x0, y0, 20.0f);
+    RenderText(name, { x0, y0 }, 20.0f);
 }

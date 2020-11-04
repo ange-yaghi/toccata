@@ -51,6 +51,22 @@ void toccata::Component::ProcessAll() {
     if (InputEnabled()) ProcessInput();
 }
 
+float toccata::Component::CalculateFontSize(const std::string &text, float maxFontSize, float minFontSize, const BoundingBox &box) {
+    const float width = m_textRenderer->CalculateWidth(text, maxFontSize);
+    const float idealFontSize = (box.Width() / width) * maxFontSize;
+    const float fontHeightCeiling = box.Height();
+
+    if (idealFontSize > maxFontSize) return maxFontSize;
+    else if (idealFontSize > fontHeightCeiling) return fontHeightCeiling;
+    else if (idealFontSize < minFontSize) return minFontSize;
+    else return idealFontSize;
+}
+
+void toccata::Component::RenderText(const std::string &text, const BoundingBox &box, float maxFontSize, float minFontSize) {
+    const float fontSize = CalculateFontSize(text, maxFontSize, minFontSize, box);
+    RenderText(text, { box.Left(), box.Bottom() }, fontSize);
+}
+
 void toccata::Component::AddChild(Component *component) {
     component->SetParent(this);
     m_children.push_back(component);
@@ -105,11 +121,12 @@ void toccata::Component::DrawBox(const BoundingBox &box, const ysVector &color) 
 
     m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
     m_engine->SetBaseColor(color);
+    m_engine->SetLit(false);
     m_engine->SetObjectTransform(
         ysMath::TranslationTransform(
             ysMath::LoadVector(
-                box.CenterX() - wx / 2.0,
-                box.CenterY() - wy / 2.0)));
+                box.CenterX() - wx / 2.0f,
+                box.CenterY() - wy / 2.0f)));
     m_engine->DrawBox(box.Width(), box.Height());
 }
 
@@ -119,8 +136,8 @@ void toccata::Component::RenderText(const std::string &text, const ysVector2 &po
 
     m_textRenderer->RenderText(
         text,
-        position.x - wx / 2.0,
-        position.y - wy / 2.0,
+        position.x - wx / 2.0f,
+        position.y - wy / 2.0f,
         (float)textHeight);
 }
 

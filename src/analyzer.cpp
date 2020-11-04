@@ -97,7 +97,8 @@ void toccata::Analyzer::ProcessBar(const Timeline::MatchedBar &bar, int index, i
         }
     }
 
-    info.Bar = masterIndex;
+    info.Index = bar.Bar.MatchedBar->GetIndex();
+    info.MasterIndex = masterIndex;
     info.Tempo = CalculateTempo(bar);
     info.AverageError = cumulativeError / mappedNotes;
 

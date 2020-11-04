@@ -38,6 +38,7 @@ namespace dbasic {
     public:
         // Drawing Text
         void RenderText(const std::string &s, float x, float y, float h);
+        float CalculateWidth(const std::string &s, float h) const;
 
         // Utilities
         static bool IsWhitespace(char c);

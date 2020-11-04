@@ -1,11 +1,12 @@
 #include "../include/bounding_box.h"
 
 toccata::BoundingBox::BoundingBox() {
-    /* void */
+    m_min = { FLT_MAX, FLT_MAX };
+    m_max = { -FLT_MAX, -FLT_MAX };
 }
 
 toccata::BoundingBox::BoundingBox(float width, float height) {
-    m_min = { 0.0, 0.0 };
+    m_min = { 0.0f, 0.0f };
     m_max = { width, height };
 }
 
@@ -85,4 +86,14 @@ toccata::BoundingBox &toccata::BoundingBox::AlignCenterY(float vCenter) {
     m_max.y -= dy;
 
     return *this;
+}
+
+toccata::BoundingBox toccata::BoundingBox::Add(const BoundingBox &box) const {
+    BoundingBox result;
+    result.m_min.x = min(box.m_min.x, m_min.x);
+    result.m_max.x = max(box.m_max.x, m_max.x);
+    result.m_min.y = min(box.m_min.y, m_min.y);
+    result.m_max.y = max(box.m_max.y, m_max.y);
+
+    return result;
 }

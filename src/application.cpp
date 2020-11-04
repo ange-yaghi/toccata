@@ -94,7 +94,7 @@ void toccata::Application::Process() {
         }
     }
 
-    m_timeline.SetPositionX(-windowWidth / 2.0f);
+    m_timeline.SetPositionX(0.0f);
     m_timeline.SetInputSegment(&m_testSegment);
     m_timeline.SetTimeOffset(windowStart);
     m_timeline.SetTimeRange(5000);
@@ -108,27 +108,31 @@ void toccata::Application::Process() {
     m_midiDisplay.SetHeight(windowHeight * 0.7f);
     m_midiDisplay.SetKeyRangeStart(0);
     m_midiDisplay.SetKeyRangeEnd(88);
-    m_midiDisplay.SetPositionY(windowHeight / 2.0f - windowHeight * 0.2f);
+    m_midiDisplay.SetPositionY(windowHeight - windowHeight * 0.2f);
     m_midiDisplay.SetTimeline(&m_timeline);
     m_midiDisplay.SetSettings(&m_settings);
 
     m_barDisplay.SetEngine(&m_engine);
     m_barDisplay.SetHeight(windowHeight * 0.1f);
-    m_barDisplay.SetPositionY(windowHeight / 2.0f - windowHeight * 0.1f);
+    m_barDisplay.SetPositionY(windowHeight - windowHeight * 0.1f);
     m_barDisplay.SetTextRenderer(&m_textRenderer);
     m_barDisplay.SetTimeline(&m_timeline);
     m_barDisplay.SetSettings(&m_settings);
 
     m_pieceDisplay.SetEngine(&m_engine);
     m_pieceDisplay.SetHeight(windowHeight * 0.1f);
-    m_pieceDisplay.SetPositionY(windowHeight / 2.0f);
+    m_pieceDisplay.SetPositionY((float)windowHeight);
     m_pieceDisplay.SetTextRenderer(&m_textRenderer);
     m_pieceDisplay.SetTimeline(&m_timeline);
     m_pieceDisplay.SetSettings(&m_settings);
 
-    m_currentTimeDisplay.SetBoundingBox(BoundingBox(300, 50)
-        .AlignCenterX(windowWidth / 2.0)
-        .AlignBottom(20.0));
+    m_currentTimeDisplay.SetBoundingBox(BoundingBox(300.0f, 50.0f)
+        .AlignCenterX(windowWidth / 2.0f)
+        .AlignBottom(20.0f));
+
+    m_practiceModePanel.SetBoundingBox(BoundingBox(windowWidth * 0.5f, windowHeight * 0.1f)
+        .AlignLeft(0.0f)
+        .AlignBottom(0.0f));
 
     MockMidiInput();
 
@@ -140,8 +144,10 @@ void toccata::Application::Process() {
     m_currentTimeDisplay.ProcessAll();
 
     m_midiDisplay.SetPracticeMode(m_practiceModePanel.GetPracticeMode());
-    m_midiDisplay.SetTimingErrorThreshold(
-        m_practiceModePanel.GetTimingPracticeControls().GetThreshold());
+    m_midiDisplay.SetTimingErrorMin(
+        m_practiceModePanel.GetTimingPracticeControls().GetMinError());
+    m_midiDisplay.SetTimingErrorMax(
+        m_practiceModePanel.GetTimingPracticeControls().GetMaxError());
     m_midiDisplay.SetVelocityErrorThreshold(
         m_practiceModePanel.GetVelocityPracticeControls().GetThreshold());
     m_midiDisplay.SetTargetVelocity(
@@ -276,7 +282,7 @@ void toccata::Application::Destroy() {
 }
 
 void toccata::Application::InitializeLibrary() {
-    const std::string paths[] = 
+    static const std::string paths[] = 
     {
         "../../test/midi/simple_passage.midi",
         "../../test/midi/simple_passage_2.mid"

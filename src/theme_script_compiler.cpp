@@ -66,8 +66,8 @@ void toccata::ThemeScriptCompiler::Execute() {
 }
 
 void toccata::ThemeScriptCompiler::Destroy() {
-    m_compiler->free();
     m_program.free();
+    m_compiler->free();
 }
 
 void toccata::ThemeScriptCompiler::PrintError(

@@ -57,8 +57,11 @@ namespace toccata {
         void SetVelocityErrorThreshold(double threshold) { m_velocityErrorThreshold = threshold; }
         double GetVelocityErrorThreshold() const { return m_velocityErrorThreshold; }
 
-        void SetTimingErrorThreshold(double threshold) { m_timingErrorThreshold = threshold; }
-        double GetTimingErrorThreshold() const { return m_timingErrorThreshold; }
+        void SetTimingErrorMin(double errorMin) { m_timingErrorMin = errorMin; }
+        double GetTimingErrorMin() const { return m_timingErrorMin; }
+
+        void SetTimingErrorMax(double errorMax) { m_timingErrorMax = errorMax; }
+        double GetTimingErrorMax() const { return m_timingErrorMax; }
 
     protected:
         void RenderReferenceNotes();
@@ -80,7 +83,8 @@ namespace toccata {
         double m_velocityErrorThreshold;
 
         // Timing practice parameters
-        double m_timingErrorThreshold;
+        double m_timingErrorMin;
+        double m_timingErrorMax;
     };
 
 } /* namespace toccata */

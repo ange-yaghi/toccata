@@ -32,6 +32,9 @@ namespace toccata {
         void SetId(int id) { m_id = id; }
         int GetId() const { return m_id; }
 
+        void SetIndex(int index) { m_index = index; }
+        int GetIndex() const { return m_index; }
+
         SearchResult FindNext(const Bar *next, int skipsAllowed) const;
 
     protected:
@@ -40,6 +43,7 @@ namespace toccata {
         Piece *m_piece;
 
         int m_id;
+        int m_index;
     };
 
 } /* namespace toccata */

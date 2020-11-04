@@ -37,6 +37,8 @@ namespace toccata {
         BoundingBox &AlignCenterX(float hCenter);
         BoundingBox &AlignCenterY(float vCenter);
 
+        BoundingBox Add(const BoundingBox &box) const;
+
     protected:
         ysVector2 m_min;
         ysVector2 m_max;

@@ -14,14 +14,16 @@ namespace toccata {
 
         virtual void Construct();
 
-        double GetThreshold() const { return m_threshold.GetCurrentValue(); }
+        double GetMinError() const { return m_minError.GetCurrentValue() / 1000.0; }
+        double GetMaxError() const { return m_maxError.GetCurrentValue() / 1000.0; }
 
     protected:
         virtual void Render();
         virtual void Update();
 
     protected:
-        NumericInput m_threshold;
+        NumericInput m_minError;
+        NumericInput m_maxError;
     };
 
 } /* namespace toccata */

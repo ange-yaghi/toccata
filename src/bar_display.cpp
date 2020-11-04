@@ -1,8 +1,12 @@
 #include "../include/bar_display.h"
 
 #include "../include/transform.h"
+#include "../include/grid.h"
 
 #include <sstream>
+
+#undef min
+#undef max
 
 toccata::BarDisplay::BarDisplay() {
     m_channelCount = 3;
@@ -37,7 +41,7 @@ void toccata::BarDisplay::Render() {
 
     for (int i = 0; i < n; ++i) {
         const Analyzer::BarInformation &info = m_analyzer->GetBar(i);
-        const Timeline::MatchedBar &bar = m_timeline->GetBar(info.Bar);
+        const Timeline::MatchedBar &bar = m_timeline->GetBar(info.MasterIndex);
         const MusicSegment *segment = bar.Bar.MatchedBar->GetSegment();
         const int channel = bar.Channel;
 
@@ -54,7 +58,10 @@ void toccata::BarDisplay::Render() {
         m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
         DrawBox(x, y, width, channelHeight);
 
-        RenderBarInformation(info, x, y, x + channelHeight, y + channelHeight);
+        RenderBarInformation(info, 
+            BoundingBox(width, channelHeight)
+                .AlignLeft(x)
+                .AlignBottom(y));
     }
 }
 
@@ -105,33 +112,68 @@ void toccata::BarDisplay::DrawBox(float x, float y, float w, float h) {
 }
 
 void toccata::BarDisplay::RenderBarInformation(
-    const Analyzer::BarInformation &info, float x0, float y0, float x1, float y1)
+    const Analyzer::BarInformation &info, const BoundingBox &box)
 {
+    Grid grid;
+    grid.SetBoundingBox(box);
+    grid.SetVerticalDivisions(2);
+    grid.SetHorizontalDivisions(2);
+    grid.SetVerticalMargin(5.0f);
+    grid.SetHorizontalMargin(5.0f);
+    
+    // BPM
+    BoundingBox bpmBox;
+    grid.GetCell(0, 1, bpmBox);
+
     std::stringstream ss;
     ss << (int)std::round(info.Tempo) << " BPM";
+    const std::string bpmText = ss.str();
 
-    m_textRenderer->RenderText(ss.str(), x0, y0, 30.0f);
+    // Bar number
+    BoundingBox barBox;
+    grid.GetCell(1, 1, barBox);
 
     ss = std::stringstream();
-    ss << "B: " << info.Bar;
+    ss << "SEQ " << info.Index + 1;
+    const std::string barText = ss.str();
 
-    m_textRenderer->RenderText(ss.str(), x0 + 175.0f, y0, 20.0f);
+    // Error
+    BoundingBox errBox;
+    grid.GetCell(0, 0, errBox);
 
-    const Timeline::MatchedBar &bar = m_timeline->GetBar(info.Bar);
+    ss = std::stringstream();
+    ss.precision(2);
+    ss << std::fixed << info.AverageError * 1000 << " MIL";
+    const std::string errText = ss.str();
+
+    // Missed notes
+    const Timeline::MatchedBar &bar = m_timeline->GetBar(info.MasterIndex);
     int missedNotes = 0;
     for (const Analyzer::NoteInformation &noteInfo : info.NoteInformation) {
         if (noteInfo.InputNote == -1) ++missedNotes;
     }
 
-    ss = std::stringstream();
-    ss << "ERR: " << info.AverageError;
+    BoundingBox missedNotesBox;
+    grid.GetCell(1, 0, missedNotesBox);
 
+    ss = std::stringstream();
     if (missedNotes > 0) {
-        ss << "/" << missedNotes;
+        ss << "-" << missedNotes;
     }
     else {
-        ss << "/-";
+        ss << "CLEAN";
     }
 
-    m_textRenderer->RenderText(ss.str(), x0 + 175.0f, y0 + 20.0f, 20.0f);
+    const std::string missedNotesText = ss.str();
+
+    // Draw text
+    const float maxTextSize = std::min(
+        std::min(CalculateFontSize(bpmText, 30.0f, 10.0f, bpmBox), CalculateFontSize(errText, 30.0f, 10.0f, errBox) / 0.75f),
+        std::min(CalculateFontSize(missedNotesText, 30.0f, 10.0f, barBox) / 0.75f, CalculateFontSize(barText, 30.0f, 10.0f, missedNotesBox) / 0.75f)
+    );
+
+    m_textRenderer->RenderText(bpmText, bpmBox.Left(), bpmBox.Bottom(), maxTextSize);
+    m_textRenderer->RenderText(errText, errBox.Left(), errBox.Bottom(), maxTextSize * 0.75f);
+    m_textRenderer->RenderText(missedNotesText, missedNotesBox.Left(), missedNotesBox.Bottom(), maxTextSize * 0.75f);
+    m_textRenderer->RenderText(barText, barBox.Left(), barBox.Bottom(), maxTextSize * 0.75f);
 }

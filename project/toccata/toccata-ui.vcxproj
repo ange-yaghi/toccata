@@ -31,6 +31,7 @@
     <ClCompile Include="..\..\src\component.cpp" />
     <ClCompile Include="..\..\src\create_profile_node.cpp" />
     <ClCompile Include="..\..\src\current_time_display.cpp" />
+    <ClCompile Include="..\..\src\grid.cpp" />
     <ClCompile Include="..\..\src\heat_map.cpp" />
     <ClCompile Include="..\..\src\int_to_color_node.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
@@ -68,6 +69,7 @@
     <ClInclude Include="..\..\include\current_time_display.h" />
     <ClInclude Include="..\..\include\delta.h" />
     <ClInclude Include="..\..\include\application.h" />
+    <ClInclude Include="..\..\include\grid.h" />
     <ClInclude Include="..\..\include\heat_map.h" />
     <ClInclude Include="..\..\include\int_to_color_node.h" />
     <ClInclude Include="..\..\include\midi_display.h" />

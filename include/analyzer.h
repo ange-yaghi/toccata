@@ -16,7 +16,8 @@ namespace toccata {
         };
 
         struct BarInformation {
-            int Bar;
+            int MasterIndex;
+            int Index;
             std::vector<NoteInformation> NoteInformation;
             double AverageError;
             double Tempo;
