@@ -55,8 +55,10 @@ void toccata::BarDisplay::Render() {
         const float x = world_s;
         const float width = world_e - world_s;
 
-        m_engine->SetBaseColor(ysColor::srgbiToLinear(0xFF, 0x00, 0x00));
-        DrawBox(x, y, width, channelHeight);
+        const ysVector color = m_settings->BarDisplay_BackgroundColor;
+        DrawBox(BoundingBox(width, channelHeight)
+            .AlignBottom(y)
+            .AlignLeft(x), color);
 
         RenderBarInformation(info, 
             BoundingBox(width, channelHeight)
@@ -104,11 +106,6 @@ void toccata::BarDisplay::AllocateChannels() {
             }
         }
     }
-}
-
-void toccata::BarDisplay::DrawBox(float x, float y, float w, float h) {
-    m_engine->SetObjectTransform(ysMath::TranslationTransform(ysMath::LoadVector(x + w / 2, y + h / 2)));
-    m_engine->DrawBox(w, h);
 }
 
 void toccata::BarDisplay::RenderBarInformation(
