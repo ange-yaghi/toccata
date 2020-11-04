@@ -169,8 +169,8 @@ void toccata::BarDisplay::RenderBarInformation(
         std::min(CalculateFontSize(missedNotesText, 30.0f, 10.0f, barBox) / 0.75f, CalculateFontSize(barText, 30.0f, 10.0f, missedNotesBox) / 0.75f)
     );
 
-    m_textRenderer->RenderText(bpmText, bpmBox.Left(), bpmBox.Bottom(), maxTextSize);
-    m_textRenderer->RenderText(errText, errBox.Left(), errBox.Bottom(), maxTextSize * 0.75f);
-    m_textRenderer->RenderText(missedNotesText, missedNotesBox.Left(), missedNotesBox.Bottom(), maxTextSize * 0.75f);
-    m_textRenderer->RenderText(barText, barBox.Left(), barBox.Bottom(), maxTextSize * 0.75f);
+    RenderText(bpmText, { bpmBox.Left(), bpmBox.Bottom() }, maxTextSize);
+    RenderText(errText, { errBox.Left(), errBox.Bottom() }, maxTextSize * 0.75f);
+    RenderText(missedNotesText, { missedNotesBox.Left(), missedNotesBox.Bottom() }, maxTextSize * 0.75f);
+    RenderText(barText, { barBox.Left(), barBox.Bottom() }, maxTextSize * 0.75f);
 }
