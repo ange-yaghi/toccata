@@ -337,12 +337,97 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
         if (isLeaf[i]) ++leafCount;
     }
 
-    std::vector<MatchedPiece> results;
-
+    std::vector<PieceData> results;
     for (int i = 0; i < n; ++i) {
         if (!isLeaf[i]) continue;
 
         Decision *parentDecision = m_decisions[i];
+
+        int pieceStart = INT_MAX;
+        int pieceEnd = INT_MIN;
+        for (Decision *decision = parentDecision; decision != nullptr; decision = decision->ParentDecision) {
+            pieceStart = std::min(pieceStart, decision->GetStart());
+            pieceEnd = std::max(pieceEnd, decision->GetEnd());
+        }
+
+        PieceData data;
+        data.Start = pieceStart;
+        data.End = pieceEnd;
+        data.ParentDecision = parentDecision;
+        data.StartDecision = parentDecision;
+        data.EndDecision = nullptr;
+        data.MatchedNotes = GetBranchNoteCount(parentDecision);
+        data.Filtered = false;
+
+        results.push_back(data);
+    }
+
+    std::sort(results.begin(), results.end(),
+        [](PieceData &a, PieceData &b) {
+            if (a.MatchedNotes == b.MatchedNotes) {
+                return (a.End - a.Start + 1) < (b.End - b.Start + 1);
+            }
+            else return a.MatchedNotes > b.MatchedNotes;
+        });
+
+    bool done;
+    do {
+        done = true;
+
+        for (int i = 0; i < (int)results.size(); ++i) {
+            for (int j = i + 1; j < (int)results.size(); ++j) {
+                PieceData &piece0 = results[i];
+                if (piece0.Filtered) continue;
+
+                const int length0 = piece0.End - piece0.Start + 1;
+
+                PieceData &piece1 = results[j];
+                if (piece1.Filtered) continue;
+
+                const int length1 = piece1.End - piece1.Start + 1;
+
+                const int start = std::max(piece0.Start, piece1.Start);
+                const int end = std::min(piece0.End, piece1.End);
+
+                const int overlap = std::max(0, end - start + 1);
+                const int overlapThreshold = (int)std::ceil(0.25 * std::min(length0, length1));
+
+                if (overlap >= overlapThreshold) {
+                    TrimPiece(j, results, piece0.Start, piece0.End);
+
+                    std::sort(results.begin(), results.end(),
+                        [](PieceData &a, PieceData &b) {
+                            if (a.MatchedNotes == b.MatchedNotes) {
+                                return (a.End - a.Start + 1) < (b.End - b.Start + 1);
+                            }
+                            else return a.MatchedNotes > b.MatchedNotes;
+                        });
+
+                    done = false;
+                }
+            }
+        }
+    } while (!done);
+
+    int newSize = 0;
+    for (int i = 0; i < (int)results.size(); ++i) {
+        if (results[i].Filtered) continue;
+
+        results[newSize++] = results[i];
+    }
+
+    results.resize(newSize);
+
+    std::sort(results.begin(), results.end(),
+        [](PieceData &a, PieceData &b) {
+            return a.End < b.End;
+        });
+
+    std::vector<MatchedPiece> pieces;
+    for (const PieceData &data : results) {
+        Decision *endDecision = data.EndDecision;
+        Decision *startDecision = data.StartDecision;
+        Decision *parentDecision = data.ParentDecision;
         double s_avg = 0.0;
         int s_samples = 0;
         for (Decision *decision = parentDecision; decision != nullptr; decision = decision->ParentDecision) {
@@ -355,16 +440,17 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
         s_avg /= s_samples;
 
         MatchedPiece newPiece;
-        newPiece.Piece = parentDecision->MatchedBar->GetPiece();
+        newPiece.Piece = startDecision->MatchedBar->GetPiece();
         newPiece.Start = INT_MAX;
         newPiece.End = INT_MIN;
-        newPiece.MatchedNotes = GetBranchNoteCount(m_decisions[i]);
+        newPiece.MatchedNotes = data.MatchedNotes;
 
-        for (Decision *decision = parentDecision; decision != nullptr; decision = decision->ParentDecision) {
+        for (Decision *decision = startDecision; decision != nullptr; decision = decision->ParentDecision) {
             MatchedBar bar;
             bar.MatchedBar = decision->MatchedBar;
             bar.Start = decision->GetStart();
             bar.End = decision->GetEnd();
+            bar.MatchedNotes = decision->MappedNotes;
 
             if (decision->Singular && s_samples > 0) {
                 bar.T.s = s_avg;
@@ -389,56 +475,10 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
 
         std::reverse(newPiece.Bars.begin(), newPiece.Bars.end());
 
-        results.push_back(newPiece);
+        pieces.push_back(newPiece);
     }
 
-    std::sort(results.begin(), results.end(),
-        [](MatchedPiece &a, MatchedPiece &b) {
-            if (a.MatchedNotes == b.MatchedNotes) {
-                return (a.End - a.Start + 1) < (b.End - b.Start + 1);
-            }
-            else return a.MatchedNotes > b.MatchedNotes;
-        });
-
-    const int pieceCount = (int)results.size();
-    std::vector<bool> filtered(pieceCount, false);
-    for (int i = 0; i < pieceCount; ++i) {
-        if (filtered[i]) continue;
-
-        const MatchedPiece &piece0 = results[i];
-        const int length0 = piece0.End - piece0.Start + 1;
-
-        for (int j = i + 1; j < pieceCount; ++j) {
-            const MatchedPiece &piece1 = results[j];
-            const int length1 = piece1.End - piece1.Start + 1;
-
-            const int start = std::max(piece0.Start, piece1.Start);
-            const int end = std::min(piece0.End, piece1.End);
-
-            const int overlap = std::max(0, end - start + 1);
-            const int overlapThreshold = (int)std::ceil(0.25 * std::min(length0, length1));
-
-            if (overlap >= overlapThreshold) {
-                filtered[j] = true;
-            }
-        }
-    }
-
-    int newSize = 0;
-    for (int i = 0; i < pieceCount; ++i) {
-        if (filtered[i]) continue;
-
-        results[newSize++] = results[i];
-    }
-
-    results.resize(newSize);
-
-    std::sort(results.begin(), results.end(),
-        [](MatchedPiece &a, MatchedPiece &b) {
-            return a.End < b.End;
-        });
-
-    return results;
+    return pieces;
 }
 
 toccata::DecisionTree::Decision *toccata::DecisionTree::FindBestParent(const Decision *decision) const {
@@ -579,7 +619,7 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::Match(
     request.Reference = reference->GetSegment();
     request.Segment = m_segment;
 
-    bool foundSolution = context.Solver.Solve(request, &result);
+    const bool foundSolution = context.Solver.Solve(request, &result);
     if (!foundSolution) return nullptr;
 
     Decision *newDecision = AllocateDecision();
@@ -591,6 +631,78 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::Match(
     newDecision->Singular = result.Singular;
 
     return newDecision;
+}
+
+void toccata::DecisionTree::TrimPiece(int index, std::vector<PieceData> &pieceData, int startTrim, int endTrim) {
+    pieceData[index].Filtered = true;
+
+    Decision *newStart = nullptr;
+    Decision *newEnd = nullptr;
+    for (
+        Decision *currentDecision = pieceData[index].StartDecision;
+        currentDecision != pieceData[index].EndDecision;
+        currentDecision = currentDecision->ParentDecision) 
+    {
+        const int start = std::max(currentDecision->GetStart(), startTrim);
+        const int end = std::min(currentDecision->GetEnd(), endTrim);
+        const int overlap = std::max(0, end - start + 1);
+        if (overlap == 0) {
+            if (newStart == nullptr) {
+                newStart = newEnd = currentDecision;
+            }
+            else {
+                newEnd = currentDecision->ParentDecision;
+            }
+        }
+        else {
+            newEnd = currentDecision;
+
+            if (newStart != nullptr && newStart != newEnd) {
+                PieceData newPiece;
+                newPiece.Start = INT_MAX;
+                newPiece.End = INT_MIN;
+                newPiece.ParentDecision = pieceData[index].ParentDecision;
+                newPiece.StartDecision = newStart;
+                newPiece.EndDecision = newEnd;
+                newPiece.MatchedNotes = 0;
+                newPiece.Filtered = false;
+                for (
+                    Decision *currentDecision = newPiece.StartDecision;
+                    currentDecision != newPiece.EndDecision;
+                    currentDecision = currentDecision->ParentDecision) {
+                    newPiece.Start = std::min(newPiece.Start, currentDecision->GetStart());
+                    newPiece.End = std::max(newPiece.End, currentDecision->GetEnd());
+                    newPiece.MatchedNotes += currentDecision->MappedNotes;
+                }
+
+                pieceData.push_back(newPiece);
+            }
+
+            newStart = nullptr;
+            newEnd = nullptr;
+        }
+    }
+
+    if (newStart != nullptr && newStart != newEnd) {
+        PieceData newPiece;
+        newPiece.Start = INT_MAX;
+        newPiece.End = INT_MIN;
+        newPiece.ParentDecision = pieceData[index].ParentDecision;
+        newPiece.StartDecision = newStart;
+        newPiece.EndDecision = newEnd;
+        newPiece.MatchedNotes = 0;
+        newPiece.Filtered = false;
+        for (
+            Decision *currentDecision = newPiece.StartDecision;
+            currentDecision != newPiece.EndDecision;
+            currentDecision = currentDecision->ParentDecision) {
+            newPiece.Start = std::min(newPiece.Start, currentDecision->GetStart());
+            newPiece.End = std::max(newPiece.End, currentDecision->GetEnd());
+            newPiece.MatchedNotes += currentDecision->MappedNotes;
+        }
+
+        pieceData.push_back(newPiece);
+    }
 }
 
 bool toccata::DecisionTree::Decision::IsSameAs(const Decision *decision) const {

@@ -27,6 +27,7 @@ namespace toccata {
 
             int Start;
             int End;
+            int MatchedNotes;
 
             Transform T;
         };
@@ -71,6 +72,16 @@ namespace toccata {
             int GetStart() const;
 
             bool Overlapping(const Decision *decision, int overlap) const;
+        };
+
+        struct PieceData {
+            int Start;
+            int End;
+            int MatchedNotes;
+            Decision *ParentDecision;
+            Decision *StartDecision;
+            Decision *EndDecision;
+            bool Filtered;
         };
 
     protected:
@@ -155,6 +166,8 @@ namespace toccata {
             int libraryStart, int libraryEnd,
             int threadId);
         Decision *Match(const Bar *bar, int startIndex, ThreadContext &context);
+
+        static void TrimPiece(int index, std::vector<PieceData> &pieceData, int startTrim, int endTrim);
 
     protected:
         std::vector<Decision *> m_decisions;

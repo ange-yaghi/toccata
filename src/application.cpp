@@ -300,7 +300,7 @@ void toccata::Application::InitializeLibrary() {
 }
 
 void toccata::Application::InitializeDecisionThread() {
-    m_decisionThread.Initialize(&m_library, 12, 1000.0, 1.0);
+    m_decisionThread.Initialize(&m_library, 1, 1000.0, 1.0);
     m_decisionThread.StartThreads();
 }
 
