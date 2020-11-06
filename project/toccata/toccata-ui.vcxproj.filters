@@ -162,6 +162,9 @@
     <ClCompile Include="..\..\src\grid.cpp">
       <Filter>Source Files\components\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\metrics_panel.cpp">
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\delta.h">
@@ -286,6 +289,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\grid.h">
       <Filter>Header Files\components\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\metrics_panel.h">
+      <Filter>Header Files\components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

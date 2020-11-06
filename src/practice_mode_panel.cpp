@@ -33,7 +33,7 @@ void toccata::PracticeModePanel::Render() {
 }
 
 void toccata::PracticeModePanel::Update() {
-    Grid grid(m_boundingBox, 7, 4, 5.0f);
+    Grid grid(m_boundingBox, 5, 4, 5.0f);
     Grid buttonGrid(grid.GetFullRange(0, 0, 1, 2), 2, 1, 5.0f, 5.0f);
 
     m_timingToggle.SetBoundingBox(buttonGrid.GetCell(0, 0));

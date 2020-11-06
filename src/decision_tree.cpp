@@ -370,8 +370,8 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
             else return a.MatchedNotes > b.MatchedNotes;
         });
 
-    bool done;
-    do {
+    bool done = false;
+    while (!done) {
         done = true;
 
         for (int i = 0; i < (int)results.size(); ++i) {
@@ -407,7 +407,7 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionTree::GetPiece
                 }
             }
         }
-    } while (!done);
+    }
 
     int newSize = 0;
     for (int i = 0; i < (int)results.size(); ++i) {
@@ -605,6 +605,8 @@ toccata::DecisionTree::Decision *toccata::DecisionTree::Match(
 {
     const int n = reference->GetSegment()->NoteContainer.GetCount();
     const int k = m_segment->NoteContainer.GetCount();
+
+    if (k == 0) return nullptr;
 
     std::set<int> mappedNotes;
 

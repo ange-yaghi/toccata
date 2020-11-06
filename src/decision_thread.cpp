@@ -1,9 +1,20 @@
 #include "../include/decision_thread.h"
 
+#include <chrono>
+
 toccata::DecisionThread::DecisionThread() {
     m_currentIndex = 0;
     m_complete = true;
     m_kill = false;
+
+    m_peakIndex = 0;
+    m_peakIndexReset = true;
+
+    m_peakLatency = 0.0;
+    m_peakLatencyReset = true;
+
+    m_peakTargetIndex = 0;
+    m_peakTargetIndexReset = true;
 }
 
 toccata::DecisionThread::~DecisionThread() {
@@ -44,10 +55,19 @@ void toccata::DecisionThread::DoIteration() {
 
     const int noteCount = m_inputBuffer.NoteContainer.GetCount();
 
+    auto start = std::chrono::steady_clock::now();    
+
     if (m_currentIndex < noteCount) {
         m_tree.Process(m_currentIndex++);
     }
     else m_complete = true;
+
+    auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+
+    RecordLatency(elapsed.count());
+    RecordIndex(m_currentIndex);
+    RecordTargetIndex(noteCount);
 
     m_bufferLock.unlock();
 }
@@ -88,4 +108,73 @@ std::vector<toccata::DecisionTree::MatchedPiece> toccata::DecisionThread::GetPie
     m_bufferLock.unlock();
 
     return result;
+}
+
+void toccata::DecisionThread::RecordIndex(int index) {
+    if (m_peakIndexReset) {
+        m_peakIndex = index;
+        m_peakIndexReset = false;
+    }
+    else {
+        m_peakIndex = std::min(index, m_peakIndex);
+    }
+}
+
+int toccata::DecisionThread::ReadPeakIndex() {
+    int peakIndex;
+
+    m_bufferLock.lock();
+
+    m_peakIndexReset = true;
+    peakIndex = m_peakIndex;
+
+    m_bufferLock.unlock();
+
+    return peakIndex;
+}
+
+void toccata::DecisionThread::RecordTargetIndex(int index) {
+    if (m_peakTargetIndexReset) {
+        m_peakTargetIndex = index;
+        m_peakTargetIndexReset = false;
+    }
+    else {
+        m_peakTargetIndex = std::max(m_peakTargetIndex, index);
+    }
+}
+
+int toccata::DecisionThread::ReadPeakTargetIndex() {
+    int peakTargetIndex;
+
+    m_bufferLock.lock();
+
+    m_peakTargetIndexReset = true;
+    peakTargetIndex = m_peakTargetIndex;
+
+    m_bufferLock.unlock();
+
+    return m_peakTargetIndex;
+}
+
+void toccata::DecisionThread::RecordLatency(double latency) {
+    if (m_peakLatencyReset) {
+        m_peakLatency = latency;
+        m_peakLatencyReset = false;
+    }
+    else {
+        m_peakLatency = std::max(m_peakLatency, latency);
+    }
+}
+
+double toccata::DecisionThread::ReadPeakLatency() {
+    double peakLatency;
+
+    m_bufferLock.lock();
+
+    m_peakLatencyReset = true;
+    peakLatency = m_peakLatency;
+
+    m_bufferLock.unlock();
+
+    return peakLatency;
 }

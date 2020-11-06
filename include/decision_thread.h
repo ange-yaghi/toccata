@@ -34,6 +34,15 @@ namespace toccata {
         void Clear();
         std::vector<DecisionTree::MatchedPiece> GetPieces();
 
+        void RecordIndex(int index);
+        int ReadPeakIndex();
+
+        void RecordTargetIndex(int index);
+        int ReadPeakTargetIndex();
+
+        void RecordLatency(double latency);
+        double ReadPeakLatency();
+
     protected:
         std::mutex m_bufferLock;
 
@@ -46,6 +55,17 @@ namespace toccata {
         std::thread m_thread;
 
         DecisionTree m_tree;
+
+    protected:
+        // Metrics
+        bool m_peakIndexReset;
+        int m_peakIndex;
+        
+        bool m_peakTargetIndexReset;
+        int m_peakTargetIndex;
+
+        bool m_peakLatencyReset;
+        double m_peakLatency;
     };
 
 } /* namespace toccata */

@@ -36,6 +36,7 @@
     <ClCompile Include="..\..\src\int_to_color_node.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\application.cpp" />
+    <ClCompile Include="..\..\src\metrics_panel.cpp" />
     <ClCompile Include="..\..\src\midi_display.cpp" />
     <ClCompile Include="..\..\src\numeric_input.cpp" />
     <ClCompile Include="..\..\src\object_channel_types.cpp" />
@@ -72,6 +73,7 @@
     <ClInclude Include="..\..\include\grid.h" />
     <ClInclude Include="..\..\include\heat_map.h" />
     <ClInclude Include="..\..\include\int_to_color_node.h" />
+    <ClInclude Include="..\..\include\metrics_panel.h" />
     <ClInclude Include="..\..\include\midi_display.h" />
     <ClInclude Include="..\..\include\numeric_input.h" />
     <ClInclude Include="..\..\include\object_channel_types.h" />

@@ -11,6 +11,7 @@
 #include "timeline.h"
 #include "practice_mode_panel.h"
 #include "current_time_display.h"
+#include "metrics_panel.h"
 
 #include "delta.h"
 
@@ -46,6 +47,7 @@ namespace toccata {
 
         dbasic::TextRenderer m_textRenderer;
 
+        MetricsPanel m_metricsPanel;
         BarDisplay m_barDisplay;
         MidiDisplay m_midiDisplay;
         PieceDisplay m_pieceDisplay;

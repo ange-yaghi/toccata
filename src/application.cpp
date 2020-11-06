@@ -8,6 +8,7 @@
 #include "../include/midi_callback.h"
 #include "../include/theme_script_compiler.h"
 #include "../include/settings_manager.h"
+#include "../include/grid.h"
 
 #include <sstream>
 
@@ -72,6 +73,9 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
 
     m_practiceModePanel.Initialize(&m_engine, &m_textRenderer, &m_settings);
     m_currentTimeDisplay.Initialize(&m_engine, &m_textRenderer, &m_settings);
+    m_metricsPanel.Initialize(&m_engine, &m_textRenderer, &m_settings);
+
+    m_metricsPanel.SetDecisionThread(&m_decisionThread);
 
     ReloadThemes();
 }
@@ -126,13 +130,13 @@ void toccata::Application::Process() {
     m_pieceDisplay.SetTimeline(&m_timeline);
     m_pieceDisplay.SetSettings(&m_settings);
 
-    m_currentTimeDisplay.SetBoundingBox(BoundingBox(300.0f, 50.0f)
-        .AlignCenterX(windowWidth / 2.0f)
-        .AlignBottom(20.0f));
+    Grid lowerGrid(
+        BoundingBox(windowWidth, windowHeight * 0.1f).AlignLeft(0.0f).AlignBottom(0.0f),
+        3, 1, 0.0f);
 
-    m_practiceModePanel.SetBoundingBox(BoundingBox(windowWidth * 0.5f, windowHeight * 0.1f)
-        .AlignLeft(0.0f)
-        .AlignBottom(0.0f));
+    m_currentTimeDisplay.SetBoundingBox(lowerGrid.GetCell(2, 0));
+    m_practiceModePanel.SetBoundingBox(lowerGrid.GetCell(0, 0));
+    m_metricsPanel.SetBoundingBox(lowerGrid.GetCell(1, 0));
 
     MockMidiInput();
 
@@ -140,6 +144,7 @@ void toccata::Application::Process() {
         ReloadThemes();
     }
 
+    m_metricsPanel.ProcessAll();
     m_practiceModePanel.ProcessAll();
     m_currentTimeDisplay.ProcessAll();
 
@@ -160,6 +165,7 @@ void toccata::Application::Render() {
     m_pieceDisplay.Render();
     m_practiceModePanel.RenderAll();
     m_currentTimeDisplay.RenderAll();
+    m_metricsPanel.RenderAll();
 
     std::stringstream ss; 
     ss << "TOCCATA" << "\n";
@@ -213,7 +219,7 @@ void toccata::Application::CheckMidiStatus() {
     const bool status = m_midiSystem.Refresh();
     if (!status) {
         if (m_midiSystem.GetLastErrorCode() == MidiDeviceSystem::ErrorCode::DeviceListChangedDuringUpdate) {
-
+            // TODO
         }
         else {
             // TODO
