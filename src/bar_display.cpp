@@ -115,7 +115,7 @@ void toccata::BarDisplay::RenderBarInformation(
     grid.SetBoundingBox(box);
     grid.SetVerticalDivisions(2);
     grid.SetHorizontalDivisions(2);
-    grid.SetVerticalMargin(5.0f);
+    grid.SetVerticalMargin(2.0f);
     grid.SetHorizontalMargin(5.0f);
     
     // BPM
