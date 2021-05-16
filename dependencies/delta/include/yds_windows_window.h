@@ -21,9 +21,12 @@ public:
 
     virtual bool SetWindowStyle(WindowStyle style);
 
-    virtual void ScreenToLocal(int &x, int &y);
+    virtual void ScreenToLocal(int &x, int &y) const;
 
     virtual bool IsVisible();
+
+    virtual int GetScreenWidth() const;
+    virtual int GetScreenHeight() const;
 
 public:
     // Windows Specific
@@ -50,8 +53,8 @@ protected:
 protected:
     ATOM RegisterWindowsClass();
 
-    HINSTANCE	m_instance;
-    HWND		m_hwnd;
+    HINSTANCE m_instance;
+    HWND m_hwnd;
 };
 
 #endif /* YDS_WINDOWS_WINDOW_H */
