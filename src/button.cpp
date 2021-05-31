@@ -29,11 +29,11 @@ void toccata::Button::ProcessInput() {
         }
     }
 
-    if (m_mouseHover && m_engine->ProcessMouseKeyDown(ysMouse::Button::Left)) {
+    if (m_mouseHover && m_engine->ProcessMouseButtonDown(ysMouse::Button::Left)) {
         m_mouseHold = true;
     }
 
-    if (m_mouseHold && !m_engine->IsMouseKeyDown(ysMouse::Button::Left)) {
+    if (m_mouseHold && !m_engine->IsMouseButtonDown(ysMouse::Button::Left)) {
         m_mouseHold = false;
         m_clicked = m_mouseHover;
     }

@@ -601,7 +601,9 @@ void toccata::DecisionTree::SeedMatch(
 }
 
 toccata::DecisionTree::Decision *toccata::DecisionTree::Match(
-    const Bar *reference, int startIndex, ThreadContext &context) 
+    const Bar *reference,
+    int startIndex,
+    ThreadContext &context) 
 {
     const int n = reference->GetSegment()->NoteContainer.GetCount();
     const int k = m_segment->NoteContainer.GetCount();

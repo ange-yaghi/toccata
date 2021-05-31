@@ -2,6 +2,7 @@
 
 toccata::Component::Component() {
     m_engine = nullptr;
+    m_shaders = nullptr;
     m_textRenderer = nullptr;
 
     m_settings = nullptr;
@@ -20,15 +21,21 @@ void toccata::Component::Construct() {
     /* void */
 }
 
-void toccata::Component::Initialize(dbasic::DeltaEngine *engine, dbasic::TextRenderer *renderer, Settings *settings) {
+void toccata::Component::Initialize(
+    dbasic::DeltaEngine *engine,
+    dbasic::DefaultShaders *shaders,
+    dbasic::TextRenderer *renderer,
+    Settings *settings)
+{
     Construct();
     
     m_engine = engine;
+    m_shaders = shaders;
     m_textRenderer = renderer;
     m_settings = settings;
 
     for (Component *component : m_children) {
-        component->Initialize(engine, renderer, settings);
+        component->Initialize(engine, shaders, renderer, settings);
     }
 }
 
@@ -116,28 +123,30 @@ bool toccata::Component::IsVisible() const {
 }
 
 void toccata::Component::DrawBox(const BoundingBox &box, const ysVector &color) {
-    const int wx = m_engine->GetScreenWidth();
-    const int wy = m_engine->GetScreenHeight();
+    const int sw = m_engine->GetScreenWidth();
+    const int sh = m_engine->GetScreenHeight();
 
-    m_engine->SetDrawTarget(dbasic::DeltaEngine::DrawTarget::Gui);
-    m_engine->SetBaseColor(color);
-    m_engine->SetLit(false);
-    m_engine->SetObjectTransform(
+    m_shaders->SetBaseColor(color);
+    m_shaders->SetLit(false);
+    m_shaders->SetColorReplace(true);
+    m_shaders->SetDiffuseTexture(nullptr);
+    m_shaders->SetObjectTransform(
         ysMath::TranslationTransform(
             ysMath::LoadVector(
-                box.CenterX() - wx / 2.0f,
-                box.CenterY() - wy / 2.0f)));
-    m_engine->DrawBox(box.Width(), box.Height());
+                box.CenterX() - sw / 2.0f,
+                box.CenterY() - sh / 2.0f)));
+    m_shaders->SetScale(box.Width() / 2.0f, box.Height() / 2.0f);
+    m_engine->DrawBox(m_shaders->GetRegularFlags());
 }
 
 void toccata::Component::RenderText(const std::string &text, const ysVector2 &position, float textHeight) {
-    const int wx = m_engine->GetScreenWidth();
-    const int wy = m_engine->GetScreenHeight();
+    const int sw = m_engine->GetScreenWidth();
+    const int sh = m_engine->GetScreenHeight();
 
     m_textRenderer->RenderText(
         text,
-        position.x - wx / 2.0f,
-        position.y - wy / 2.0f,
+        position.x - sw / 2.0f,
+        position.y - sh / 2.0f,
         (float)textHeight);
 }
 

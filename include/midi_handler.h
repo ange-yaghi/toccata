@@ -18,7 +18,7 @@ namespace toccata {
     public:
         static MidiHandler *Get();
 
-        void Extract(MidiStream *targetBuffer);
+        void Extract(MidiStream *targetBuffer, MidiStream *unresolvedBuffer = nullptr);
 
         void ProcessEvent(int status, int midiByte1, int midiByte2, timestamp timestamp);
         void ProcessMidiTick(unsigned long timestamp);

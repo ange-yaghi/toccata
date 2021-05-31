@@ -8,6 +8,7 @@ toccata::Timeline::Timeline() {
     m_timeOffset = 0;
 
     m_inputSegment = nullptr;
+    m_unfinishedSegment = nullptr;
 
     m_textRenderer = nullptr;
 }

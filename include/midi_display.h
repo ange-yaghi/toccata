@@ -66,6 +66,7 @@ namespace toccata {
     protected:
         void RenderReferenceNotes();
         void RenderPlayedNotes();
+        void RenderUnresolvedNotes();
 
         void RenderCursor();
 

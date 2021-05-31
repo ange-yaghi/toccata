@@ -31,7 +31,7 @@ namespace toccata {
         void Render();
 
         void MockMidiInput();
-        void MockMidiKey(ysKeyboard::KEY_CODE key, int midiKey);
+        void MockMidiKey(ysKey::Code key, int midiKey);
 
         void InitializeLibrary();
         void InitializeDecisionThread();
@@ -44,6 +44,8 @@ namespace toccata {
 
         dbasic::DeltaEngine m_engine;
         dbasic::AssetManager m_assetManager;
+        dbasic::ShaderSet m_shaderSet;
+        dbasic::DefaultShaders m_shaders;
 
         dbasic::TextRenderer m_textRenderer;
 
@@ -52,6 +54,7 @@ namespace toccata {
         MidiDisplay m_midiDisplay;
         PieceDisplay m_pieceDisplay;
         MusicSegment m_testSegment;
+        MusicSegment m_unresolvedNotes;
         MusicSegment m_referenceSegment;
         Timeline m_timeline;
         Analyzer m_analyzer;
@@ -66,6 +69,8 @@ namespace toccata {
         Settings m_settings;
 
         float m_currentOffset;
+
+        bool *m_isKeydown;
     };
 
 } /* namespace toccata */

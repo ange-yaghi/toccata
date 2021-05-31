@@ -30,10 +30,10 @@ void toccata::NumericInput::ProcessInput() {
     }
 
     if (HasControl()) {
-        if (m_engine->ProcessKeyDown(ysKeyboard::KEY_UP)) {
+        if (m_engine->ProcessKeyDown(ysKey::Code::Up)) {
             m_currentValue += m_step;
         }
-        else if (m_engine->ProcessKeyDown(ysKeyboard::KEY_DOWN)) {
+        else if (m_engine->ProcessKeyDown(ysKey::Code::Down)) {
             m_currentValue -= m_step;
         }
     }

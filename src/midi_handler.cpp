@@ -25,7 +25,7 @@ toccata::MidiHandler *toccata::MidiHandler::Get() {
     return s_handler;
 }
 
-void toccata::MidiHandler::Extract(MidiStream *targetBuffer) {
+void toccata::MidiHandler::Extract(MidiStream *targetBuffer, MidiStream *unresolvedBuffer) {
     m_bufferLock.lock();
 
     const int noteCount = m_buffer.GetNoteCount();
@@ -34,6 +34,9 @@ void toccata::MidiHandler::Extract(MidiStream *targetBuffer) {
 
         if (note.Valid) {
             targetBuffer->AddNote(note);
+        }
+        else if (unresolvedBuffer != nullptr) {
+            unresolvedBuffer->AddNote(note);
         }
     }
 

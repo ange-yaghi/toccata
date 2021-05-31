@@ -15,8 +15,6 @@ namespace toccata {
         BarDisplay();
         ~BarDisplay();
 
-        void Initialize(dbasic::DeltaEngine *engine);
-
         void Process();
         void Render();
 

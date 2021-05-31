@@ -13,7 +13,7 @@ namespace toccata {
         Component();
         ~Component();
 
-        void Initialize(dbasic::DeltaEngine *engine, dbasic::TextRenderer *renderer, Settings *settings);
+        void Initialize(dbasic::DeltaEngine *engine, dbasic::DefaultShaders *shaders, dbasic::TextRenderer *renderer, Settings *settings);
         virtual void Construct();
 
         virtual void RenderAll();
@@ -21,6 +21,9 @@ namespace toccata {
 
         void SetTextRenderer(dbasic::TextRenderer *renderer) { m_textRenderer = renderer; }
         dbasic::TextRenderer *GetTextRenderer() const { return m_textRenderer; }
+
+        void SetShaders(dbasic::DefaultShaders *shaders) { m_shaders = shaders; }
+        dbasic::DefaultShaders *GetShaders() const { return m_shaders; }
 
         void SetEngine(dbasic::DeltaEngine *engine) { m_engine = engine; }
         dbasic::DeltaEngine *GetEngine() const { return m_engine; }
@@ -62,6 +65,7 @@ namespace toccata {
         virtual void Update();
         virtual void ProcessInput();
 
+        dbasic::DefaultShaders *m_shaders;
         dbasic::DeltaEngine *m_engine;
         dbasic::TextRenderer *m_textRenderer;
 

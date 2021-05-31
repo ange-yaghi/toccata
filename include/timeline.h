@@ -35,6 +35,9 @@ namespace toccata {
         void SetInputSegment(MusicSegment *segment) { m_inputSegment = segment; }
         MusicSegment *GetInputSegment() const { return m_inputSegment; }
 
+        void SetUnfinishedSegment(MusicSegment *segment) { m_unfinishedSegment = segment; }
+        MusicSegment *GetUnfinishedSegment() const { return m_unfinishedSegment; }
+
         void SetTimeRange(timestamp range) { m_timeRange = range; }
         timestamp GetTimeRange() const { return m_timeRange; }
 
@@ -84,6 +87,7 @@ namespace toccata {
         timestamp m_timeOffset;
 
         MusicSegment *m_inputSegment;
+        MusicSegment *m_unfinishedSegment;
 
         std::vector<MatchedBar> m_bars;
         std::vector<MatchedPiece> m_pieces;

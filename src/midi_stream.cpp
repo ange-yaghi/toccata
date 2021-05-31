@@ -72,7 +72,11 @@ toccata::MidiStream::MidiEvent toccata::MidiStream::GetEvent(int index) const {
 }
 
 void toccata::MidiStream::ProcessMidiEvent(
-    int status, int byte1, int byte2, timestamp t, MusicPoint::Hand hand)
+    int status,
+    int byte1,
+    int byte2,
+    timestamp t,
+    MusicPoint::Hand hand)
 {
     if (status == 0x9 || status == 0x8) {
         const int key = byte1;

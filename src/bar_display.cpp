@@ -16,10 +16,6 @@ toccata::BarDisplay::~BarDisplay() {
     /* void */
 }
 
-void toccata::BarDisplay::Initialize(dbasic::DeltaEngine *engine) {
-    m_engine = engine;
-}
-
 void toccata::BarDisplay::Process() {
     /* void */
 }
@@ -109,7 +105,8 @@ void toccata::BarDisplay::AllocateChannels() {
 }
 
 void toccata::BarDisplay::RenderBarInformation(
-    const Analyzer::BarInformation &info, const BoundingBox &box)
+    const Analyzer::BarInformation &info,
+    const BoundingBox &box)
 {
     Grid grid;
     grid.SetBoundingBox(box);

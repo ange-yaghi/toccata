@@ -18,7 +18,7 @@ void toccata::CurrentTimeDisplay::Render() {
     std::stringstream ss;
     ss << MidiHandler::Get()->GetEstimatedTimestamp();
 
-    const float textHeight = m_boundingBox.Height();
+    const float textHeight = m_boundingBox.Height() / 4;
 
     RenderText(
         ss.str(),

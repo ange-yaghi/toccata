@@ -51,14 +51,21 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
     settings.WindowTitle = "Toccata";
 
     m_engine.CreateGameWindow(settings);
-    m_engine.SetCameraMode(dbasic::DeltaEngine::CameraMode::Target);
-    m_engine.SetClearColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
+
+    m_engine.InitializeShaderSet(&m_shaderSet);
+    m_engine.InitializeDefaultShaders(&m_shaders, &m_shaderSet);
+    m_engine.InitializeConsoleShaders(&m_shaderSet);
+    m_engine.SetShaderSet(&m_shaderSet);
+
+    m_shaders.SetCameraMode(dbasic::DefaultShaders::CameraMode::Flat);
+    m_shaderSet.GetStage(0)->GetRenderTarget()->SetDepthTestEnabled(false);
+    m_shaders.SetClearColor(ysColor::srgbiToLinear(0x00, 0x00, 0x00));
 
     m_assetManager.SetEngine(&m_engine);
 
     m_analyzer.SetTimeline(&m_timeline);
 
-    m_barDisplay.Initialize(&m_engine);
+    m_barDisplay.Initialize(&m_engine, &m_shaders, &m_textRenderer, &m_settings);
     m_barDisplay.SetTextRenderer(&m_textRenderer);
     m_barDisplay.SetAnalyzer(&m_analyzer);
 
@@ -71,18 +78,29 @@ void toccata::Application::Initialize(void *instance, ysContextObject::DeviceAPI
     m_testSegment.PulseUnit = 1000.0;
     m_testSegment.PulseRate = 1.0;
 
-    m_practiceModePanel.Initialize(&m_engine, &m_textRenderer, &m_settings);
-    m_currentTimeDisplay.Initialize(&m_engine, &m_textRenderer, &m_settings);
-    m_metricsPanel.Initialize(&m_engine, &m_textRenderer, &m_settings);
+    m_unresolvedNotes.PulseUnit = 1000.0;
+    m_unresolvedNotes.PulseRate = 1.0;
+
+    m_practiceModePanel.Initialize(&m_engine, &m_shaders, &m_textRenderer, &m_settings);
+    m_currentTimeDisplay.Initialize(&m_engine, &m_shaders, &m_textRenderer, &m_settings);
+    m_metricsPanel.Initialize(&m_engine, &m_shaders, &m_textRenderer, &m_settings);
 
     m_metricsPanel.SetDecisionThread(&m_decisionThread);
 
     ReloadThemes();
+
+    m_isKeydown = new bool[(int)ysKey::Code::Count];
+    for (int i = 0; i < (int)ysKey::Code::Count; ++i) m_isKeydown[i] = false;
 }
 
 void toccata::Application::Process() {
     const int windowWidth = m_engine.GetScreenWidth();
     const int windowHeight = m_engine.GetScreenHeight();
+
+    m_shaders.SetScreenDimensions(windowWidth, windowHeight);
+    m_shaders.CalculateUiCamera();
+    m_shaders.SetFogNear(10000.0f);
+    m_shaders.SetFogFar(10001.0f);
 
     const float dt = m_engine.GetFrameLength();
     m_currentOffset += dt;
@@ -100,6 +118,7 @@ void toccata::Application::Process() {
 
     m_timeline.SetPositionX(0.0f);
     m_timeline.SetInputSegment(&m_testSegment);
+    m_timeline.SetUnfinishedSegment(&m_unresolvedNotes);
     m_timeline.SetTimeOffset(windowStart);
     m_timeline.SetTimeRange(5000);
     m_timeline.SetWidth((float)windowWidth);
@@ -108,6 +127,7 @@ void toccata::Application::Process() {
     m_analyzer.Analyze();
 
     m_midiDisplay.SetEngine(&m_engine);
+    m_midiDisplay.SetShaders(&m_shaders);
     m_midiDisplay.SetTextRenderer(&m_textRenderer);
     m_midiDisplay.SetHeight(windowHeight * 0.7f);
     m_midiDisplay.SetKeyRangeStart(0);
@@ -117,6 +137,7 @@ void toccata::Application::Process() {
     m_midiDisplay.SetSettings(&m_settings);
 
     m_barDisplay.SetEngine(&m_engine);
+    m_barDisplay.SetShaders(&m_shaders);
     m_barDisplay.SetHeight(windowHeight * 0.1f);
     m_barDisplay.SetPositionY(windowHeight - windowHeight * 0.1f);
     m_barDisplay.SetTextRenderer(&m_textRenderer);
@@ -124,6 +145,7 @@ void toccata::Application::Process() {
     m_barDisplay.SetSettings(&m_settings);
 
     m_pieceDisplay.SetEngine(&m_engine);
+    m_pieceDisplay.SetShaders(&m_shaders);
     m_pieceDisplay.SetHeight(windowHeight * 0.1f);
     m_pieceDisplay.SetPositionY((float)windowHeight);
     m_pieceDisplay.SetTextRenderer(&m_textRenderer);
@@ -140,7 +162,7 @@ void toccata::Application::Process() {
 
     MockMidiInput();
 
-    if (m_engine.ProcessKeyDown(ysKeyboard::KEY_F5)) {
+    if (m_engine.ProcessKeyDown(ysKey::Code::F5)) {
         ReloadThemes();
     }
 
@@ -176,30 +198,33 @@ void toccata::Application::Render() {
 }
 
 void toccata::Application::MockMidiInput() {
-    MockMidiKey(ysKeyboard::KEY_A, 48);
-    MockMidiKey(ysKeyboard::KEY_S, 50);
-    MockMidiKey(ysKeyboard::KEY_D, 52);
-    MockMidiKey(ysKeyboard::KEY_F, 53);
-    MockMidiKey(ysKeyboard::KEY_G, 55);
-    MockMidiKey(ysKeyboard::KEY_H, 57);
+    MockMidiKey(ysKey::Code::A, 48);
+    MockMidiKey(ysKey::Code::S, 50);
+    MockMidiKey(ysKey::Code::D, 52);
+    MockMidiKey(ysKey::Code::F, 53);
+    MockMidiKey(ysKey::Code::G, 55);
+    MockMidiKey(ysKey::Code::H, 57);
 }
 
-void toccata::Application::MockMidiKey(ysKeyboard::KEY_CODE key, int midiKey) {
+void toccata::Application::MockMidiKey(ysKey::Code key, int midiKey) {
     // Add 100 million years just for fun
     const timestamp t = 
         (timestamp)std::round(m_currentOffset * 1000) + 3153600000000000000;
 
-    if (m_engine.ProcessKeyDown(key)) {
+    if (m_engine.IsKeyDown(key) && !m_isKeydown[(int)key]) {
+        m_isKeydown[(int)key] = true;
         MidiHandler::Get()->ProcessEvent(0x9, midiKey, 100, t);
     }
-    else if (m_engine.ProcessKeyUp(key)) {
+    else if (!m_engine.IsKeyDown(key) && m_isKeydown[(int)key]) {
+        m_isKeydown[(int)key] = false;
         MidiHandler::Get()->ProcessEvent(0x8, midiKey, 0, t);
     }
 }
 
 void toccata::Application::ProcessMidiInput() {
     MidiStream targetStream;
-    MidiHandler::Get()->Extract(&targetStream);
+    MidiStream unresolvedStream;
+    MidiHandler::Get()->Extract(&targetStream, &unresolvedStream);
 
     const int noteCount = targetStream.GetNoteCount();
     for (int i = 0; i < noteCount; ++i) {
@@ -211,6 +236,18 @@ void toccata::Application::ProcessMidiInput() {
         point.Length = note.NoteLength;
         m_decisionThread.AddNote(point);
         m_testSegment.NoteContainer.AddPoint(point);
+    }
+
+    const int unresolvedNodeCount = unresolvedStream.GetNoteCount();
+    m_unresolvedNotes.NoteContainer.Clear();
+    for (int i = 0; i < unresolvedNodeCount; ++i) {
+        const MidiNote &note = unresolvedStream.GetNote(i);
+        MusicPoint point;
+        point.Pitch = note.MidiKey;
+        point.Timestamp = note.Timestamp;
+        point.Velocity = note.Velocity;
+        point.Length = note.NoteLength;
+        m_unresolvedNotes.NoteContainer.AddPoint(point);
     }
 }
 
@@ -283,6 +320,7 @@ void toccata::Application::Run() {
 }
 
 void toccata::Application::Destroy() {
+    m_shaderSet.Destroy();
     m_assetManager.Destroy();
     m_engine.Destroy();
 }

@@ -41,7 +41,7 @@ void toccata::MidiDisplay::Render() {
     for (int i = m_keyStart; i <= m_keyEnd; ++i) {
         const int j = (i - m_keyStart);
 
-        ysVector color = IsAccidental(i)
+        const ysVector color = IsAccidental(i)
             ? m_settings->MidiDisplay_AccidentalChannelColor
             : m_settings->MidiDisplay_NaturalChannelColor;
 
@@ -60,7 +60,10 @@ void toccata::MidiDisplay::Render() {
     }
 
     if (m_showReferenceNotes) RenderReferenceNotes();
-    if (m_showPlayedNotes) RenderPlayedNotes();
+    if (m_showPlayedNotes) {
+        RenderPlayedNotes();
+        RenderUnresolvedNotes();
+    }
 
     const int barCount = m_timeline->GetBarCount();
     for (int i = 0; i < barCount; ++i) {
@@ -264,7 +267,7 @@ void toccata::MidiDisplay::RenderPlayedNotes() {
                 .AlignLeft(noteStart), color);
         }
         else {
-            ysVector color;
+            ysVector color = ysMath::Constants::Zero3;
             if (m_mode == PracticeMode::Timing) {
                 color = m_settings->MidiDisplay_DefaultPlayedNoteColor;
             }
@@ -279,6 +282,37 @@ void toccata::MidiDisplay::RenderPlayedNotes() {
                 .AlignCenterY(y)
                 .AlignLeft(noteStart), color);
         }
+    }
+}
+
+void toccata::MidiDisplay::RenderUnresolvedNotes() {
+    const float height = m_height;
+
+    const float channelHeight = height / (m_keyEnd - m_keyStart + 1);
+    const float start_y = m_positionY;
+    const float middle_y = start_y - height / 2;
+
+    const float lower_y = start_y - height;
+
+    const timestamp currentTimestamp = MidiHandler::Get()->GetEstimatedTimestamp();
+
+    MusicSegment *unfinishedSegment = m_timeline->GetUnfinishedSegment();
+    const int n = unfinishedSegment->NoteContainer.GetCount();
+    for (int i = 0; i < n; ++i) {
+        const MusicPoint &point = unfinishedSegment->NoteContainer.GetPoints()[i];
+
+        if (point.Pitch > m_keyEnd || point.Pitch < m_keyStart) continue;
+        if (!m_timeline->InRange(point.Timestamp, currentTimestamp)) continue;
+
+        const double noteStart = m_timeline->TimestampToWorldX(point.Timestamp);
+        const double noteEnd = m_timeline->TimestampToWorldX(currentTimestamp);
+        const double noteWidth = noteEnd - noteStart;
+
+        const float y = (float)(lower_y + channelHeight * (point.Pitch - m_keyStart) + channelHeight / 2);
+
+        DrawBox(BoundingBox(noteWidth, channelHeight)
+            .AlignCenterY(y)
+            .AlignLeft(noteStart), ysMath::Constants::One);
     }
 }
 
